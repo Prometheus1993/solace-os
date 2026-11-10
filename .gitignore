@@ -1,0 +1,17 @@
+node_modules/
+/data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+dist/
+.DS_Store
+*.log
+
+# secrets — never commit
+.env*
+!.env.example
+
+# local-only
+/source-exports/
+/frontend/src/assets/private/

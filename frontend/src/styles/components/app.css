@@ -1,0 +1,51 @@
+/* frontend/src/App.tsx — page shell (drop overlay, busy bar, toast). */
+
+.app-root {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--pageBg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-loading {
+  color: var(--muted);
+  font-family: var(--font-body);
+  padding: 40px;
+}
+
+/* .is-mobile: the BottomNav clearance; desktop's plain 24px is the "off" state. */
+.app-main {
+  padding-bottom: 24px;
+}
+.app-main.is-mobile {
+  padding-bottom: calc(58px + env(safe-area-inset-bottom));
+}
+
+.app-busy-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold);
+  z-index: 90;
+}
+
+/* --toast-tone: resolved in JS (C.ok / C.danger / C.gold) — drives both border and text colour. */
+.app-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 620px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-line;
+  line-height: 1.5;
+  background: var(--panel);
+  border: 1px solid var(--toast-tone);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  z-index: 90;
+  color: var(--toast-tone);
+}

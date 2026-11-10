@@ -1,0 +1,61 @@
+/* Non-variable global rules — reset/body, yorha-btn/-input/-card-row, keyframes, fx overlays,
+   media queries. Moved verbatim from the old frontend/src/theme.css (variables now live in
+   styles/themes/). tokens.ts reads every colour as C.x = 'var(--x)', so a data-theme swap
+   re-themes the whole app (inline styles + this raw CSS alike). */
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--pageBg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  letter-spacing: .02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── YoRHa button: boxy; a dark fill sweeps in from the left on hover/active; text flips to onAccent ── */
+.yorha-btn { position: relative; overflow: hidden; cursor: pointer; isolation: isolate; }
+.yorha-btn::after {
+  content: ''; position: absolute; inset: 0; width: 0;
+  /* z-index:-1 + isolate keeps the fill BEHIND the label text — even bare (un-wrapped)
+     text nodes like "Log" — so the label never disappears under the hover sweep. */
+  background: var(--gold); transition: width .14s ease; z-index: -1;
+}
+.yorha-btn:hover::after, .yorha-btn:active::after, .yorha-btn[aria-selected="true"]::after { width: 100%; }
+.yorha-btn > * { position: relative; z-index: 1; }
+.yorha-btn:hover, .yorha-btn:active, .yorha-btn[aria-selected="true"] { color: var(--onAccent); }
+
+/* ── inputs: square; focus → ink border ── */
+.yorha-input:focus { border-color: var(--gold); outline: none; }
+
+/* ── Garmin sync: the ⟲ glyph spins while a sync is in flight (CommandBar SYNC button) ── */
+@keyframes solace-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── texture overlays (opt-in via .fx-on; the moving scanline is killed by reduced-motion) ── */
+.fx-on .fx-scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 60;
+  background: repeating-linear-gradient(0deg, rgba(var(--fxLine), .035) 0 1px, transparent 1px 3px); }
+.fx-on .fx-grid { position: fixed; inset: 0; pointer-events: none; z-index: 59;
+  background:
+    linear-gradient(0deg, rgba(var(--fxLine), .03) 1px, transparent 1px) 0 0 / 100% .3rem,
+    linear-gradient(90deg, rgba(var(--fxLine), .03) 1px, transparent 1px) 0 0 / .3rem 100%; }
+.fx-on .fx-vignette { position: fixed; inset: 0; pointer-events: none; z-index: 61;
+  box-shadow: inset 0 0 150px rgba(var(--fxLine), .10); }
+
+/* ── richer selectable card-row (module lists): flat, hover → ink border + a subtle lift ── */
+.yorha-card-row { cursor: pointer; transition: border-color .12s, transform .12s, box-shadow .12s; }
+.yorha-card-row:hover { border-color: var(--gold) !important; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(var(--fxLine), .14); }
+
+/* ── YoRHa enrich: soft fade, hover-lift, gradient divider ──────────────────── */
+/* Soft fade for tab content on mount (no transform → never causes horizontal scroll). */
+@keyframes yorha-fade { from { opacity: 0; } to { opacity: 1; } }
+.yorha-fade { animation: yorha-fade .26s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .yorha-btn::after { transition: none; }
+  .yorha-card-row { transition: none; }
+  .yorha-card-row:hover { transform: none; box-shadow: none; }
+  .yorha-fade { animation: none; }
+  .fx-on .fx-scanlines { display: none; }
+}

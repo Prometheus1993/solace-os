@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" role="img" aria-label="Placeholder avatar">
+  <!-- Original placeholder silhouette (repo-safe stand-in for a private local avatar). -->
+  <g fill="#14161a" stroke="#3a3f47" stroke-width="2" stroke-linejoin="round">
+    <path d="M100 40c-20 0-32 16-32 36 0 12 4 22 10 28l-6 16c-24 6-42 22-42 52v88h140v-88c0-30-18-46-42-52l-6-16c6-6 10-16 10-28 0-20-12-36-32-36z"/>
+  </g>
+  <path d="M64 70h72l4 18H60z" fill="#ff3545" opacity=".9"/>
+  <path d="M140 74c24 8 38 26 44 52-14-12-30-18-46-20zM60 74c-24 8-38 26-44 52 14-12 30-18 46-20z" fill="#b01f2c"/>
+  <rect x="94" y="76" width="12" height="6" fill="#9be8ee"/>
+  <path d="M100 160v120" stroke="#ff3545" stroke-width="2" opacity=".6"/>
+</svg>

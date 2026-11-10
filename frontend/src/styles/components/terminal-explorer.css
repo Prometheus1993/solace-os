@@ -1,0 +1,42 @@
+.terminal-explorer { height:100%; display:flex; flex-direction:column; font:14px 'Share Tech Mono',monospace; --border:#345368; }
+.te-layout { display:grid; min-height:0; flex:1; }
+.te-folders { overflow:auto; }
+.te-folders > p { padding:0 8px; margin:0 0 14px; }.te-folders > .te-library { margin:18px 0 4px; }
+.te-folders button { display:flex; align-items:center; width:100%; gap:8px; padding:9px; background:transparent; text-align:left; overflow-wrap:anywhere; }
+.te-folders button small { margin-left:auto; }.te-folders button[aria-current=page] { border-color:#74b9c3; }
+.te-subfolders { padding-left:12px; }.te-nav-note { display:block; margin:26px 8px 0; font-size:12px; line-height:1.7; }
+.te-workspace { min-height:0; min-width:0; display:flex; flex-direction:column; }
+.te-path { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+.te-path > span { margin-right:8px; }
+.te-content { min-height:0; overflow:auto; flex:1; scrollbar-width:thin; }
+.te-content h1 { font:600 23px Oxanium,sans-serif; margin:0 0 16px; }
+.te-status {
+  padding:10px 18px;
+  border-top:1px solid #345368;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-shrink:0;
+}
+.terminal-explorer input,.terminal-explorer select { font-size:16px; min-height:42px; }.terminal-explorer button { min-height:40px; }
+.te-content .parts-tab-shell { gap:14px; padding:0; max-width:none; }
+.te-content .str-log-list,.te-content .series-shelf__scroll { max-height:none; overflow:visible; }
+.te-content .str-log-actions { position:sticky; bottom:-18px; z-index:1; padding:12px 0; }
+.te-content .str-log-hint,.te-content .str-log-chip { font-size:12px; }
+@media(max-width:760px) {
+  .te-nav-note { display:none; }
+  .te-folders button { gap:4px; padding:7px 4px; }
+  .te-subfolders { padding-left:5px; }
+  .te-status { padding:8px; }
+  .te-content h1 { font-size:20px; }
+  .te-content .str-log-head { grid-template-columns:1fr; }
+  .te-content .str-log-set { grid-template-columns:14px minmax(0,1fr) minmax(0,1fr) 28px 28px; gap:3px; }
+  .te-content .str-log-actions { bottom:-10px; }
+  .te-content .series-form__grid { grid-template-columns:1fr; }
+}
+@media(max-width:480px) {
+  .te-folders { display:flex; overflow-x:auto; gap:4px; align-items:center; }
+  .te-folders .te-subfolders { display:contents; }
+  .te-folders button { flex-shrink:0; width:auto; white-space:nowrap; }
+  .te-content .str-log-set { grid-template-columns:18px minmax(0,1fr) minmax(0,1fr) 32px 32px; }
+}

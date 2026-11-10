@@ -1,0 +1,53 @@
+/* frontend/src/FxOverlay.tsx — full-screen "LEVEL UP" fanfare. Moved verbatim from the old runtime-
+   injected FX_CSS template string (was a <style> tag mounted by the component itself). */
+
+@keyframes fxFlash { 0% { opacity: 0; } 14% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fxText { 0% { opacity: 0; transform: scale(.7); } 28% { opacity: 1; transform: scale(1.04); } 44% { transform: scale(1); } 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fxShard { 0% { opacity: 0; transform: translate(0,0); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); } }
+
+.fx-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  pointer-events: none;
+}
+.fx-flash {
+  position: absolute;
+  inset: 0;
+  animation: fxFlash 2.6s ease-out forwards;
+}
+.fx-shard {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  animation: fxShard 1.4s ease-out forwards;
+}
+.fx-text {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  animation: fxText 2.6s ease-out forwards;
+}
+.fx-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(30px, 7.143vw, 60px);
+  letter-spacing: .06em;
+}
+.fx-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(16.4px, 2.381vw, 20px);
+  letter-spacing: .1em;
+  color: var(--text);
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-shard { display: none; }
+  .fx-text, .fx-flash { animation: none; }
+  .fx-flash { opacity: .5; }
+}

@@ -1,0 +1,29 @@
+name: CodeQL
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  analyze:
+    # CodeQL is free for public repos; skipped while the repo is private (needs paid GitHub Advanced Security).
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

@@ -1,0 +1,24 @@
+/* frontend/src/tabs/Body.tsx — recovery vitals tiles + body composition + trend cards + weigh-in form
+   (VITALS view). */
+
+.vitals-tile { background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); padding: 14px 16px; }
+.vitals-tile__header { display: flex; align-items: center; justify-content: space-between; }
+.vitals-tile__label { font-family: var(--font-body); font-weight: 300; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); }
+.vitals-tile__dot { width: 8px; height: 8px; background: var(--vitals-dot); }
+.vitals-tile__value { font-family: var(--font-mono); font-weight: 500; font-size: clamp(20.2px, 3.333vw, 28px); color: var(--headingWarm); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.vitals-tile__value.is-null { color: var(--nullText); }
+.vitals-tile__unit { font-family: var(--font-body); font-size: 12px; color: var(--muted2); }
+.vitals-tile__footer { font-size: 11px; color: var(--faint); margin-top: 3px; }
+
+/* Reuses `.parts-tile-grid`'s layout (identical minmax(150,1fr) grid) for the 3 auto-fit grids in
+   this view; the weigh-in form grid additionally bottom-aligns its Field/button columns. */
+.vitals-form-grid { align-items: end; }
+.vitals-trends-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 18px; }
+
+.vitals-trend-hint { font-family: var(--font-body); font-size: 11px; color: var(--faint); margin-top: 10px; }
+.vitals-recovery-note { font-family: var(--font-body); font-size: 11px; color: var(--faint); margin-top: 12px; }
+.vitals-empty-note { font-family: var(--font-body); font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+.vitals-goals-hint { font-family: var(--font-body); font-size: 11px; color: var(--faint); margin-top: 12px; }
+.vitals-msg { font-family: var(--font-mono); font-size: 13px; color: var(--ok); }
+.vitals-msg.is-error { color: var(--danger); }

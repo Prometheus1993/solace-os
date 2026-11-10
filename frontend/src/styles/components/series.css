@@ -1,0 +1,131 @@
+/* frontend/src/tabs/Series.tsx — the unified ARCHIVES shelf (manga + books), cover-picker, next-to-buy,
+   per-volume disclosure (prefix `series-`). */
+
+.series-cover-placeholder { flex-shrink: 0; background: var(--subTile); border: 1px solid var(--subBorder); display: grid; place-items: center; color: var(--faint); font-family: var(--font-mono); }
+.series-cover-img { flex-shrink: 0; object-fit: cover; border: 1px solid var(--subBorder); display: block; }
+
+.series-buy-chip { flex-shrink: 0; background: var(--gold); color: var(--onAccent); font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; white-space: nowrap; }
+
+.series-twoway { display: flex; flex-direction: column; gap: 5px; }
+.series-twoway__label { font-family: var(--font-body); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted2); }
+.series-twoway__group { display: flex; }
+.series-twoway-btn { flex: 1; min-height: 38px; padding: 0 10px; border: 1px solid var(--panelBorder); background: transparent; color: var(--muted); border-radius: var(--radius); cursor: pointer; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .04em; white-space: nowrap; }
+.series-twoway-btn.is-active { border-color: var(--gold); background: var(--gold); color: var(--onAccent); }
+
+.series-price-pill { font-family: var(--font-mono); font-size: 10.5px; color: var(--text); border: 1px solid var(--subBorder); padding: 1px 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.series-price-pill.is-estimated { color: var(--muted2); }
+.series-price-pill__est { color: var(--faint); }
+
+/* -- SeriesRow -------------------------------------------------------------- */
+.series-row { display: flex; align-items: stretch; gap: 11px; padding: 9px 12px; background: var(--subTile); border: 1px solid var(--subBorder); box-shadow: inset 3px 0 0 0 var(--series-row-accent); }
+.series-row.is-selected { border-color: var(--gold); }
+.series-row__main { display: flex; align-items: stretch; gap: 11px; flex: 1; min-width: 0; cursor: pointer; }
+.series-row__info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.series-row__title-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.series-row__title { font-family: var(--font-body); font-size: 13.5px; color: var(--text); }
+.series-row__state-chip { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; color: var(--series-state-color); border: 1px solid var(--series-state-color); padding: 1px 5px; }
+.series-row__author { font-family: var(--font-body); font-size: 11px; color: var(--faint); }
+.series-row__manga-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.series-row__read-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.series-row__bar-wrap { flex: 0 0 96px; }
+.series-row__note { font-family: var(--font-mono); font-size: 11px; color: var(--muted2); }
+.series-row__behind { font-family: var(--font-mono); font-size: 11px; color: var(--danger); }
+.series-row__book-line { font-family: var(--font-body); font-size: 11px; color: var(--muted2); }
+.series-row__genres { display: flex; flex-wrap: wrap; gap: 4px; }
+.series-genre-chip { font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em; color: var(--muted2); border: 1px solid var(--subBorder); padding: 0 4px; }
+.series-row__meta-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.series-row__rating { font-family: var(--font-body); font-size: 11px; color: var(--muted2); }
+.series-row__spent { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted2); font-variant-numeric: tabular-nums; }
+.series-vol-toggle { align-self: center; padding: 5px 9px; font-size: 10px; letter-spacing: .06em; color: var(--gold); background: transparent; flex-shrink: 0; white-space: nowrap; }
+.series-vol-toggle.is-expanded { color: var(--onAccent); background: var(--gold); }
+
+/* -- VolumePanel (the per-series volume disclosure) ------------------------- */
+.series-vol-panel { background: var(--subTile); border: 1px solid var(--subBorder); border-left: 2px solid var(--leanness); padding: 11px 13px; margin-top: 2px; }
+.series-vol-panel__header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 9px; }
+.series-vol-panel__header-text { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; color: var(--muted2); }
+.series-vol-panel__list { display: flex; flex-direction: column; gap: 4px; }
+.series-vol-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 3px 0; border-bottom: 1px solid var(--hairline); }
+.series-vol-row__num { font-family: var(--font-mono); font-size: 11.5px; color: var(--text); width: 46px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.series-read-chip { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; color: var(--series-chip-color); border: 1px solid var(--subBorder); padding: 0 5px; flex-shrink: 0; }
+.series-read-chip.is-read { border-color: var(--ok); }
+.series-read-chip--button { background: transparent; cursor: pointer; height: 18px; line-height: 16px; }
+.series-read-chip--button:disabled { cursor: default; opacity: .5; }
+.series-read-chip--static { opacity: .7; }
+.series-vol-row__owned { font-family: var(--font-mono); font-size: 9.5px; color: var(--muted); flex-shrink: 0; }
+.series-vol-row__owned.is-not-owned { color: var(--faint); }
+.series-vol-row__read-date { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .08em; color: var(--muted); flex-shrink: 0; }
+.series-vol-row__format { font-family: var(--font-mono); font-size: 9px; color: var(--strength); flex-shrink: 0; }
+.series-vol-row__spacer { flex: 1; }
+
+/* -- CandidatePicker (cover-picker grid) ------------------------------------ */
+.series-candidates { margin-top: 12px; }
+.series-candidates__header { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; color: var(--muted2); margin-bottom: 7px; }
+.series-candidates__en-hint { color: var(--gold); }
+.series-candidates__row { display: flex; gap: 9px; overflow-x: auto; padding-bottom: 6px; }
+.series-candidate { flex-shrink: 0; width: 122px; text-align: left; background: var(--subTile); border: 1px solid var(--subBorder); padding: 7px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
+.series-candidate__title { font-family: var(--font-body); font-size: 11.5px; color: var(--text); line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.series-candidate__sub { font-family: var(--font-body); font-size: 9.5px; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.series-candidate__author-match { font-family: var(--font-mono); font-size: 9px; color: var(--strength); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.series-candidate__en-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.series-candidate__en-badge { background: var(--gold); color: var(--onAccent); font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; padding: 1px 5px; }
+.series-candidate__edition { font-family: var(--font-mono); font-size: 9px; color: var(--strength); }
+.series-candidate__publisher { font-family: var(--font-body); font-size: 9px; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 92px; }
+.series-candidate__volcount { font-family: var(--font-mono); font-size: 9.5px; color: var(--muted); }
+.series-candidate__volcount.is-ongoing { color: var(--gold); }
+.series-candidate__genres { display: flex; flex-wrap: wrap; gap: 3px; }
+.series-candidate__genre-chip { font-family: var(--font-mono); font-size: 8px; letter-spacing: .04em; color: var(--muted2); border: 1px solid var(--subBorder); padding: 0 3px; }
+.series-related { margin-top: 10px; }
+.series-related__header { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; color: var(--muted2); margin-bottom: 6px; }
+.series-related__row { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 5px; }
+.series-related-card { flex-shrink: 0; width: 92px; text-align: left; background: var(--subTile); border: 1px solid var(--subBorder); padding: 5px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.series-related-card__label { font-family: var(--font-mono); font-size: 8px; letter-spacing: .06em; color: var(--strength); }
+.series-related-card__label.is-oneshot { color: var(--gold); }
+.series-related-card__title { font-family: var(--font-body); font-size: 10px; color: var(--text); line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* -- BuyConfirm (inline "Bought vol N?" confirm) --------------------------- */
+.series-buyconfirm__title { font-family: var(--font-body); font-size: 13.5px; color: var(--text); margin-bottom: 10px; }
+.series-buyconfirm__title-bold { font-weight: 500; }
+.series-buyconfirm__row { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.series-buyconfirm__price-field { flex: 0 1 150px; }
+.series-buyconfirm__price-input { font-variant-numeric: tabular-nums; }
+.series-buyconfirm__confirm-btn { background: var(--gold); color: var(--onAccent); }
+.series-buyconfirm__cancel-btn { color: var(--muted); border-color: var(--panelBorder); }
+.series-buyconfirm__hint { font-family: var(--font-mono); font-size: 11px; margin-top: 8px; color: var(--muted2); }
+.series-buyconfirm__hint.is-danger { color: var(--danger); }
+
+/* -- NextToBuyCard ----------------------------------------------------------- */
+.series-nexttobuy__header-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted2); }
+.series-nexttobuy__list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overscroll-behavior: contain; padding: 2px 4px 2px 0; }
+.series-nexttobuy__item { flex-shrink: 0; }
+.series-nexttobuy__row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 9px; background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); text-align: left; font: inherit; color: inherit; }
+.series-nexttobuy__row.is-selected { border-color: var(--gold); }
+.series-nexttobuy__title { flex: 1; min-width: 0; font-family: var(--font-body); font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.series-nexttobuy__own { font-family: var(--font-mono); font-size: 11px; color: var(--muted2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.series-nexttobuy__flash { font-family: var(--font-mono); font-size: 12px; color: var(--ok); margin-top: 10px; }
+
+/* -- The add/edit form (renderForm) ----------------------------------------- */
+.series-form__title-row { display: flex; gap: 10px; align-items: flex-end; }
+.series-form__title-field { flex: 1; min-width: 0; }
+.series-form__title-input-row { display: flex; gap: 6px; }
+.series-form__title-input { flex: 1; min-width: 0; font-size: 15px; }
+.series-form__search-btn { flex-shrink: 0; }
+.series-form__spaced { margin-top: 12px; }
+.series-form__grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(150px,100%),1fr)); gap: 12px; align-items: end; margin-top: 14px; }
+.series-form__grid--tight { margin-top: 12px; }
+.series-form__ongoing-hint { font-family: var(--font-body); font-size: 11.5px; color: var(--faint); margin-top: 6px; }
+.series-form__footer-hint { font-family: var(--font-body); font-size: 11.5px; color: var(--faint); margin-top: 10px; }
+.series-form__actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; min-height: 18px; flex-wrap: wrap; }
+.series-form__delete-btn { color: var(--danger); border-color: var(--danger); }
+.series-form__cancel-btn { color: var(--muted); border-color: var(--panelBorder); }
+.series-form__msg { font-family: var(--font-mono); font-size: 13px; color: var(--ok); }
+.series-form__msg.is-danger { color: var(--danger); }
+
+/* -- The Series shelf (search/sort/filter toolbar + list) -------------------- */
+.series-shelf__add-btn { padding: 5px 12px; font-size: 11px; }
+.series-shelf__toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.series-shelf__query-input { flex: 1 1 180px; min-width: 0; }
+.series-shelf__select { flex: 0 1 150px; }
+.series-shelf__block { margin-bottom: 12px; }
+.series-shelf__searching { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted2); min-height: 34px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.series-shelf__clear-btn { padding: 4px 10px; font-size: 10.5px; }
+.series-shelf__scroll { max-height: 70vh; overflow-y: auto; overscroll-behavior: contain; padding: 2px 4px 2px 0; }

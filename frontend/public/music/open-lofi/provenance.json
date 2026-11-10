@@ -1,0 +1,42 @@
+{
+  "source": "https://github.com/btahir/open-lofi/releases/download/v1.0.0/openlofi.zip",
+  "license": "CC0-1.0",
+  "tracks": [
+    {
+      "file": "high-rise-haze.mp3",
+      "bytes": 2937654,
+      "sha256": "dcedeb786bcc3964f44ff0cb6407212d34d9a1b3e2e463c2430d45b0ac555f0d",
+      "archiveEntry": "high-rise-haze.mp3"
+    },
+    {
+      "file": "midnight-window-glow.mp3",
+      "bytes": 2914326,
+      "sha256": "cc087a8f813689a6c6e068e1a5b83ccff5f1f0c0d3b011ad901fd1e2ce591c47",
+      "archiveEntry": "midnight-window-glow.mp3"
+    },
+    {
+      "file": "storm-over-side-streets.mp3",
+      "bytes": 3503478,
+      "sha256": "353ecb6617a55aaea8dfc7a584345e86b4108cdd8e15075a6e4dde50550c7434",
+      "archiveEntry": "storm-over-side-streets.mp3"
+    },
+    {
+      "file": "after-school-rain.mp3",
+      "bytes": 2330190,
+      "sha256": "02389a480381b579941934251687b8d3976f953321147045ae41308f34bb9714",
+      "archiveEntry": "after-school-rain.mp3"
+    },
+    {
+      "file": "chapter-by-lamplight.mp3",
+      "bytes": 3141462,
+      "sha256": "d892f78615b490db38866817ce477fb500bde37f3bc1e220703f534178743827",
+      "archiveEntry": "chapter-by-lamplight.mp3"
+    },
+    {
+      "file": "terminal-rain.mp3",
+      "bytes": 2650566,
+      "sha256": "fa8b129cb9deb2225db5bdfed55b531d0fcfae050bf62af551c30d8d5cd806ee",
+      "archiveEntry": "terminal-rain.mp3"
+    }
+  ]
+}

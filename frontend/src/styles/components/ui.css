@@ -1,0 +1,30 @@
+/* frontend/src/ui.tsx — shared YoRHa primitives (Panel/BlockHeader/OsBlock/chips/bars). */
+
+.ui-bracket { position: absolute; width: 10px; height: 10px; pointer-events: none; }
+.ui-bracket--tl { top: -1px; left: -1px; border-top: 1px solid var(--bracket-color); border-left: 1px solid var(--bracket-color); }
+.ui-bracket--tr { top: -1px; right: -1px; border-top: 1px solid var(--bracket-color); border-right: 1px solid var(--bracket-color); }
+.ui-bracket--bl { bottom: -1px; left: -1px; border-bottom: 1px solid var(--bracket-color); border-left: 1px solid var(--bracket-color); }
+.ui-bracket--br { bottom: -1px; right: -1px; border-bottom: 1px solid var(--bracket-color); border-right: 1px solid var(--bracket-color); }
+
+.ui-panel { position: relative; background: var(--panel); border: 1px solid var(--panelBorder); border-radius: var(--radius); padding: clamp(13px, 3.2vw, 20px); }
+
+.ui-block-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--text); border-bottom: 1px solid var(--subBorder); }
+.ui-block-header__dot { width: 9px; height: 9px; background: var(--gold); flex: 0 0 auto; }
+.ui-block-header__label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ui-inv-strip { background: var(--gold); color: var(--onAccent); padding: 10px 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+
+.ui-os-block { position: relative; background: var(--panel); border: 1px solid var(--panelBorder); border-radius: var(--radius); }
+.ui-os-block__body { padding: 12px 14px; }
+
+.ui-sub-tile { background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); padding: clamp(11px, 2.6vw, 15px); }
+
+.ui-chip { font-family: var(--font-body); font-weight: 600; padding: 3px 9px; border-radius: var(--radius); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; display: inline-block; }
+.ui-chip--outline { color: var(--chip-color); background: transparent; border: 1px solid var(--chip-color); }
+.ui-chip--filled { color: var(--onAccent); background: var(--chip-color); border: 1px solid var(--chip-color); }
+
+.ui-bar-track { position: relative; border-radius: var(--radius); background: var(--trackBg); border: 1px solid var(--trackBorder); overflow: hidden; }
+.ui-bar-track__fill { position: absolute; inset: 0; }
+
+.ui-zone-pill { font-family: var(--font-mono); font-weight: 500; font-size: 13px; background: transparent; border-radius: var(--radius); padding: 4px 10px; color: var(--zone-color); border: 1px solid var(--zone-color); }
+.ui-zone-pill.is-soft { border-style: dashed; }

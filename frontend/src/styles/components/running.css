@@ -1,0 +1,60 @@
+/* frontend/src/tabs/Running.tsx — the "All runs" feed + charts (prefix `run-`). */
+
+.run-mini-pill { font-family: var(--font-body); font-weight: 400; font-size: 11px; color: var(--pill-color); background: transparent; border: 1px solid var(--pill-color); border-radius: var(--radius); padding: 2px 7px; white-space: nowrap; }
+
+/* Base styles live in the class (not inline) so :hover can override; the per-row zone accent is a
+   --row-accent custom property. */
+.run-feed-row { background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); transition: border-color .12s ease; padding: 11px 14px; cursor: default; box-shadow: inset 3px 0 0 0 var(--row-accent); }
+.run-feed-row:hover { border-color: var(--gold); }
+@media (prefers-reduced-motion: reduce) { .run-feed-row { transition: none; } }
+
+.run-mobile-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.run-mobile-head__left { display: flex; align-items: baseline; gap: 9px; min-width: 0; flex-wrap: wrap; }
+.run-mobile-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+.run-date { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--muted2); flex-shrink: 0; }
+
+.run-km { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--headingWarm); }
+.run-km--mobile { font-size: clamp(14.8px, 2.143vw, 18px); }
+.run-km--desktop { font-size: clamp(16.4px, 2.381vw, 20px); width: 76px; flex-shrink: 0; }
+
+.run-pace { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted); }
+.run-pace--mobile { font-size: 12px; }
+.run-pace--desktop { font-size: 12.5px; width: 104px; flex-shrink: 0; }
+.run-pace__sub { color: var(--faint); }
+
+.run-hr { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.run-hr--mobile { font-size: 12px; }
+.run-hr--desktop { font-size: 13px; }
+
+.run-temp { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted2); font-size: 12px; }
+.run-temp--desktop { white-space: nowrap; }
+
+.run-label { font-family: var(--font-body); color: var(--muted); text-transform: capitalize; }
+.run-label--mobile { font-size: 12px; }
+.run-label--desktop { font-size: 12.5px; white-space: nowrap; }
+
+
+.run-desktop-row { display: flex; align-items: center; gap: 14px; }
+.run-daybox { width: 38px; text-align: center; flex-shrink: 0; }
+.run-daynum { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: clamp(15.6px, 2.262vw, 19px); color: var(--text); line-height: 1; }
+.run-daymonth { font-family: var(--font-body); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted2); margin-top: 2px; }
+.run-desktop-meta { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.run-desktop-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+
+.run-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 720px) { .run-stat-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.run-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 18px; }
+.run-caption { font-family: var(--font-body); font-size: 11px; color: var(--faint); margin-top: 10px; }
+
+.run-zone-list { display: flex; flex-direction: column; gap: 8px; }
+.run-zone-row { display: flex; align-items: center; gap: 10px; }
+.run-zone-label { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 13px; width: 26px; color: var(--zone-accent); }
+.run-zone-track { flex: 1; height: 12px; background: var(--trackBg); border: 1px solid var(--trackBorder); border-radius: var(--radius); overflow: hidden; }
+.run-zone-fill { height: 100%; background: var(--zone-accent); }
+.run-zone-count { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 13px; width: 28px; text-align: right; color: var(--muted); }
+
+.run-recent-list { display: flex; flex-direction: column; gap: 8px; }
+.run-empty { color: var(--faint); font-size: 13px; }

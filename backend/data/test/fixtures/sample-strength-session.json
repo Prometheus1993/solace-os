@@ -1,0 +1,10 @@
+{
+  "date": "2026-08-15",
+  "notes": "Sample full-body session",
+  "exercises": [
+    { "name": "Bench Press", "sets": [ { "reps": 10, "weightKg": 40 }, { "reps": 10, "weightKg": 40 }, { "reps": 8, "weightKg": 45 } ] },
+    { "name": "Seated Row", "sets": [ { "reps": 12, "weightKg": 35 }, { "reps": 12, "weightKg": 35 }, { "reps": 12, "weightKg": 40 } ] },
+    { "name": "Overhead Press", "sets": [ { "reps": 10, "weightKg": 25 }, { "reps": 10, "weightKg": 25 }, { "reps": 8, "weightKg": 25 } ] },
+    { "name": "Dumbbell Curl", "sets": [ { "reps": 12, "weightKg": 10 }, { "reps": 12, "weightKg": 10 }, { "reps": 12, "weightKg": 10 } ] }
+  ]
+}

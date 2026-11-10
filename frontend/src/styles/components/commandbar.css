@@ -1,0 +1,108 @@
+/* frontend/src/CommandBar.tsx — desktop "YoRHa OS" command bar shell (ink fill, wordmark, area nav,
+   totals, ⟲ SYNC). */
+
+.cb-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  /* Wrap in the 640–~950px band (BottomNav is already gone there): nav/totals fold to a second
+     row instead of forcing a horizontal scrollbar. */
+  flex-wrap: wrap;
+  gap: 4px 26px;
+  padding: 11px clamp(14px, 2vw, 26px);
+  /* Respect the Dynamic Island when launched full-screen from the Home Screen (0 in a browser tab). */
+  padding-top: calc(11px + env(safe-area-inset-top));
+  background: var(--gold);
+  color: var(--onAccent);
+}
+.cb-wordmark {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .18em;
+  white-space: nowrap;
+}
+.cb-nav {
+  display: flex;
+  gap: 4px;
+}
+.cb-nav-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 5px 8px 6px;
+  cursor: pointer;
+  opacity: .8;
+}
+.cb-nav-btn.is-active {
+  opacity: 1;
+  border-bottom-color: var(--onAccent);
+}
+.cb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cb-totals {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  opacity: .8;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cb-stale-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--danger);
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+.cb-theme-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.cb-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  padding: 5px 9px;
+  opacity: 1;
+  cursor: pointer;
+}
+.cb-sync-btn.is-syncing {
+  opacity: .6;
+  cursor: progress;
+}
+/* Applied only while a sync is in flight (never an "off" class — matches the old undefined style). */
+.cb-sync-spin {
+  display: inline-block;
+  animation: solace-spin .9s linear infinite;
+}

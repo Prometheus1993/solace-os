@@ -1,0 +1,276 @@
+
+.wp-eyebrow { color: #ef5267; font-size: 14px; }
+.wp-deck-panel { z-index: 3; }
+.wp-deck-panel h1 { font: 600 32px Oxanium, sans-serif; letter-spacing: -.03em; }
+.wp-signal { display: flex; align-items: center; gap: 10px; border-block: 1px solid #63809733; color: #95a9b9; font-size: 14px; }
+.wp-signal i { width: 6px; height: 6px; background: currentColor; box-shadow: 0 0 13px currentColor; }
+.wp-signal.is-active { color: #9aeef3; }
+.wp-signal.is-blocked { color: #efb265; }
+.wp-sync { width: 100%; padding: 15px; border: 1px solid #ff435b; background: #a82136; letter-spacing: .1em; }
+.wp-sync:hover { background: #cd2943; }
+.wp-sync:disabled { opacity: .5; cursor: wait; }
+.wp-scanner-panel { z-index: 3; scrollbar-width: thin; scrollbar-color: #66b9c9 #101b29; }
+.wp-scanner-panel .wp-eyebrow { color: #8ceaf0; }
+.wp-scanner-panel h1 { font: 600 30px Oxanium, sans-serif; }
+.wp-scanner-subtitle { margin: 0 0 20px; color: #9bb8c7; font-size: 14px; }
+.wp-scan-detail h2 { margin: 24px 0 5px; color: #a4c5d2; font-size: 14px; font-weight: normal; }
+.wp-scan-value { font: 500 54px Oxanium, sans-serif; margin: 0 0 10px; color: #d8ffff; }
+.wp-scan-value small { font: 14px 'Share Tech Mono', monospace; color: #80b0c1; margin: 0 7px; }
+.wp-scan-meta { display: flex; flex-wrap: wrap; gap: 8px; color: #9ad9e0; font-size: 14px; line-height: 1.5; }
+.wp-scan-meta .wp-stale { color: #efb265; }
+.wp-scan-history { position: relative; margin-top: 20px; border-top: 1px solid #48748266; padding-top: 8px; }
+.wp-scan-history h3 {
+  display: flex;
+  justify-content: space-between;
+  font-weight: normal;
+  font-size: 14px;
+  color: #bad9df;
+}
+.wp-scan-history h3 span { color: #b7cbd6; font-size: 14px; }
+.wp-scan-history svg { display: block; }
+.wp-scan-history polyline { stroke: #8ceaf0; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.wp-chart-grid { stroke: #77bdce25; fill: none; }
+.wp-chart-scale { top: 42px; left: 0; bottom: auto; display: flex; justify-content: space-between; color: #c2d6df; font-size: 14px; }
+.wp-chart-dates { display: flex; justify-content: space-between; margin: 4px 0 10px 35px; font-size: 14px; color: #c2d6df; }
+.wp-scan-history details { font-size: 14px; color: #aecbd5; }
+.wp-scan-history summary { cursor: pointer; padding: 10px 0; }
+.wp-scan-history table { width: 100%; border-collapse: collapse; }
+.wp-scan-history th, .wp-scan-history td {
+  padding: 6px 0;
+  border-bottom: 1px solid #48748244;
+  text-align: left;
+}
+.wp-scan-history td:last-child, .wp-scan-history th:last-child { text-align: right; }
+.wp-scan-model-note { color: #b7cbd6; line-height: 1.6; }
+.wp-scan-model-note {
+  padding-top: 12px;
+  border-top: 1px solid #48748244;
+  font-size: 14px;
+  letter-spacing: .05em;
+}
+.wp-progress-label { display: block; color: #9ad9e0; font-size: 14px; margin: 24px 0; }
+.wp-progress-label progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: 12px;
+  accent-color: #8ceaf0;
+}
+@media (max-width: 760px) {
+  .wp-scan-detail h2 { margin-top: 18px; } /* Signal buttons in the panel provide larger touch targets. */
+}
+@media (max-width: 760px) { .wp-eyebrow { font-size: 14px; }
+}
+
+/* Reading copy uses a wider text face; mono remains on controls and telemetry. */
+.wp-scan-explanation, .wp-scan-footnote { font-family: system-ui, sans-serif; font-size: 16px; line-height: 1.65; color: #d1dfe7; }
+.wp-scanner-subtitle, .wp-eyebrow, .wp-scan-meta, .wp-scan-detail h2 { letter-spacing: .04em; }
+.wp-scan-history h3 { flex-wrap: wrap; gap: 6px; line-height: 1.5; }
+.wp-scan-history svg { margin-left: 60px; width: calc(100% - 60px); height: 110px; }
+.wp-chart-scale { position: static; height: auto; flex-direction: row; margin-top: 12px; }
+.wp-chart-dates { margin-left: 0; gap: 10px; flex-wrap: wrap; }
+
+/* Terminal focus gives the working interface the height previously spent on room chrome. */
+.wp-shard-panel { z-index:3; color:#e6eeee; }
+.wp-shard-panel h1 { font:600 28px Oxanium,sans-serif; }
+.wp-shard-search { display:grid; gap:8px; font-size:14px; color:#c1d5df; }
+.wp-shard-search input {
+  width:100%;
+  padding:10px;
+  font:16px system-ui,sans-serif;
+  color:#edfaff;
+  background:#08121b;
+  border:1px solid #607b8b;
+}
+.wp-shard-cover { display:grid; place-items:center; font-size:12px; }
+.wp-shard-cover img { display:block; }
+
+/* Continuous holographic shelf: the room remains visible, browsing stays horizontal. */
+.wp-shard-stream { display:flex; flex-direction:column; overflow:hidden; }
+.wp-shard-stream > header { display:flex; align-items:center; justify-content:space-between; gap:24px; flex-shrink:0; }
+.wp-shard-stream h1 { margin:6px 0; }.wp-shard-stream .wp-shard-search { width:min(360px,45%); }
+.wp-stream-hint { color:#bbd5e0; font:14px/1.5 system-ui,sans-serif; margin:12px 0; }
+.wp-shard-rail {
+  display:flex;
+  align-items:stretch;
+  gap:22px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  min-height:0;
+  flex:1;
+  padding:16px 14px 22px;
+  perspective:1000px;
+  scrollbar-width:thin;
+  overscroll-behavior-x:contain;
+  cursor:grab;
+}
+.wp-shard-rail:active { cursor:grabbing; }
+.wp-stream-card {
+  flex:0 0 clamp(155px,16vw,230px);
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+  border:1px solid #6cb6c5;
+  border-top:3px solid #92f4f5;
+  text-align:left;
+  transform:rotateY(-7deg);
+  transition:transform .18s,border-color .18s,box-shadow .18s;
+  user-select:none;
+}
+.wp-stream-card:hover,.wp-stream-card:focus-visible { transform:rotateY(0) translateY(-5px); }
+.wp-stream-card small { font-size:12px; }
+.wp-stream-card strong {
+  font-size:16px;
+  line-height:1.35;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:2.7em;
+}
+.wp-stream-card .wp-shard-cover {
+  width:100%;
+  min-height:0;
+  flex:1;
+  align-self:stretch;
+  overflow:hidden;
+  background:#07131d;
+}
+.wp-stream-card .wp-shard-cover img {
+  width:100%;
+  height:100%;
+  min-height:0;
+  object-fit:contain;
+  pointer-events:none;
+}
+.wp-stream-card > span { color:#c0dce6; }
+.wp-stream-card b { float:right; }
+.wp-shard-stream > footer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding-top:12px;
+  font-size:14px;
+  flex-shrink:0;
+}
+.wp-shard-stream > footer button {
+  min-width:48px;
+  min-height:44px;
+  margin-left:8px;
+  color:#e6ffff;
+  background:#173443;
+  border:1px solid #6ca8bb;
+  font-size:22px;
+  cursor:pointer;
+}
+@media(max-width:760px) {
+  .wp-shard-stream > header { gap:12px; }
+  .wp-shard-stream h1 { font-size:21px; }
+  .wp-shard-stream .wp-eyebrow { font-size:12px; }
+  .wp-shard-stream .wp-shard-search { width:50%; }
+  .wp-shard-rail { gap:14px; padding:10px 6px 16px; }
+  .wp-stream-card { flex-basis:160px; }
+  .wp-shard-stream > footer { font-size:12px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .wp-stream-card { transition:none; transform:none; }
+  .wp-stream-card:hover,.wp-stream-card:focus-visible { transform:none; }
+}
+
+.wp-deck-console { scrollbar-width:thin; }
+.wp-deck-console .wp-signal { margin-top:10px; padding:10px 0; }
+.wp-deck-console h2 {
+  font:14px 'Share Tech Mono',monospace;
+  letter-spacing:.08em;
+  color:#a9e5ed;
+  margin:12px 0;
+}
+.wp-deck-console h2 small { display:block; margin-top:6px; color:#bfccd6; font-size:12px; }
+.wp-deck-console p { font:14px/1.5 system-ui,sans-serif; margin:8px 0; color:#d0dfe7; }
+.wp-deck-console small { color:#a8bfcc; line-height:1.5; }
+.wp-deck-vitals { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.wp-deck-vitals > div {
+  padding:10px;
+  background:#152e3c;
+  font:14px system-ui,sans-serif;
+}
+.wp-deck-vitals span { display:block; color:#a8c8d5; font-size:12px; }
+.wp-deck-vitals strong { display:block; margin-top:6px; font-size:22px; }
+.wp-deck-vitals strong small { font-size:12px; }
+.wp-readiness-call { display:block; font:20px Oxanium,sans-serif; margin-bottom:12px; }
+.wp-deck-readiness { border-block:1px solid #416173; padding:4px 0 12px; margin:12px 0; }
+.wp-deck-links { display:flex; gap:8px; margin-top:8px; }
+.wp-deck-links button { flex:1; padding:10px; min-height:44px; background:#152e3c; border:1px solid #527c8b; }
+
+/* Shard projector: one light-up reveal, then a quiet readable surface. */
+.wp-shard-stream {
+  --shard-accent:#a8a4ff;
+  --shard-edge:#7771bd;
+  --shard-surface:#191b39;
+  background:linear-gradient(125deg,#242044f5,#0a1728f5 65%);
+  animation:wp-shard-power-on .7s cubic-bezier(.2,.7,.2,1) both;
+  isolation:isolate;
+}
+.wp-shard-stream[data-channel=books] {
+  --shard-accent:#f4ce8e;
+  --shard-edge:#a58a60;
+  --shard-surface:#30271e;
+  background:repeating-linear-gradient(90deg,transparent 0 79px,#e5c28a06 80px),linear-gradient(125deg,#332a20fa,#151b23f5 70%);
+}
+.wp-shard-stream::after {
+  content:"";
+  position:absolute;
+  z-index:2;
+  pointer-events:none;
+  inset:0;
+  background:linear-gradient(180deg,transparent 42%,#c9faff55 49%,#e3ffffbb 50%,transparent 58%);
+  animation:wp-shard-light-sweep .85s .2s both;
+}
+.wp-shard-stream > * { animation:wp-shard-content-in .45s .35s both; }
+.wp-shard-stream .wp-eyebrow,.wp-shard-stream .wp-stream-card small,.wp-shard-stream .wp-stream-card b { color:var(--shard-accent); }
+.wp-shard-stream .wp-stream-card { border-color:var(--shard-edge); background:var(--shard-surface); }
+.wp-shard-stream .wp-stream-card:hover,.wp-shard-stream .wp-stream-card:focus-visible {
+  border-color:var(--shard-accent);
+  box-shadow:0 0 22px color-mix(in srgb,var(--shard-accent) 20%,transparent);
+}
+.wp-shard-stream[data-channel=books] .wp-stream-card { border-left:4px solid var(--shard-edge); }
+.wp-shard-stream[data-channel=books] .wp-stream-card strong { font-family:Georgia,serif; }
+.wp-shard-channels { display:flex; gap:8px; margin-top:12px; flex-shrink:0; }
+.wp-shard-channels button {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:44px;
+  padding:8px 14px;
+  border:1px solid var(--shard-edge);
+  background:#0b1320;
+}
+.wp-shard-channels button[aria-pressed=true] { background:var(--shard-surface); color:var(--shard-accent); box-shadow:inset 0 -2px var(--shard-accent); }
+.wp-shard-channels small { font-size:12px; color:#c8cbd4; }
+.wp-shard-channels button:focus-visible { outline:2px solid var(--shard-accent); outline-offset:3px; }
+.wp-shard-stream .wp-shard-rail { scrollbar-color:var(--shard-accent) #102335; }
+@keyframes wp-shard-power-on {
+  0% { opacity:0; clip-path:inset(49.8% 47%); }
+  30% { opacity:1; clip-path:inset(49.6% 0); }
+  100% { opacity:1; clip-path:inset(0); }
+}
+@keyframes wp-shard-light-sweep { from { opacity:0; transform:translateY(-65%); } 20% { opacity:.7; } to { opacity:0; transform:translateY(65%); } }
+@keyframes wp-shard-content-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@media(max-width:760px) {
+  .wp-shard-channels { gap:6px; margin-top:8px; }
+  .wp-shard-channels button { flex:1; justify-content:center; padding:8px; }
+  .wp-shard-channels small { display:none; }
+}
+@media(prefers-reduced-motion:reduce) { .wp-shard-stream,.wp-shard-stream > * { animation:none; }.wp-shard-stream::after { display:none; } }
+
+.wp-scanner-panel { display:flex; flex-direction:column; }
+.wp-scanner-panel > .wp-eyebrow,.wp-scanner-panel > h1,.wp-scanner-subtitle { flex-shrink:0; }
+.wp-scanner-panel .wp-scan-detail { min-height:0; scrollbar-width:thin; padding-right:6px; }
+.wp-scanner-panel .wp-scan-model-note { flex-shrink:0; margin:8px 0 0; }
+@media(max-width:760px) {
+  .wp-scanner-panel .wp-scanner-subtitle { margin-bottom:6px; }
+}
+.wp-power-actions a { display:block; margin-top:14px; color:#a2f0ee; font-size:14px; }

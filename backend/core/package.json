@@ -1,0 +1,17 @@
+{
+  "name": "@solace/core",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure, UI-agnostic domain: units, conventions engine, coaching engine, gamification, ports. Zero I/O.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./domain": "./src/domain/index.ts",
+    "./conventions": "./src/conventions/index.ts",
+    "./coaching": "./src/coaching/index.ts",
+    "./gamification": "./src/gamification/index.ts",
+    "./views": "./src/views/index.ts",
+    "./ports": "./src/ports/index.ts"
+  },
+  "dependencies": {}
+}

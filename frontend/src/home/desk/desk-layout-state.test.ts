@@ -1,0 +1,87 @@
+import { describe, expect, it } from 'vitest';
+import { adjustProp, applyDeskStyle, decodeDeskLayout, DEFAULT_ADJUSTMENT, DESK_OBJECTS, dragAdjustment, encodeDeskLayout, resetProp, resizeAdjustment } from './desk-layout-state.ts';
+import { supportsDeskStyle } from './desk-sprite-catalog.ts';
+
+describe('desk layout adjustments', () => {
+  it('round trips independent prop adjustments without changing the default', () => {
+    const layout = adjustProp(adjustProp({}, 'monitor', { x: 4.5, y: -3, scale: 1.25 }), 'radio', { x: -10, scale: .7 });
+    expect(decodeDeskLayout(encodeDeskLayout(layout))).toEqual(layout);
+    expect(layout.monitor).toEqual({ x: 4.5, y: -3, scale: 1.25 });
+    expect(layout.radio).toEqual({ x: -10, y: 0, scale: .7 });
+    expect(DEFAULT_ADJUSTMENT).toEqual({ x: 0, y: 0, scale: 1 });
+    expect(decodeDeskLayout(null)).toEqual({});
+  });
+  it('resets one prop without removing other adjustments or mutating saved values', () => {
+    const original = adjustProp(adjustProp({}, 'radio', { scale: .8 }), 'monitor', { x: 10 });
+    const reset = resetProp(original, 'radio');
+    expect(reset.radio).toBeUndefined();
+    expect(reset.monitor).toEqual(original.monitor);
+    expect(original.radio?.scale).toBe(.8);
+    expect(resetProp({}, 'monitor')).toEqual({});
+  });
+  it('constrains extreme input and ignores nonfinite edits', () => {
+    const layout = adjustProp({}, 'lamp', { x: 999, y: -999, scale: 10 });
+    expect(layout.lamp).toEqual({ x: 100, y: -100, scale: 2 });
+    expect(adjustProp(layout, 'lamp', { x: NaN, y: Infinity, scale: -1 }).lamp).toEqual({ x: 100, y: -100, scale: .35 });
+  });
+  it('rejects malformed or incompatible saved data', () => {
+    for (const raw of ['{', 'null', '[]', '{}', '{"version":2,"props":{}}', '{"version":1,"props":[]}']) expect(() => decodeDeskLayout(raw)).toThrow();
+  });
+  it('ignores unknown props and invalid records, clamping known finite values', () => {
+    expect(decodeDeskLayout(JSON.stringify({ version: 1, props: { unknown: { x: 5, y: 0, scale: 1 }, radio: { x: '4', y: 0, scale: 1 }, monitor: { x: 500, y: 0, scale: 0 } } }))).toEqual({ monitor: { x: 100, y: 0, scale: .35 } });
+    expect(new Set(DESK_OBJECTS.map(([id]) => id)).size).toBe(DESK_OBJECTS.length);
+  });
+  it('uses stage proportions so moves remain stable across screen sizes', () => {
+    const start = { x: 3, y: -2, scale: .8 };
+    expect(dragAdjustment(start, 100, 50, 1000, 500)).toEqual({ x: 13, y: 8, scale: .8 });
+    expect(dragAdjustment(start, 50, 25, 500, 250)).toEqual({ x: 13, y: 8, scale: .8 });
+    expect(start).toEqual({ x: 3, y: -2, scale: .8 });
+    expect(Number.isFinite(dragAdjustment(start, 5, 5, 0, 0).x)).toBe(true);
+  });
+  it('resizes proportionally about the base and clamps a crossed anchor', () => {
+    const anchor = { x: 100, y: 200 }, start = { x: 150, y: 100 };
+    expect(resizeAdjustment(1, start, start, anchor)).toBe(1);
+    expect(resizeAdjustment(1, start, { x: 175, y: 50 }, anchor)).toBe(1.5);
+    expect(resizeAdjustment(1, start, { x: 125, y: 150 }, anchor)).toBe(.5);
+    expect(resizeAdjustment(1, start, { x: 50, y: 300 }, anchor)).toBe(.35);
+    expect(resizeAdjustment(1, start, { x: 500, y: -500 }, anchor)).toBe(2);
+  });
+  it('persists sprite choices and inventory visibility without losing positions', () => {
+    const original = adjustProp({}, 'radio', { x: 7, y: -8, scale: .75 });
+    const chosen = adjustProp(original, 'radio', { sprite: 'cozy', hidden: true });
+    expect(chosen.radio).toEqual({ x: 7, y: -8, scale: .75, sprite: 'cozy', hidden: true });
+    expect(decodeDeskLayout(encodeDeskLayout(chosen))).toEqual(chosen);
+    expect(adjustProp(chosen, 'radio', { x: 10 }).radio).toMatchObject({ sprite: 'cozy', hidden: true });
+    expect(adjustProp(chosen, 'radio', { hidden: false }).radio).toMatchObject({ x: 7, scale: .75, hidden: false });
+    expect(resetProp(chosen, 'radio')).toEqual({});
+    expect(original.radio).toEqual({ x: 7, y: -8, scale: .75 });
+  });
+  it('applies a whole vibe without moving, resizing or restoring stored objects', () => {
+    const original = adjustProp({}, 'mug', { x: 4, scale: 1.2, hidden: true });
+    const themed = applyDeskStyle(original, 'neon');
+    expect(themed.mug).toEqual({ x: 4, y: 0, scale: 1.2, hidden: true, sprite: 'neon' });
+    for (const [id] of DESK_OBJECTS) if (supportsDeskStyle(id)) expect(themed[id]?.sprite).toBe('neon');
+    expect(applyDeskStyle(themed, 'original').mug).toMatchObject({ sprite: 'original', x: 4, scale: 1.2, hidden: true });
+    expect(original.mug?.sprite).toBeUndefined();
+  });
+  it('loads old layouts and safely ignores unknown inventory choices', () => {
+    expect(decodeDeskLayout('{"version":1,"props":{"lamp":{"x":3,"y":2,"scale":1}}}').lamp).toEqual({ x: 3, y: 2, scale: 1 });
+    expect(decodeDeskLayout('{"version":1,"props":{"lamp":{"x":3,"y":2,"scale":1,"sprite":"unknown","hidden":"true"}}}').lamp).toEqual({ x: 3, y: 2, scale: 1 });
+  });
+  it('saves and resets structural sizes independently of props and style presets', () => {
+    const layout = adjustProp(adjustProp({}, 'surface', { scale: 1.3, y: 2 }), 'window', { scale: 1.15, x: -2 });
+    const themed = applyDeskStyle(layout, 'neon');
+    expect(themed.surface).toEqual(layout.surface);
+    expect(themed.window).toEqual(layout.window);
+    expect(decodeDeskLayout(encodeDeskLayout(themed))).toEqual(themed);
+    expect(resetProp(themed, 'surface').window).toEqual(layout.window);
+    expect(resetProp(themed, 'surface').surface).toBeUndefined();
+  });
+  it('keeps existing arrangements when a floor companion is added to the editor', () => {
+    const old = decodeDeskLayout('{"version":1,"props":{"monitor":{"x":4,"y":-2,"scale":0.8}}}');
+    const next = adjustProp(old, 'companion', { x: -6, scale: 1.2, sprite: 'cozy', hidden: true });
+    expect(next.monitor).toEqual(old.monitor);
+    expect(decodeDeskLayout(encodeDeskLayout(next))).toEqual(next);
+    expect(resetProp(next, 'companion').monitor).toEqual(old.monitor);
+  });
+});

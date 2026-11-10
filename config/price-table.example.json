@@ -1,0 +1,37 @@
+{
+  "_comment": [
+    "EXAMPLE per-volume price table with made-up publishers, series and prices. EUR CENTS (integer).",
+    "To use your own: copy this file to source-exports/price-table.json and edit it (that path is git-ignored).",
+    "Resolution precedence (see backend/core/src/domain/pricing.ts):",
+    "  seriesVolumeOverrides -> seriesOverrides -> publisherEdition -> publisherStandard -> oneShotCents -> defaultCents",
+    "oneShotCents sits BELOW publisherStandard on purpose: a one-shot is only assumed pricier when the publisher is unknown.",
+    "Series keys must match series.canonical_title EXACTLY."
+  ],
+  "version": 1,
+  "defaultCents": 999,
+  "oneShotCents": 1399,
+
+  "publisherStandard": {
+    "example press": 1099,
+    "sample house": 1499,
+    "demo books": 1699
+  },
+
+  "publisherEdition": {
+    "example press": { "omnibus": 2199, "deluxe": 2999 },
+    "sample house": { "omnibus": 2399 }
+  },
+
+  "seriesOverrides": {
+    "Sample Saga — Deluxe": 4999,
+    "Placeholder Chronicles — Deluxe": 1899
+  },
+
+  "seriesVolumeOverrides": {
+    "Sample Saga Collector Edition": [
+      { "from": 1, "to": 1, "cents": 5999 },
+      { "from": 2, "to": 5, "cents": 4999 },
+      { "from": 6, "to": 6, "cents": 4499 }
+    ]
+  }
+}

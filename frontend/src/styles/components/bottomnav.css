@@ -1,0 +1,32 @@
+/* frontend/src/BottomNav.tsx — mobile-first bottom tab bar (4 areas). */
+
+.bn-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  display: flex;
+  background: var(--panel);
+  border-top: 1px solid var(--panelBorder);
+  /* Sit the tab row above the iPhone home-indicator (0 in a normal browser tab). */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bn-item {
+  flex: 1;
+  min-height: 52px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background .12s, color .12s;
+  color: var(--muted);
+  background: transparent;
+}
+.bn-item.is-active {
+  color: var(--onAccent);
+  background: var(--gold);
+}

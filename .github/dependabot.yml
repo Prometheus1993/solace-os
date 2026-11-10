@@ -1,0 +1,20 @@
+# Weekly update PRs. Minor + patch bumps arrive grouped as one PR per ecosystem;
+# major bumps come as separate PRs so each one can be reviewed on its own.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]

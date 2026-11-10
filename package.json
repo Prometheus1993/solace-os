@@ -1,0 +1,30 @@
+{
+  "name": "solace",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first training tracker (running + strength) with a game-like stat layer and a personal books/exams life-sim, behind a YoRHa-style web UI.",
+  "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
+  "workspaces": [
+    "backend/*",
+    "frontend"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p backend/core/tsconfig.json --noEmit && tsc -p backend/data/tsconfig.json --noEmit && tsc -p backend/cli/tsconfig.json --noEmit && tsc -p backend/server/tsconfig.json --noEmit && tsc -p frontend/tsconfig.json --noEmit",
+    "cli": "tsx backend/cli/src/index.ts",
+    "server": "tsx backend/server/src/index.ts",
+    "web": "npm run dev -w web",
+    "start": "bash start.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

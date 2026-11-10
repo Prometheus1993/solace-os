@@ -1,0 +1,33 @@
+/* Motion always plays: reduced-motion intentionally ignored.
+   Start screen ("jack in"). Scoped under .start-screen; no other area is affected. Uses its own colours so it
+   does not depend on the YoRHa theme variables. */
+.start-screen {
+  --ss-red: #ff3545;
+  position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column;
+  background: #050506; color: #c9ccd0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  opacity: 1; transition: opacity 0.18s ease-out;
+}
+.start-screen.is-leaving { opacity: 0; }
+.start-screen::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px); }
+.start-screen .ss-bar { display: flex; align-items: center; gap: 14px; margin: 18px clamp(16px, 3vw, 28px) 0; padding-bottom: 14px; border-bottom: 1px solid #1a1c20; font-size: 12px; letter-spacing: 0.18em; color: #9aa1a8; }
+.start-screen .ss-bar svg { color: var(--ss-red); }
+.start-screen .ss-term { margin-left: auto; }
+.start-screen .ss-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 clamp(20px, 6vw, 24vw) 6vh; }
+.start-screen .ss-block p { margin: 0 0 6px; font-size: clamp(14px, 1.5vw, 17px); line-height: 1.6; opacity: 0; transition: opacity 0.12s; }
+.start-screen .ss-block p.is-shown { opacity: 1; }
+.start-screen .ss-block b { font-weight: 400; letter-spacing: 0.16em; color: #e8e8e5; }
+.start-screen .ss-dim { color: #9aa1a8; margin-bottom: 18px !important; }
+.start-screen .ss-block span { color: #e8e8e5; }
+.start-screen .ss-block span.ss-bad { color: var(--ss-red); }
+.start-screen .ss-ready { margin-top: 26px !important; color: #e8e8e5; letter-spacing: 0.14em; }
+.start-screen .ss-cursor { font-style: normal; color: var(--ss-red); animation: ss-blink 1.4s steps(1) infinite; }
+.start-screen .ss-enter { align-self: flex-start; display: inline-flex; gap: 16px; align-items: center; margin-top: 26px; min-height: 44px; padding: 0 14px; background: none; border: 0; border-left: 2px solid var(--ss-red); font: inherit; font-size: 15px; letter-spacing: 0.12em; cursor: pointer; }
+.start-screen .ss-key { color: #6e757c; }
+.start-screen .ss-jack { color: var(--ss-red); border-bottom: 2px solid var(--ss-red); padding-bottom: 1px; }
+.start-screen .ss-enter:focus-visible { outline: 2px solid #9be8ee; outline-offset: 4px; }
+.start-screen .ss-enter:hover .ss-key { color: #c9ccd0; }
+@keyframes ss-blink { 50% { opacity: 0; } }
+@keyframes ss-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.ss-fade-in { animation: ss-fade-in 0.18s ease-out both; }
+.start-screen .ss-enter { transition: transform 0.07s ease-out, filter 0.07s ease-out; }
+.start-screen .ss-enter:active { transform: scale(0.96); filter: brightness(1.6); }
