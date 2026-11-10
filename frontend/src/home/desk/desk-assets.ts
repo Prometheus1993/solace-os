@@ -9,5 +9,5 @@ const files = import.meta.glob<string>([
   '../../assets/private/desk-edgerunners-firing-atlas-v1.png',
 ], { eager: true, query: '?url', import: 'default' });
 
-/** Bundled URL of `assets/private/<name>-v1.png`; undefined when the private art is not installed. */
+/** Bundled URL of `assets/private/<name>-v1.png`; undefined when the file is missing. */
 export const deskAsset = (name: string) => files[`../../assets/private/${name}-v1.png`];

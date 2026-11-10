@@ -23,4 +23,4 @@ Six locally bundled MP3s in `public/music/open-lofi/` from [btahir/open-lofi](ht
 
 Design references only (no code copied): eDEX-UI, Arwes, SYS-UI.
 
-Desk and city artwork is generated locally and is not shipped; it lives in `src/assets/private/` (gitignored). A fresh clone shows placeholders. The repository ships an original placeholder avatar, `src/assets/avatar-placeholder.svg`.
+The desk, city and avatar artwork in `src/assets/private/` is generated locally for this project and shipped with the repo. `src/assets/avatar-placeholder.svg` remains the fallback if a file is missing.
