@@ -13,6 +13,9 @@ Rules:
 
 ## [Unreleased]
 
+### Changed
+- The desk and avatar artwork in `frontend/src/assets/private/` is now part of the repo, so a fresh clone shows the full desk. `.idea/` is ignored.
+
 ## [0.4.0] - 2026-11-10
 
 First public release.

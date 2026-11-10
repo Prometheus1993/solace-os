@@ -6,6 +6,7 @@ node_modules/
 *.sqlite-shm
 dist/
 .DS_Store
+.idea/
 *.log
 
 # secrets — never commit
@@ -14,4 +15,4 @@ dist/
 
 # local-only
 /source-exports/
-/frontend/src/assets/private/
+/frontend/src/assets/private/_retired/

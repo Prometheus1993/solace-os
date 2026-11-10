@@ -55,7 +55,7 @@ npm run cli seed   # creates data/solace.sqlite with example athlete values and 
 npm start          # API server on :8787 and web UI on :5174
 ```
 
-Open <http://localhost:5174>. The desk artwork (`frontend/src/assets/private/`) is not included; a fresh clone shows placeholders. `npm start` runs `start.sh`, which looks for Node 22 (Homebrew keg or nvm) and starts both
+Open <http://localhost:5174>. The desk and avatar artwork (`frontend/src/assets/private/`) is included, so a fresh clone shows the full desk. `npm start` runs `start.sh`, which looks for Node 22 (Homebrew keg or nvm) and starts both
 processes; Ctrl+C stops both. You can also run them separately: `npm run server` and `npm run web`.
 
 Newer npm versions block dependency install scripts. If `better-sqlite3` reports a missing bindings file, run
