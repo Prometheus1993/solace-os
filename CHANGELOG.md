@@ -13,16 +13,20 @@ Rules:
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-10
+
+First public release.
+
 ### Changed
-- Pre-publish cleanup: example values in tests, neutral comments, a shorter README upgrade note, and generic `.gitignore` entries (#47).
-- Inter and JetBrains Mono are now self-hosted (no Google Fonts request); licences listed in `frontend/THIRD_PARTY.md` (#47).
-- The Garmin re-login command is pinned to `garmin_mcp@0.1.0`; `garmin_fetch.py` credits the code adapted from it (#47).
-- App icons are a neutral placeholder "S" (#47).
-- The UI is now fully English: labels, toasts and empty states, tests and comments. The MISSIONS sub-views are `SCHOOL TERM` / `EXAM TERM` (`#school/school-term`, `#school/exam-term`); old `#school/schoolperiode` and `#school/examenperiode` links still work (#48).
+- Pre-publish cleanup: example values in tests, neutral comments, a shorter README upgrade note, and generic `.gitignore` entries.
+- Inter and JetBrains Mono are now self-hosted (no Google Fonts request); licences listed in `frontend/THIRD_PARTY.md`.
+- The Garmin re-login command is pinned to `garmin_mcp@0.1.0`; `garmin_fetch.py` credits the code adapted from it.
+- App icons are a neutral placeholder "S".
+- The UI is now fully English: labels, toasts and empty states, tests and comments. The MISSIONS sub-views are `SCHOOL TERM` / `EXAM TERM` (`#school/school-term`, `#school/exam-term`); old `#school/schoolperiode` and `#school/examenperiode` links still work.
 
 ### Removed
-- `frontend/DESIGN.md` and `frontend/PRODUCT.md` are no longer tracked (#47).
+- `frontend/DESIGN.md` and `frontend/PRODUCT.md` are no longer tracked.
 
 ## [0.3.0] - 2026-11-10
 
-Initial public release; development history lives in a private predecessor repository.
+Last private version; development history lives in a private predecessor repository.
