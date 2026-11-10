@@ -13,6 +13,9 @@ Rules:
 
 ## [Unreleased]
 
+### Added
+- Dependabot minor and patch PRs merge automatically once CI is green; major updates still need a manual review. Dependabot waits 7 days before proposing a new version.
+
 ### Changed
 - The desk and avatar artwork in `frontend/src/assets/private/` is now part of the repo, so a fresh clone shows the full desk. `.idea/` is ignored.
 
