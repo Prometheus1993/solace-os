@@ -12,4 +12,6 @@ assets
 **/.DS_Store
 .claude
 *.sqlite*
+desktop/*
+!desktop/package.json
 **/*.sqlite*

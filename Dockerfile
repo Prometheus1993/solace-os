@@ -10,6 +10,8 @@ COPY backend/data/package.json backend/data/
 COPY backend/server/package.json backend/server/
 COPY backend/cli/package.json backend/cli/
 COPY frontend/package.json frontend/
+# Only the manifest, so `npm ci` can resolve the workspace; the Mac app itself is not part of the image.
+COPY desktop/package.json desktop/
 RUN npm ci
 
 FROM node:22-bookworm-slim
