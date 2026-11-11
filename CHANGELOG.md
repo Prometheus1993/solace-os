@@ -17,6 +17,7 @@ Rules:
 - Solace as a Mac app (Electron, new workspace `desktop/`): `npm run desktop` runs it, `npm run desktop:build` builds an unsigned `Solace.app`. It starts the API server and the web UI itself (or reuses a Solace that already runs on those ports), keeps running when you close the window, launches at login, has an "Always on Top" toggle and the global show/hide shortcut Control+Option+Command+S. It notifies you on the morning of an exam or resit day and when your Garmin login is about to expire or has expired. If it starts its own API but the web port is already answering (for example the Docker demo), it stops with a port-in-use error instead of showing the wrong database. See README "Mac app".
 
 ### Changed
+- README is shorter: the roadmap moved to the new `ROADMAP.md`, the Mac app details to `docs/mac-app.md`, the CLI is part of "Development", and the configuration table is replaced by a pointer to `.env.example`. The "Upgrading from ragnarok" note is removed.
 - The desk keeps only the original style. The floor-companion artwork file now holds just the original cat. A saved desk layout that still names another style opens as the original without error.
 
 ### Removed
