@@ -1,8 +1,10 @@
-import { LegacyDbError } from '@solace/data';
+import { resolve } from 'node:path';
+import { LegacyDbError, readPriceTable } from '@solace/data';
 import { openContext } from './context.ts';
 import { systemClock } from './clock.ts';
 import { seed } from './commands/seed.ts';
 import { recompute } from './commands/recompute.ts';
+import { prepareDemoDb, seedDemo } from './commands/seed-demo.ts';
 
 // Load a local .env (project root) so env vars (e.g. GOOGLE_BOOKS_API_KEY) can live in a file
 // instead of being exported every shell. Node 22's process.loadEnvFile().
@@ -19,8 +21,25 @@ Usage: npm run cli <command>
 
 Commands:
   seed        Create the DB, run migrations, write the baseline (idempotent)
+  seed --demo [--reset]
+              Fill data/demo.sqlite (only that file) with fake demo data; --reset deletes it first
   recompute   Recompute the three stat tracks into stat_history
   help        Show this help`);
+}
+
+/** `seed --demo`: data/demo.sqlite only, whatever SOLACE_DB says; refuses to touch an existing demo DB without --reset. */
+async function seedDemoCommand(reset: boolean): Promise<number> {
+  const table = readPriceTable(resolve(process.cwd(), 'config', 'price-table.example.json'));
+  if (!table) throw new Error('config/price-table.example.json is missing or malformed.');
+  const path = prepareDemoDb(reset);
+  const ctx = openContext(path);
+  try {
+    await seedDemo(ctx.repo, systemClock(), table);
+    console.log(`Demo data written to ${path}. Start it with: npm run demo`);
+    return 0;
+  } finally {
+    ctx.db.close();
+  }
 }
 
 async function main(argv: string[]): Promise<number> {
@@ -30,6 +49,8 @@ async function main(argv: string[]): Promise<number> {
     printHelp();
     return 0;
   }
+
+  if (command === 'seed' && argv.includes('--demo')) return seedDemoCommand(argv.includes('--reset'));
 
   const ctx = openContext();
   try {

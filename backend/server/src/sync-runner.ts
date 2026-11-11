@@ -32,3 +32,8 @@ export function createSyncRunner({ repo, clock, weather, serialize, doSync = syn
     },
   };
 }
+
+/** Stands in for `syncGarmin` when the server runs on the demo DB: never spawns the fetcher or touches source-exports/. */
+export const demoSyncDisabled: typeof syncGarmin = async () => {
+  throw new GarminSyncError('Garmin sync is disabled in the demo.', 'fetch');
+};

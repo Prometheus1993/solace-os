@@ -19,7 +19,8 @@
     "cli": "tsx backend/cli/src/index.ts",
     "server": "tsx backend/server/src/index.ts",
     "web": "npm run dev -w web",
-    "start": "bash start.sh"
+    "start": "bash start.sh",
+    "demo": "bash demo.sh"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
