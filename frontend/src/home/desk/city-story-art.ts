@@ -1,9 +1,8 @@
 import { gridRegions, sharedSpriteBounds, spriteBounds, type SpriteRect } from './sprite-atlas.ts';
-import type { Actor } from './city-story-motion.ts';
 import { deskAsset } from './desk-assets.ts';
 
 export type StorySprite = { image: HTMLImageElement; frames: SpriteRect[]; columns: number; anchors: number[] };
-export type StoryArt = { train: StorySprite | null; trainRear: StorySprite | null; buildings: StorySprite | null; billboards: StorySprite | null; run: StorySprite | null; fire: StorySprite | null; missing: boolean };
+export type StoryArt = { train: StorySprite | null; trainRear: StorySprite | null; buildings: StorySprite | null; billboards: StorySprite | null; missing: boolean };
 function loadSprite(name: string, columns: number, rows: number, sharedRows = true): Promise<StorySprite> {
   return new Promise((resolve, reject) => {
     const src = deskAsset(name);
@@ -38,22 +37,12 @@ function loadSprite(name: string, columns: number, rows: number, sharedRows = tr
 }
 let pending: Promise<StoryArt> | undefined;
 export function loadStoryArt(): Promise<StoryArt> {
-  pending ??= Promise.allSettled([loadSprite('desk-flying-train', 1, 1), loadSprite('desk-edgerunners-chase-atlas', 8, 2), loadSprite('desk-edgerunners-firing-atlas', 4, 2), loadSprite('desk-flying-train-rear', 1, 1), loadSprite('desk-city-buildings-atlas', 4, 2, false), loadSprite('desk-japanese-billboards-atlas', 4, 2, false)]).then(results => ({
+  pending ??= Promise.allSettled([loadSprite('desk-flying-train', 1, 1), loadSprite('desk-flying-train-rear', 1, 1), loadSprite('desk-city-buildings-atlas', 4, 2, false), loadSprite('desk-japanese-billboards-atlas', 4, 2, false)]).then(results => ({
     train: results[0].status === 'fulfilled' ? results[0].value : null,
-    run: results[1].status === 'fulfilled' ? results[1].value : null,
-    fire: results[2].status === 'fulfilled' ? results[2].value : null,
-    trainRear: results[3].status === 'fulfilled' ? results[3].value : null,
-    buildings: results[4].status === 'fulfilled' ? results[4].value : null,
-    billboards: results[5].status === 'fulfilled' ? results[5].value : null,
+    trainRear: results[1].status === 'fulfilled' ? results[1].value : null,
+    buildings: results[2].status === 'fulfilled' ? results[2].value : null,
+    billboards: results[3].status === 'fulfilled' ? results[3].value : null,
     missing: results.some(result => result.status === 'rejected'),
   }));
   return pending;
-}
-export function drawActor(context: CanvasRenderingContext2D, art: StorySprite, actor: Actor, frame: number, x: number, y: number, height: number, facing: number) {
-  const row = actor === 'david' ? 0 : 1;
-  const rect = art.frames[row * art.columns + frame % art.columns];
-  const width = height * rect.width / rect.height;
-  context.save(); context.translate(x, y); context.scale(facing, 1);
-  context.drawImage(art.image, rect.x, rect.y, rect.width, rect.height, -width * art.anchors[row], -height, width, height);
-  context.restore();
 }
