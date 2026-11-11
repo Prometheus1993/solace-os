@@ -1,0 +1,21 @@
+# docker compose up   -> http://localhost:5174 (demo data). Only Vite is published, on 127.0.0.1;
+# the API stays inside the container.
+services:
+  solace:
+    build: .
+    init: true
+    ports:
+      - "127.0.0.1:${SOLACE_PORT:-5174}:5174"
+    environment:
+      # 1 = demo data (default), 0 = your own database in the same volume
+      SOLACE_DEMO: ${SOLACE_DEMO:-1}
+    volumes:
+      # holds solace.sqlite / demo.sqlite plus their -wal and -shm files
+      - solace-data:/app/data
+      # optional personal price table:
+      # - ./source-exports/price-table.json:/app/source-exports/price-table.json:ro
+      # optional Garmin sync (SOLACE_DEMO=0 only); read-write because the token is refreshed:
+      # - ~/.garminconnect:/root/.garminconnect
+
+volumes:
+  solace-data:

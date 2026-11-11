@@ -15,7 +15,7 @@ trademarks belong to their owners, and none of those names is used as the name o
 
 ## What it looks like
 
-<!-- The start-screen screenshot (docs/screenshots/start.png) follows once the start screen is rebranded. -->
+![The start screen](docs/screenshots/start.png)
 
 ![The desk](docs/screenshots/desk.png)
 ![COMBAT](docs/screenshots/combat.png)
@@ -60,6 +60,21 @@ npm run demo   # re-seeds data/demo.sqlite, then API on :8797 and web UI on :517
 
 Open <http://localhost:5177>. Garmin sync is disabled in the demo. To only (re)create the demo data:
 `npm run cli seed -- --demo` (refuses if `data/demo.sqlite` exists; add `--reset` to replace it).
+
+## Run with Docker
+
+One container runs the API and the web UI (the same two processes as `npm start`), on demo data by default.
+
+```sh
+docker compose up --build   # then open http://localhost:5174
+docker compose down         # stops it; your data stays in the volume (add -v to delete it)
+```
+
+- **Data** lives in the named volume `solace-data`, mounted at `/app/data` (the `.sqlite`, `-wal` and `-shm` files together). The demo database is seeded once on first start; your edits persist.
+- **Demo or your own data:** `SOLACE_DEMO=0 docker compose up` uses `data/solace.sqlite` in the same volume (created on first start). The default, `SOLACE_DEMO=1`, uses fake data and disables Garmin sync.
+- **Port:** only the web UI is published, on `127.0.0.1` (never your network); the API stays inside the container and the UI proxies `/api` to it. Change the host port with `SOLACE_PORT=5180`.
+- **Garmin sync (optional, `SOLACE_DEMO=0` only):** log in once on your own machine (see Garmin sync), then uncomment the `~/.garminconnect` volume in `compose.yaml`. It must be read-write because the token is refreshed. Without a token, ⟲ SYNC shows a clear error.
+- **Price table:** the container uses `config/price-table.example.json`; uncomment the `price-table.json` volume in `compose.yaml` to use your own.
 
 ## Requirements and setup
 

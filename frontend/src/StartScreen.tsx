@@ -47,12 +47,12 @@ export function StartScreen({ onEnter }: { onEnter: () => void }) {
         <span>{t.header}</span>
         <span className="ss-term">{t.terminal}</span>
       </header>
-      <main className="ss-main" aria-label="Arasaka access terminal">
+      <main className="ss-main" aria-label="Solace access terminal">
         <div className="ss-block" aria-hidden="true">
-          <p className={line(0)}><b>ARASAKA NETWORK</b></p>
+          <p className={line(0)}><b>SOLACE NETWORK</b></p>
           <p className={`${line(0)} ss-dim`}>External connection detected.</p>
           <p className={`${line(1)} ss-first`}>&gt; locating relay.......... <span>OK</span></p>
-          <p className={line(2)}>&gt; corporate handshake..... <span className="ss-bad">REJECTED</span></p>
+          <p className={line(2)}>&gt; external handshake...... <span className="ss-bad">REJECTED</span></p>
           <p className={line(3)}>&gt; loading local override.. <span>OK</span></p>
           <p className={`${line(4)} ss-ready`}>SESSION READY<i className="ss-cursor">_</i></p>
         </div>
