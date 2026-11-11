@@ -13,6 +13,8 @@ Rules:
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-11
+
 ### Added
 - `docker compose up` runs Solace in one container (API and web UI, as `npm start`), on demo data by default; `SOLACE_DEMO=0` uses your own database. Data lives in the named volume `solace-data`, only the web port is published and only on 127.0.0.1, and Garmin sync works when you mount `~/.garminconnect`. CI now also builds the Docker image (job `docker-build`). See README "Run with Docker".
 - `npm run demo` starts Solace on fake data (runs, wellness, strength, exams with a resit and a deliberated grade, school tasks, books and manga) on ports 8797 and 5177, next to your real Solace. `npm run cli seed -- --demo [--reset]` writes only `data/demo.sqlite`, never the live database. Garmin sync is disabled in the demo, and the demo ignores your own Google Books key and price table.
