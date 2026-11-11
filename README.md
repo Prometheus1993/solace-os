@@ -15,7 +15,7 @@ trademarks belong to their owners, and none of those names is used as the name o
 
 ## What it looks like
 
-<!-- The start-screen screenshot (docs/screenshots/start.png) follows once the start screen is rebranded. -->
+![The start screen](docs/screenshots/start.png)
 
 ![The desk](docs/screenshots/desk.png)
 ![COMBAT](docs/screenshots/combat.png)
