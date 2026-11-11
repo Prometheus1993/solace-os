@@ -15,9 +15,8 @@ trademarks belong to their owners, and none of those names is used as the name o
 
 ## What it looks like
 
-<!-- TODO(#19): take the four screenshots from `npm run demo` and save them as docs/screenshots/{start,desk,combat,archives}.png. Until then the images below are broken links. -->
+<!-- The start-screen screenshot (docs/screenshots/start.png) follows once the start screen is rebranded. -->
 
-![Start screen](docs/screenshots/start.png)
 ![The desk](docs/screenshots/desk.png)
 ![COMBAT](docs/screenshots/combat.png)
 ![ARCHIVES](docs/screenshots/archives.png)

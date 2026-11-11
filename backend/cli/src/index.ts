@@ -21,8 +21,9 @@ Usage: npm run cli <command>
 
 Commands:
   seed        Create the DB, run migrations, write the baseline (idempotent)
-  seed --demo [--reset]
+  seed -- --demo [--reset]
               Fill data/demo.sqlite (only that file) with fake demo data; --reset deletes it first
+              (with npm, flags need the -- separator: npm run cli seed -- --demo)
   recompute   Recompute the three stat tracks into stat_history
   help        Show this help`);
 }
