@@ -17,6 +17,12 @@ import { ScanlineOverlay } from './ScanlineOverlay.tsx';
 import { C, cssVars } from './tokens.ts';
 
 type Toast = { msg: string; tone: 'info' | 'ok' | 'err' } | null;
+declare global {
+  interface Window {
+    /** Present only inside the Mac app (desktop/src/preload.cjs). */
+    solaceDesktop?: { garminAuthExpired(): void };
+  }
+}
 interface SyncResponse {
   ok?: boolean;
   error?: string;
@@ -128,6 +134,7 @@ export function App() {
       } else if (j.error === 'busy') {
         setToast({ msg: 'A Garmin sync is already running.', tone: 'info' });
       } else if (j.error === 'auth') {
+        window.solaceDesktop?.garminAuthExpired();
         setToast({ msg: 'Garmin login expired — run: uvx --python 3.12 --from git+https://github.com/Taxuspt/garmin_mcp@0.1.0 garmin-mcp-auth --force-reauth', tone: 'err' });
       } else {
         setToast({ msg: `Sync failed — ${j.message ?? j.error ?? 'unknown error'}`, tone: 'err' });

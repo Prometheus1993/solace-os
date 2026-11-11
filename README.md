@@ -104,6 +104,41 @@ Copying only the first file gives a stale backup.
 > Every `npm run cli <cmd>` and every server start applies pending database migrations. To experiment without touching
 > your real data, point at a scratch file first: `export SOLACE_DB=$(mktemp -d)/t.sqlite`.
 
+## Mac app
+
+Solace can run as a Mac app (Electron), so you no longer need `npm start`. The app is a thin shell: it starts the
+same two processes as `npm start` (API server and web UI, on Node 22) from this repo folder and shows the web UI in
+one window. It uses the same database and the same `.env` as `npm start`.
+
+- **Reuse:** if Solace already answers on port 8787 or 5174 (for example from `npm start`), the app uses it and does
+  not start a second one. Quitting (Cmd+Q) stops only the processes the app started itself.
+- **Closing the window** hides it; the app and its servers keep running. Quit with Cmd+Q.
+- **Show/hide shortcut:** Control+Option+Command+S (⌃⌥⌘S), from anywhere.
+- **Menu "Solace":** "Launch at Login" (on by default) and "Always on Top" (off by default).
+- **Notifications:** on the morning (06:00 to 12:00) of an exam or resit day; when your Garmin login is about
+  5.5 months old (the age of the `~/.garminconnect` folder; no call to Garmin); and right away when a sync reports
+  that the login expired. The app never starts a sync by itself. Allow notifications for Solace in System Settings.
+- If the API server cannot start (for example the legacy-database guard), the app shows the error and quits; it does not retry.
+
+Try it without building: `npm run desktop` (launch at login is unavailable in this mode).
+
+### Build it yourself (unsigned, macOS)
+
+There is no download: you build the app on your own Mac. It is unsigned and only works on the Mac that built it.
+
+```sh
+npm install             # once, as in the setup above
+npm run cli seed        # once, if you have no database yet
+npm run desktop:build   # downloads Electron (about 100 MB) and writes desktop/dist/Solace-darwin-<arch>/Solace.app
+```
+
+Open `Solace.app` from that folder, or drag it to `/Applications` first. The app remembers where this repo folder is:
+if you move or rename the folder, build again. After a `git pull`, restart the app; rebuild only when `desktop/` changed.
+
+The app needs Node 22 from the Homebrew `node@22` keg or from nvm (the same lookup as `start.sh`).
+For a test run next to your real Solace, use other ports and a scratch database:
+`SOLACE_DB=$(mktemp -d)/t.sqlite PORT=8799 SOLACE_WEB_PORT=5175 npm run desktop`.
+
 ## Garmin sync
 
 The sync pulls new runs (`.fit` files) and wellness data (HRV, sleep, resting heart rate, Body Battery) from Garmin
@@ -173,6 +208,7 @@ Copy [`.env.example`](.env.example) to `.env` (git-ignored). Every variable is o
 | `SOLACE_PRICE_TABLE` | Price table path |
 | `GOOGLE_BOOKS_API_KEY` | Book cover lookup (a Google Cloud key starting with `AIza`). Optional: you can set the key in the app instead (ARCHIVES, "Google Books API key", with step-by-step instructions). If both exist, `.env` wins |
 | `SOLACE_API` | Dev only: where the Vite proxy forwards `/api` |
+| `SOLACE_WEB_PORT` | Mac app only: web UI port (5174) |
 
 ## Development
 
@@ -193,6 +229,7 @@ TypeScript npm-workspaces monorepo, run with `tsx` and `vitest`, no build step:
 | `backend/data` | SQLite repository, migrations, importers, Garmin sync, weather client |
 | `backend/server` | Local JSON API: `GET /api/dashboard`, Garmin sync and manual-entry writes |
 | `backend/cli` | The commands above |
+| `desktop/` | Electron shell for macOS (see "Mac app") |
 | `config/` | Example price table |
 | `docs/FORMULAS.md` | How every stat, level and readiness call is computed |
 

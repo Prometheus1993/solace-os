@@ -10,16 +10,19 @@
   },
   "workspaces": [
     "backend/*",
-    "frontend"
+    "frontend",
+    "desktop"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -p backend/core/tsconfig.json --noEmit && tsc -p backend/data/tsconfig.json --noEmit && tsc -p backend/cli/tsconfig.json --noEmit && tsc -p backend/server/tsconfig.json --noEmit && tsc -p frontend/tsconfig.json --noEmit",
+    "typecheck": "tsc -p backend/core/tsconfig.json --noEmit && tsc -p backend/data/tsconfig.json --noEmit && tsc -p backend/cli/tsconfig.json --noEmit && tsc -p backend/server/tsconfig.json --noEmit && tsc -p frontend/tsconfig.json --noEmit && tsc -p desktop/tsconfig.json --noEmit",
     "cli": "tsx backend/cli/src/index.ts",
     "server": "tsx backend/server/src/index.ts",
     "web": "npm run dev -w web",
     "start": "bash start.sh",
+    "desktop": "npm start -w @solace/desktop",
+    "desktop:build": "npm run package -w @solace/desktop",
     "demo": "bash demo.sh"
   },
   "devDependencies": {
