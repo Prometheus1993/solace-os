@@ -38,14 +38,7 @@ desk yourself, and your key stats stay visible in a footer bar. From the desk yo
 On top of the training data sits a game-like stat layer: STAMINA, STRENGTH and LEANNESS (0 to 100), a daily readiness
 call and goal quests. Formulas are in [`docs/FORMULAS.md`](docs/FORMULAS.md).
 
-## Roadmap
-
-- Demo data (`npm run demo`) and screenshots
-- Docker (`docker compose up`, SQLite in a volume, optional Garmin)
-- Electron app for my own Mac (unsigned): starts the server itself and launches at login
-- A living desk: a walking cat, a real day/night cycle, city life and weather (Antwerp)
-- One Solace visual style, then COMBAT, MISSIONS and ARCHIVES restyled to it
-- Maybe later: a hosted multi-user version (Postgres/Supabase)
+Plans and progress are in [`ROADMAP.md`](ROADMAP.md).
 
 ## Try the demo
 
@@ -105,38 +98,7 @@ Copying only the first file gives a stale backup.
 
 ## Mac app
 
-Solace can run as a Mac app (Electron), so you no longer need `npm start`. The app is a thin shell: it starts the
-same two processes as `npm start` (API server and web UI, on Node 22) from this repo folder and shows the web UI in
-one window. It uses the same database and the same `.env` as `npm start`.
-
-- **Reuse:** if Solace already answers on port 8787 or 5174 (for example from `npm start`), the app uses it and does
-  not start a second one. Quitting (Cmd+Q) stops only the processes the app started itself.
-- **Closing the window** hides it; the app and its servers keep running. Quit with Cmd+Q.
-- **Show/hide shortcut:** Control+Option+Command+S (⌃⌥⌘S), from anywhere.
-- **Menu "Solace":** "Launch at Login" (on by default) and "Always on Top" (off by default).
-- **Notifications:** on the morning (06:00 to 12:00) of an exam or resit day; when your Garmin login is about
-  5.5 months old (the age of the `~/.garminconnect` folder; no call to Garmin); and right away when a sync reports
-  that the login expired. The app never starts a sync by itself. Allow notifications for Solace in System Settings.
-- If the API server cannot start (for example the legacy-database guard), the app shows the error and quits; it does not retry.
-
-Try it without building: `npm run desktop` (launch at login is unavailable in this mode).
-
-### Build it yourself (unsigned, macOS)
-
-There is no download: you build the app on your own Mac. It is unsigned and only works on the Mac that built it.
-
-```sh
-npm install             # once, as in the setup above
-npm run cli seed        # once, if you have no database yet
-npm run desktop:build   # downloads Electron (about 100 MB) and writes desktop/dist/Solace-darwin-<arch>/Solace.app
-```
-
-Open `Solace.app` from that folder, or drag it to `/Applications` first. The app remembers where this repo folder is:
-if you move or rename the folder, build again. After a `git pull`, restart the app; rebuild only when `desktop/` changed.
-
-The app needs Node 22 from the Homebrew `node@22` keg or from nvm (the same lookup as `start.sh`).
-For a test run next to your real Solace, use other ports and a scratch database:
-`SOLACE_DB=$(mktemp -d)/t.sqlite PORT=8799 SOLACE_WEB_PORT=5175 npm run desktop`.
+Solace can run as a Mac app (Electron) instead of `npm start`. You build it yourself on your own Mac (unsigned, no download). It starts the same API server and web UI from this repo folder and uses the same database and `.env`. Details, shortcuts and build steps: [`docs/mac-app.md`](docs/mac-app.md).
 
 ## Garmin sync
 
@@ -174,19 +136,6 @@ Connect, stores them, backfills run temperatures from Open-Meteo and recomputes 
   configurable in code: strength sessions before the first are not counted, and LEANNESS measures progress from the
   first weigh-in on or after the second. Edit those constants to start from a different date.
 
-## CLI
-
-```sh
-npm run cli <command>
-```
-
-| Command | What it does |
-| --- | --- |
-| `seed` | Create the database with example athlete values and one example shoe (idempotent) |
-| `recompute` | Recompute the stat tracks |
-
-`npm run cli help` lists the commands.
-
 ## Security
 
 - The API has **no login**. It binds to `127.0.0.1` by default, so only your own machine can reach it.
@@ -197,17 +146,7 @@ npm run cli <command>
 
 ## Configuration
 
-Copy [`.env.example`](.env.example) to `.env` (git-ignored). Every variable is optional:
-
-| Variable | Purpose |
-| --- | --- |
-| `SOLACE_DB` | SQLite file (default `data/solace.sqlite`) |
-| `PORT`, `HOST` | API server port (8787) and bind address (127.0.0.1) |
-| `SOLACE_UV_BIN` | Path to `uv` |
-| `SOLACE_PRICE_TABLE` | Price table path |
-| `GOOGLE_BOOKS_API_KEY` | Book cover lookup (a Google Cloud key starting with `AIza`). Optional: you can set the key in the app instead (ARCHIVES, "Google Books API key", with step-by-step instructions). If both exist, `.env` wins |
-| `SOLACE_API` | Dev only: where the Vite proxy forwards `/api` |
-| `SOLACE_WEB_PORT` | Mac app only: web UI port (5174) |
+Copy [`.env.example`](.env.example) to `.env` (git-ignored). Every variable is optional and documented there.
 
 ## Development
 
@@ -219,6 +158,13 @@ npm run typecheck   # tsc --noEmit for every workspace, including frontend/
 GitHub Actions runs typecheck and tests on every pull request; Dependabot and CodeQL watch dependencies and code.
 Run tests against a scratch database (`SOLACE_DB`), never your real one.
 
+The CLI has two commands (`npm run cli help` lists them):
+
+```sh
+npm run cli seed       # create the database with example athlete values and one example shoe (idempotent)
+npm run cli recompute  # recompute the stat tracks
+```
+
 TypeScript npm-workspaces monorepo, run with `tsx` and `vitest`, no build step:
 
 | Path | Role |
@@ -228,17 +174,12 @@ TypeScript npm-workspaces monorepo, run with `tsx` and `vitest`, no build step:
 | `backend/data` | SQLite repository, migrations, importers, Garmin sync, weather client |
 | `backend/server` | Local JSON API: `GET /api/dashboard`, Garmin sync and manual-entry writes |
 | `backend/cli` | The commands above |
-| `desktop/` | Electron shell for macOS (see "Mac app") |
+| `desktop/` | Electron shell for macOS (see [`docs/mac-app.md`](docs/mac-app.md)) |
 | `config/` | Example price table |
 | `docs/FORMULAS.md` | How every stat, level and readiness call is computed |
 
 Changes are recorded in [`CHANGELOG.md`](CHANGELOG.md). Pull requests are welcome: please keep them small and focused,
 add or update tests, and add a line under `## [Unreleased]` in the changelog.
-
-## Upgrading from ragnarok
-
-Before the rename, the database was `data/ragnarok.sqlite` (plus `-wal`/`-shm`) and the env prefix was `RAGNAROK_`. Stop the app, back up and rename all three files to `solace.*` together, and rename the `.env` prefix to `SOLACE_`.
-
 ## License
 
 [MIT](LICENSE)
