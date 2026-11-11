@@ -6,7 +6,10 @@ source-exports
 !.env.example
 .git
 .github
-docs/ai
+docs
+assets
+**/*.md
+**/.DS_Store
 .claude
 *.sqlite*
 **/*.sqlite*
