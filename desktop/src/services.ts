@@ -12,6 +12,12 @@ export function decideStart(state: PortState): StartDecision {
   return state === 'free' ? 'start' : 'conflict';
 }
 
+/** The web UI proxies to one API: if we start our own API, a page already answering on the web port may belong to another one (e.g. Docker), so it is a conflict. */
+export function decideWebStart(apiDecision: StartDecision, webState: PortState): StartDecision {
+  if (apiDecision === 'start' && webState !== 'free') return 'conflict';
+  return decideStart(webState);
+}
+
 /** True when the body is a Solace `GET /api/dashboard` answer: the dashboard, or its "Not seeded" error (empty DB). */
 export function isSolaceApi(body: string): boolean {
   let parsed: unknown;

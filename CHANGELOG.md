@@ -14,7 +14,7 @@ Rules:
 ## [Unreleased]
 
 ### Added
-- Solace as a Mac app (Electron, new workspace `desktop/`): `npm run desktop` runs it, `npm run desktop:build` builds an unsigned `Solace.app`. It starts the API server and the web UI itself (or reuses a Solace that already runs on those ports), keeps running when you close the window, launches at login, has an "Always on Top" toggle and the global show/hide shortcut Control+Option+Command+S. It notifies you on the morning of an exam or resit day and when your Garmin login is about to expire or has expired. See README "Mac app".
+- Solace as a Mac app (Electron, new workspace `desktop/`): `npm run desktop` runs it, `npm run desktop:build` builds an unsigned `Solace.app`. It starts the API server and the web UI itself (or reuses a Solace that already runs on those ports), keeps running when you close the window, launches at login, has an "Always on Top" toggle and the global show/hide shortcut Control+Option+Command+S. It notifies you on the morning of an exam or resit day and when your Garmin login is about to expire or has expired. If it starts its own API but the web port is already answering (for example the Docker demo), it stops with a port-in-use error instead of showing the wrong database. See README "Mac app".
 
 ## [0.5.0] - 2026-11-11
 

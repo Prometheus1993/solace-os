@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideStart, findNode22Bin, isSolaceApi, isSolaceWeb, portsFromEnv, probe, type FsLike } from '../src/services.ts';
+import { decideStart, decideWebStart, findNode22Bin, isSolaceApi, isSolaceWeb, portsFromEnv, probe, type FsLike } from '../src/services.ts';
 
 const fakeFs = (paths: string[], dirs: Record<string, string[]> = {}): FsLike => ({
   exists: (path) => paths.includes(path),
@@ -11,6 +11,19 @@ describe('decideStart', () => {
     expect(decideStart('solace')).toBe('reuse');
     expect(decideStart('free')).toBe('start');
     expect(decideStart('foreign')).toBe('conflict');
+  });
+});
+
+describe('decideWebStart', () => {
+  it('refuses any answering web port when we start our own API', () => {
+    expect(decideWebStart('start', 'solace')).toBe('conflict');
+    expect(decideWebStart('start', 'foreign')).toBe('conflict');
+    expect(decideWebStart('start', 'free')).toBe('start');
+  });
+  it('follows the normal rule when the API is reused', () => {
+    expect(decideWebStart('reuse', 'solace')).toBe('reuse');
+    expect(decideWebStart('reuse', 'foreign')).toBe('conflict');
+    expect(decideWebStart('reuse', 'free')).toBe('start');
   });
 });
 

@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { GARMIN_REAUTH_BODY, isMorning, planNotifications, type MissionDay } from './notifications.ts';
-import { decideStart, findNode22Bin, isSolaceApi, isSolaceWeb, portsFromEnv, probe, type PortState } from './services.ts';
+import { decideStart, decideWebStart, findNode22Bin, isSolaceApi, isSolaceWeb, portsFromEnv, probe, type PortState, type StartDecision } from './services.ts';
 import { parseSettings, type Settings } from './settings.ts';
 
 // Solace as a Mac app. This does what start.sh does: it runs the API server and the Vite web UI as child processes
@@ -51,13 +51,21 @@ function stopStartedChildren(): void {
 }
 
 /** Reuse a running Solace on the port, or start our own child and wait until it answers. Never restarts a child. */
-async function ensureService(name: string, port: number, probeNow: () => Promise<PortState>, start: () => ChildProcess): Promise<void> {
-  const decision = decideStart(await probeNow());
+async function ensureService(
+  name: string,
+  port: number,
+  probeNow: () => Promise<PortState>,
+  start: () => ChildProcess,
+  decide: (state: PortState) => StartDecision = decideStart,
+): Promise<StartDecision> {
+  const decision = decide(await probeNow());
   if (decision === 'reuse') {
     console.log(`[solace] ${name}: reusing the one already running on port ${port}`);
-    return;
+    return decision;
   }
-  if (decision === 'conflict') throw new Error(`Port ${port} is in use by a program that is not Solace.`);
+  if (decision === 'conflict') {
+    throw new Error(`Port ${port} is in use by a program that is not this app's own Solace. Docker may be holding it; SOLACE_PORT moves the Docker port.`);
+  }
 
   const child = start();
   console.log(`[solace] ${name}: started (pid ${child.pid})`);
@@ -78,6 +86,7 @@ async function ensureService(name: string, port: number, probeNow: () => Promise
     await new Promise((done) => setTimeout(done, 300));
   }
   ready = true;
+  return decision;
 }
 
 async function startServices(): Promise<void> {
@@ -88,7 +97,7 @@ async function startServices(): Promise<void> {
   // Same PATH as start.sh: Node 22 first, then Homebrew (uv for the Garmin sync).
   const env: NodeJS.ProcessEnv = { ...process.env, PATH: `${node22}:/opt/homebrew/bin:${process.env['PATH'] ?? ''}` };
 
-  await ensureService('API server', ports.api, () => probe(fetch, apiUrl, isSolaceApi), () =>
+  const apiDecision = await ensureService('API server', ports.api, () => probe(fetch, apiUrl, isSolaceApi), () =>
     startChild(tsx, ['backend/server/src/index.ts'], env),
   );
   await ensureService('web UI', ports.web, () => probe(fetch, webUrl, isSolaceWeb), () =>
@@ -96,6 +105,7 @@ async function startServices(): Promise<void> {
       ...env,
       SOLACE_API: env['SOLACE_API'] ?? `http://localhost:${ports.api}`,
     }),
+    (state) => decideWebStart(apiDecision, state),
   );
 }
 
