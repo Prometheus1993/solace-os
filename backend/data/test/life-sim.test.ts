@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   EXAM_STATUSES,
   PURCHASE_TYPES,
@@ -279,5 +279,20 @@ describe('life-sim CHECK enums stay in sync with the core tuples', () => {
     db.prepare("INSERT INTO volumes (series_id, format, created_at) VALUES (1, 'single', 0)").run();
     expect(() => db.prepare("INSERT INTO copies (volume_id, read_status, created_at) VALUES (1, 'not-a-status', 0)").run()).toThrow();
     db.close();
+  });
+});
+
+describe('list order is stable when created_at ties', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('listSeries breaks a created_at tie by id, newest first', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-11T12:00:00Z'));
+    const r = repo();
+    const base = { author: null, altTitles: [], type: 'book' as const, anilistId: null, mangadexId: null, mangaupdatesId: null, malId: null, publicationStatus: 'completed' as const, readingStatus: 'active' as const, totalVolumesKnown: 1, englishPublisher: null, readingDirection: null, coverUrl: null, genres: [], notes: null, sourceHash: null };
+    const first = await r.addSeries({ ...base, canonicalTitle: 'First' });
+    const second = await r.addSeries({ ...base, canonicalTitle: 'Second' });
+    expect(second.createdAt).toBe(first.createdAt);
+    expect((await r.listSeries()).map((s) => s.id)).toEqual([second.id, first.id]);
   });
 });

@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fixedClock, parsePriceTable } from '@solace/core';
 import { assembleDashboard, demoDbPath, migrate, openDatabase, SqliteRepository } from '@solace/data';
 import { prepareDemoDb, seedDemo } from '../src/commands/seed-demo.ts';
@@ -18,7 +18,12 @@ const TABLE = parsePriceTable({
 const TODAY = '2026-11-11';
 const clock = fixedClock(Date.parse(`${TODAY}T12:00:00Z`) / 1000, TODAY);
 
+afterEach(() => vi.useRealTimers());
+
 async function seeded() {
+  // Freeze the wall clock the repository stamps createdAt with, so the result never depends on second boundaries.
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date(`${TODAY}T12:00:00Z`));
   const db = openDatabase(':memory:');
   migrate(db);
   const repo = new SqliteRepository(db);

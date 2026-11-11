@@ -567,7 +567,7 @@ export class SqliteRepository implements Repository {
   }
 
   async getRuns(): Promise<Run[]> {
-    const rows = this.db.prepare('SELECT * FROM runs ORDER BY start_time_utc').all() as RunRow[];
+    const rows = this.db.prepare('SELECT * FROM runs ORDER BY start_time_utc, id').all() as RunRow[];
     return rows.map(toRun);
   }
 
@@ -662,7 +662,7 @@ export class SqliteRepository implements Repository {
   }
 
   async getStrengthSessions(): Promise<StrengthSession[]> {
-    const rows = this.db.prepare('SELECT * FROM strength_sessions ORDER BY start_time_utc').all() as StrengthSessionRow[];
+    const rows = this.db.prepare('SELECT * FROM strength_sessions ORDER BY start_time_utc, id').all() as StrengthSessionRow[];
     return rows.map(toSession);
   }
 
@@ -731,7 +731,7 @@ export class SqliteRepository implements Repository {
   }
 
   async getWeightPoints(): Promise<WeightPoint[]> {
-    const rows = this.db.prepare('SELECT * FROM weight_points ORDER BY date').all() as WeightPointRow[];
+    const rows = this.db.prepare('SELECT * FROM weight_points ORDER BY date, id').all() as WeightPointRow[];
     return rows.map((r) => ({
       id: r.id,
       date: r.date,
@@ -756,7 +756,7 @@ export class SqliteRepository implements Repository {
     return { id: Number(info.lastInsertRowid), createdAt, ...input };
   }
   async listExams(): Promise<Exam[]> {
-    return (this.db.prepare('SELECT * FROM exams ORDER BY exam_date').all() as ExamRow[]).map(toExam);
+    return (this.db.prepare('SELECT * FROM exams ORDER BY exam_date, id').all() as ExamRow[]).map(toExam);
   }
   async updateExam(id: number, patch: ExamPatch): Promise<Exam | null> {
     const set = lifeSimSet(EXAM_COLS, patch as Record<string, unknown>);
@@ -803,7 +803,7 @@ export class SqliteRepository implements Repository {
     return { id: Number(info.lastInsertRowid), createdAt, ...input };
   }
   async listSeries(): Promise<Series[]> {
-    return (this.db.prepare('SELECT * FROM series ORDER BY created_at DESC').all() as SeriesRow[]).map(toSeries);
+    return (this.db.prepare('SELECT * FROM series ORDER BY created_at DESC, id DESC').all() as SeriesRow[]).map(toSeries);
   }
   async getSeries(id: number): Promise<Series | null> {
     const row = this.db.prepare('SELECT * FROM series WHERE id = ?').get(id) as SeriesRow | undefined;
@@ -844,10 +844,10 @@ export class SqliteRepository implements Repository {
     return { id: Number(info.lastInsertRowid), createdAt, ...input };
   }
   async listVolumes(): Promise<Volume[]> {
-    return (this.db.prepare('SELECT * FROM volumes ORDER BY series_id, volume_number').all() as VolumeRow[]).map(toVolume);
+    return (this.db.prepare('SELECT * FROM volumes ORDER BY series_id, volume_number, id').all() as VolumeRow[]).map(toVolume);
   }
   async listVolumesBySeries(seriesId: number): Promise<Volume[]> {
-    return (this.db.prepare('SELECT * FROM volumes WHERE series_id = ? ORDER BY volume_number').all(seriesId) as VolumeRow[]).map(toVolume);
+    return (this.db.prepare('SELECT * FROM volumes WHERE series_id = ? ORDER BY volume_number, id').all(seriesId) as VolumeRow[]).map(toVolume);
   }
   async updateVolume(id: number, patch: VolumePatch): Promise<Volume | null> {
     const set = lifeSimSet(VOLUME_COLS, patch as Record<string, unknown>);
@@ -875,10 +875,10 @@ export class SqliteRepository implements Repository {
     return { id: Number(info.lastInsertRowid), createdAt, ...input };
   }
   async listCopies(): Promise<Copy[]> {
-    return (this.db.prepare('SELECT * FROM copies ORDER BY created_at DESC').all() as CopyRow[]).map(toCopy);
+    return (this.db.prepare('SELECT * FROM copies ORDER BY created_at DESC, id DESC').all() as CopyRow[]).map(toCopy);
   }
   async listCopiesByVolume(volumeId: number): Promise<Copy[]> {
-    return (this.db.prepare('SELECT * FROM copies WHERE volume_id = ?').all(volumeId) as CopyRow[]).map(toCopy);
+    return (this.db.prepare('SELECT * FROM copies WHERE volume_id = ? ORDER BY id').all(volumeId) as CopyRow[]).map(toCopy);
   }
   async updateCopy(id: number, patch: CopyPatch): Promise<Copy | null> {
     const set = lifeSimSet(COPY_COLS, patch as Record<string, unknown>);
@@ -901,7 +901,7 @@ export class SqliteRepository implements Repository {
     return { id: Number(info.lastInsertRowid), createdAt, ...input };
   }
   async listPurchases(): Promise<Purchase[]> {
-    return (this.db.prepare('SELECT * FROM purchases ORDER BY created_at DESC').all() as PurchaseRow[]).map(toPurchase);
+    return (this.db.prepare('SELECT * FROM purchases ORDER BY created_at DESC, id DESC').all() as PurchaseRow[]).map(toPurchase);
   }
   async updatePurchase(id: number, patch: PurchasePatch): Promise<Purchase | null> {
     const set = lifeSimSet(PURCHASE_COLS, patch as Record<string, unknown>);
@@ -926,7 +926,7 @@ export class SqliteRepository implements Repository {
     return created;
   }
   async listPurchaseItems(): Promise<PurchaseItem[]> {
-    return (this.db.prepare('SELECT * FROM purchase_items').all() as PurchaseItemRow[]).map(toPurchaseItem);
+    return (this.db.prepare('SELECT * FROM purchase_items ORDER BY id').all() as PurchaseItemRow[]).map(toPurchaseItem);
   }
 
   async getWeatherHour(lat2dp: number, lon2dp: number, isoDate: string, hour: number): Promise<HourlyWeather | null> {

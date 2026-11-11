@@ -23,6 +23,9 @@ Rules:
 - The start screen and home header now say "SOLACE // ACCESS TERMINAL" and "SOLACE NETWORK", with a new Solace mark (a ring around a rising sun) instead of the corporate-style emblem.
 - The desk and avatar artwork in `frontend/src/assets/private/` is now part of the repo, so a fresh clone shows the full desk. `.idea/` is ignored.
 
+### Fixed
+- List queries now break ties on the row id, so rows created in the same second always come back in the same order (this made the `seed-demo` determinism test flaky in CI).
+
 ### Removed
 - The rooftop chase (two third-party characters, gunfire and their sprite atlases) is gone from the city window. The flying train, buildings, billboards and roofs are unchanged.
 
