@@ -14,6 +14,7 @@ Rules:
 ## [Unreleased]
 
 ### Added
+- `npm run demo` starts Solace on fake data (runs, wellness, strength, exams with a resit and a deliberated grade, school tasks, books and manga) on ports 8797 and 5177, next to your real Solace. `npm run cli seed -- --demo [--reset]` writes only `data/demo.sqlite`, never the live database. Garmin sync is disabled in the demo, and the demo ignores your own Google Books key and price table.
 - `CREDITS.md` credits the desk, city and avatar artwork and lists the third-party fonts, icons and music with their licenses.
 - Dependabot minor and patch PRs merge automatically once CI is green; major updates still need a manual review. Dependabot waits 7 days before proposing a new version.
 

@@ -1,8 +1,8 @@
 import { createServer } from 'node:http';
 import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import type { Clock, UnixSeconds } from '@solace/core';
-import { LegacyDbError, migrate, openDatabase, OpenMeteoClient, resolveDbPath, SqliteRepository } from '@solace/data';
+import { LegacyDbError, isDemoEnv, migrate, openDatabase, OpenMeteoClient, resolveDbPath, SqliteRepository } from '@solace/data';
 import { createSerializer, type Deps } from './deps.ts';
 import { dispatch, isLoopbackBind, mergeRoutes } from './http.ts';
 import { archivesRoutes } from './routes/archives.ts';
@@ -10,7 +10,7 @@ import { examRoutes } from './routes/exams.ts';
 import { schoolTaskRoutes } from './routes/school-tasks.ts';
 import { strengthRoutes } from './routes/strength.ts';
 import { trainingRoutes } from './routes/training.ts';
-import { createSyncRunner } from './sync-runner.ts';
+import { createSyncRunner, demoSyncDisabled } from './sync-runner.ts';
 
 // The server is a READ-ONLY DTO + Garmin sync + narrow manual-entry write endpoints. This file only boots it:
 // env, DB, CORS, and the route table. The routes live in ./routes/, one file per area; ./http.ts is the
@@ -22,6 +22,14 @@ try {
   (process as unknown as { loadEnvFile?: (path?: string) => void }).loadEnvFile?.();
 } catch {
   // no .env present — env vars can still come from the shell
+}
+
+// Demo mode (`npm run demo`): resolveDbPath pins data/demo.sqlite; sync is disabled; the user's own Google Books key
+// and price table never leak in (the demo uses the made-up example price table).
+const demo = isDemoEnv();
+if (demo) {
+  delete process.env['GOOGLE_BOOKS_API_KEY'];
+  process.env['SOLACE_PRICE_TABLE'] = resolve(process.cwd(), 'config', 'price-table.example.json');
 }
 
 const PORT = Number(process.env['PORT'] ?? 8787);
@@ -50,7 +58,7 @@ const clock: Clock = {
 
 const weather = new OpenMeteoClient(repo);
 const serialize = createSerializer();
-const sync = createSyncRunner({ repo, clock, weather, serialize });
+const sync = createSyncRunner({ repo, clock, weather, serialize, doSync: demo ? demoSyncDisabled : undefined });
 const deps: Deps = { repo, clock, weather, serialize, sync };
 const routes = mergeRoutes(trainingRoutes(deps), examRoutes(deps), schoolTaskRoutes(deps), archivesRoutes(deps), strengthRoutes(deps));
 

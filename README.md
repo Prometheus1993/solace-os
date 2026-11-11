@@ -15,7 +15,11 @@ trademarks belong to their owners, and none of those names is used as the name o
 
 ## What it looks like
 
-<!-- TODO: add screenshots here (start screen, desk home, one screen per area) once demo data exists. -->
+<!-- The start-screen screenshot (docs/screenshots/start.png) follows once the start screen is rebranded. -->
+
+![The desk](docs/screenshots/desk.png)
+![COMBAT](docs/screenshots/combat.png)
+![ARCHIVES](docs/screenshots/archives.png)
 
 You start on a "jack in" start screen. After you enter you land on your desk: a desk above a city, with tools you can
 open (school, terminal, library, biomonitor, Garmin sync, gym log, radio, scratchpad, small companions). You customise the
@@ -36,11 +40,26 @@ call and goal quests. Formulas are in [`docs/FORMULAS.md`](docs/FORMULAS.md).
 
 ## Roadmap
 
-- Demo data (`seed --demo`) and screenshots
+- Demo data (`npm run demo`) and screenshots
 - Docker (`docker compose up`, SQLite in a volume, optional Garmin)
-- One Solace visual style, then the older YoRHa-era screens (COMBAT, MISSIONS, ARCHIVES) restyled to it
-- More desk sprites and customisation, including the window view
+- Electron app for my own Mac (unsigned): starts the server itself and launches at login
+- Keep one desk style
+- A living desk: a walking cat, a real day/night cycle, city life and weather (Antwerp)
+- One Solace visual style, then COMBAT, MISSIONS and ARCHIVES restyled to it
 - Maybe later: a hosted multi-user version (Postgres/Supabase)
+
+## Try the demo
+
+The demo fills a separate database with invented runs, wellness, strength sessions, exams, school tasks, books and
+manga, dated relative to today. It never touches your real `data/solace.sqlite` and runs next to it on its own ports.
+
+```sh
+npm install
+npm run demo   # re-seeds data/demo.sqlite, then API on :8797 and web UI on :5177; Ctrl+C stops both
+```
+
+Open <http://localhost:5177>. Garmin sync is disabled in the demo. To only (re)create the demo data:
+`npm run cli seed -- --demo` (refuses if `data/demo.sqlite` exists; add `--reset` to replace it).
 
 ## Requirements and setup
 

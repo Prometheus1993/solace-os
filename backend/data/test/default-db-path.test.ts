@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { LegacyDbError, resolveDbPath } from '../src/db/default-db-path.ts';
+import { demoDbPath, LegacyDbError, resolveDbPath } from '../src/db/default-db-path.ts';
 
 function project(files: string[]): string {
   const cwd = mkdtempSync(join(tmpdir(), 'solace-dbpath-'));
@@ -31,5 +31,12 @@ describe('resolveDbPath', () => {
   it('allows the default path once solace.sqlite exists', () => {
     const cwd = project(['ragnarok.sqlite', 'solace.sqlite']);
     expect(resolveDbPath({}, cwd)).toBe(join(cwd, 'data', 'solace.sqlite'));
+  });
+
+  it('in demo mode always resolves to data/demo.sqlite, even when SOLACE_DB points at the live DB', () => {
+    const cwd = project([]);
+    const live = join(cwd, 'data', 'solace.sqlite');
+    expect(resolveDbPath({ SOLACE_DEMO: '1', SOLACE_DB: live }, cwd)).toBe(demoDbPath(cwd));
+    expect(demoDbPath(cwd)).toBe(join(cwd, 'data', 'demo.sqlite'));
   });
 });

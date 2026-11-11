@@ -7,7 +7,7 @@ import type { Deps } from '../src/deps.ts';
 import { archivesRoutes } from '../src/routes/archives.ts';
 import { trainingRoutes } from '../src/routes/training.ts';
 import { BadRequest, dispatch, isLoopbackBind, mergeRoutes, type GuardOptions, type Routes } from '../src/http.ts';
-import { createSyncRunner } from '../src/sync-runner.ts';
+import { createSyncRunner, demoSyncDisabled } from '../src/sync-runner.ts';
 
 // In-process pins for the route table's structural guarantees (the end-to-end behaviour of each route is in
 // server-validation.test.ts). No server process, no DB.
@@ -407,5 +407,12 @@ describe('Google Books key routes (#43)', () => {
     vi.stubEnv('GOOGLE_BOOKS_API_KEY', 'ENVWINS');
     await call('GET', '/api/manga-lookup?title=dune&kind=book');
     expect(urls.every((u) => u.includes('key=ENVWINS'))).toBe(true);
+  });
+});
+
+describe('POST /api/sync-garmin in the demo', () => {
+  it('is a 200 {ok:false} that says it is disabled, and never reaches the real fetcher', async () => {
+    const { call } = realRoutes(undefined, demoSyncDisabled);
+    expect(await call('POST', '/api/sync-garmin')).toMatchObject({ status: 200, body: { ok: false, error: 'fetch', message: 'Garmin sync is disabled in the demo.' } });
   });
 });

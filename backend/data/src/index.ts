@@ -1,6 +1,6 @@
 export { openDatabase, type DB, type OpenOptions } from './db/connection.ts';
 export { migrate } from './db/migrator.ts';
-export { resolveDbPath, LegacyDbError } from './db/default-db-path.ts';
+export { resolveDbPath, demoDbPath, isDemoEnv, LegacyDbError } from './db/default-db-path.ts';
 export { MIGRATIONS, type Migration } from './db/schema.ts';
 export { SqliteRepository } from './db/sqlite-repository.ts';
 export { importFit, FitParseError, type ParsedFitRun } from './importers/fit-importer.ts';
