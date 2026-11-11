@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+data
+source-exports
+.env*
+!.env.example
+.git
+.github
+docs/ai
+.claude
+*.sqlite*
+**/*.sqlite*
