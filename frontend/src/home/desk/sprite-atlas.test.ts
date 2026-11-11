@@ -16,13 +16,6 @@ describe('desk sprite sampling', () => {
     expect(spriteBounds(pixels, 8, { x: 0, y: 0, width: 4, height: 4 })).toEqual({ x: 1, y: 1, width: 2, height: 2 });
     expect(() => spriteBounds(pixels, 8, { x: 4, y: 1, width: 4, height: 3 })).toThrow('Empty sprite cell');
   });
-  it('excludes an authored top gutter without changing other atlas cells', () => {
-    const regular = gridRegions(1024, 1536, 4, 6);
-    const trimmed = gridRegions(1024, 1536, 4, 6, { 15: 24 });
-    expect(trimmed[15]).toEqual({ x: 768, y: 792, width: 256, height: 232 });
-    expect(trimmed.filter((_, i) => i !== 15)).toEqual(regular.filter((_, i) => i !== 15));
-    expect(gridRegions(8, 8, 2, 2, { 0: 999 })[0]).toEqual({ x: 0, y: 3, width: 4, height: 1 });
-  });
   it('keeps the same crop across differently lit state frames', () => {
     expect(sharedSpriteBounds([{ x: 3, y: 4, width: 8, height: 6 }, { x: 1, y: 2, width: 12, height: 8 }])).toEqual({ x: 1, y: 2, width: 12, height: 8 });
   });

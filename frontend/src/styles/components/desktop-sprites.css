@@ -430,34 +430,8 @@
   background:#101e29f2;
   pointer-events:none;
 }
-.desk-sprite-inventory { border:0; padding:0; margin:18px 0 12px; min-width:0; }
-.desk-sprite-inventory legend { padding:0; font-size:12px; color:#e4d2b5; margin-bottom:9px; }
-.desk-inventory-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
-.desk-inventory-options button {
-  padding:6px 4px;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:7px;
-  font-size:10px;
-  line-height:1.3;
-}
-.desk-inventory-options button[aria-pressed=true] { border-color:#f1bf80; background:#493c2b; }
-.desk-inventory-preview {
-  width:100%;
-  height:64px;
-  display:block;
-  padding:3px;
-  background:radial-gradient(ellipse,#34505b55,transparent);
-}
-.desk-inventory-preview .desk-sprite-missing { inset:0; font-size:8px; }
 .desk-layout-editor .desk-inventory-visibility { display:flex; align-items:center; gap:8px; margin:10px 0; }
 .desk-inventory-visibility input { width:17px; height:17px; accent-color:#edc18c; }
-.desk-inventory-sets { margin:16px 0; font-size:11px; }
-.desk-inventory-sets summary { min-height:36px; cursor:pointer; color:#b5dcd6; }
-.desk-inventory-sets > div { display:flex; flex-wrap:wrap; gap:6px; }
-.desk-inventory-sets button { flex:1; padding:7px 5px; font-size:10px; }
 @media(max-width:1100px) { .desktop-sprite-hub .desk-settings { flex-wrap:wrap; justify-content:flex-end; } }
 @media(max-width:760px) {
   .desk-layout-editor { top:145px; left:8px; width:260px; max-height:calc(100% - 260px); padding:12px; }

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adjustProp, applyDeskStyle, decodeDeskLayout, DEFAULT_ADJUSTMENT, DESK_OBJECTS, dragAdjustment, encodeDeskLayout, resetProp, resizeAdjustment } from './desk-layout-state.ts';
-import { supportsDeskStyle } from './desk-sprite-catalog.ts';
+import { adjustProp, decodeDeskLayout, DEFAULT_ADJUSTMENT, DESK_OBJECTS, dragAdjustment, encodeDeskLayout, resetProp, resizeAdjustment } from './desk-layout-state.ts';
 
 describe('desk layout adjustments', () => {
   it('round trips independent prop adjustments without changing the default', () => {
@@ -46,40 +45,36 @@ describe('desk layout adjustments', () => {
     expect(resizeAdjustment(1, start, { x: 50, y: 300 }, anchor)).toBe(.35);
     expect(resizeAdjustment(1, start, { x: 500, y: -500 }, anchor)).toBe(2);
   });
-  it('persists sprite choices and inventory visibility without losing positions', () => {
+  it('persists inventory visibility without losing positions', () => {
     const original = adjustProp({}, 'radio', { x: 7, y: -8, scale: .75 });
-    const chosen = adjustProp(original, 'radio', { sprite: 'cozy', hidden: true });
-    expect(chosen.radio).toEqual({ x: 7, y: -8, scale: .75, sprite: 'cozy', hidden: true });
+    const chosen = adjustProp(original, 'radio', { hidden: true });
+    expect(chosen.radio).toEqual({ x: 7, y: -8, scale: .75, hidden: true });
     expect(decodeDeskLayout(encodeDeskLayout(chosen))).toEqual(chosen);
-    expect(adjustProp(chosen, 'radio', { x: 10 }).radio).toMatchObject({ sprite: 'cozy', hidden: true });
+    expect(adjustProp(chosen, 'radio', { x: 10 }).radio).toMatchObject({ hidden: true });
     expect(adjustProp(chosen, 'radio', { hidden: false }).radio).toMatchObject({ x: 7, scale: .75, hidden: false });
     expect(resetProp(chosen, 'radio')).toEqual({});
     expect(original.radio).toEqual({ x: 7, y: -8, scale: .75 });
-  });
-  it('applies a whole vibe without moving, resizing or restoring stored objects', () => {
-    const original = adjustProp({}, 'mug', { x: 4, scale: 1.2, hidden: true });
-    const themed = applyDeskStyle(original, 'neon');
-    expect(themed.mug).toEqual({ x: 4, y: 0, scale: 1.2, hidden: true, sprite: 'neon' });
-    for (const [id] of DESK_OBJECTS) if (supportsDeskStyle(id)) expect(themed[id]?.sprite).toBe('neon');
-    expect(applyDeskStyle(themed, 'original').mug).toMatchObject({ sprite: 'original', x: 4, scale: 1.2, hidden: true });
-    expect(original.mug?.sprite).toBeUndefined();
   });
   it('loads old layouts and safely ignores unknown inventory choices', () => {
     expect(decodeDeskLayout('{"version":1,"props":{"lamp":{"x":3,"y":2,"scale":1}}}').lamp).toEqual({ x: 3, y: 2, scale: 1 });
     expect(decodeDeskLayout('{"version":1,"props":{"lamp":{"x":3,"y":2,"scale":1,"sprite":"unknown","hidden":"true"}}}').lamp).toEqual({ x: 3, y: 2, scale: 1 });
   });
-  it('saves and resets structural sizes independently of props and style presets', () => {
+  it('loads a saved layout that stores a removed desk style as the original look', () => {
+    const saved = '{"version":1,"props":{"mug":{"x":4,"y":1,"scale":1.2,"sprite":"cozy","hidden":true},"lamp":{"x":0,"y":0,"scale":1,"sprite":"neon"}}}';
+    const layout = decodeDeskLayout(saved);
+    expect(layout.mug).toEqual({ x: 4, y: 1, scale: 1.2, hidden: true });
+    expect(layout.lamp).toEqual({ x: 0, y: 0, scale: 1 });
+    expect(encodeDeskLayout(layout)).not.toMatch(/cozy|neon|sprite/);
+  });
+  it('saves and resets structural sizes independently of props', () => {
     const layout = adjustProp(adjustProp({}, 'surface', { scale: 1.3, y: 2 }), 'window', { scale: 1.15, x: -2 });
-    const themed = applyDeskStyle(layout, 'neon');
-    expect(themed.surface).toEqual(layout.surface);
-    expect(themed.window).toEqual(layout.window);
-    expect(decodeDeskLayout(encodeDeskLayout(themed))).toEqual(themed);
-    expect(resetProp(themed, 'surface').window).toEqual(layout.window);
-    expect(resetProp(themed, 'surface').surface).toBeUndefined();
+    expect(decodeDeskLayout(encodeDeskLayout(layout))).toEqual(layout);
+    expect(resetProp(layout, 'surface').window).toEqual(layout.window);
+    expect(resetProp(layout, 'surface').surface).toBeUndefined();
   });
   it('keeps existing arrangements when a floor companion is added to the editor', () => {
     const old = decodeDeskLayout('{"version":1,"props":{"monitor":{"x":4,"y":-2,"scale":0.8}}}');
-    const next = adjustProp(old, 'companion', { x: -6, scale: 1.2, sprite: 'cozy', hidden: true });
+    const next = adjustProp(old, 'companion', { x: -6, scale: 1.2, hidden: true });
     expect(next.monitor).toEqual(old.monitor);
     expect(decodeDeskLayout(encodeDeskLayout(next))).toEqual(next);
     expect(resetProp(next, 'companion').monitor).toEqual(old.monitor);
