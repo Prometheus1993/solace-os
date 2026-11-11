@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chaseRoofs, chaseScale, CITY_LEDGES, projectChasePoint, trainAt, trainFlight } from './city-story-motion.ts';
+import { cityRoofs, cityScale, CITY_LEDGES, projectCityPoint, trainAt, trainFlight } from './city-story-motion.ts';
 
 describe('background city choreography', () => {
   it('alternates level, banking and receding flights instead of following rails', () => {
@@ -20,12 +20,12 @@ describe('background city choreography', () => {
     expect(trainAt(45 + 5)).toEqual(trainFlight(1,4.5 / 18));
   });
   it('projects roofs onto the same rendered positions at both depths', () => {
-    expect(chaseScale('far')).toBeLessThan(chaseScale('near'));
+    expect(cityScale('far')).toBeLessThan(cityScale('near'));
     for (const depth of ['near','far'] as const) {
-      const roofs = chaseRoofs(depth);
+      const roofs = cityRoofs(depth);
       expect(roofs).toHaveLength(CITY_LEDGES.length);
       CITY_LEDGES.forEach((ledge, i) => {
-        const left = projectChasePoint({ x: ledge.x0, y: ledge.y }, depth);
+        const left = projectCityPoint({ x: ledge.x0, y: ledge.y }, depth);
         expect(roofs[i].x0).toBeCloseTo(left.x);
         expect(roofs[i].y).toBeCloseTo(left.y);
       });

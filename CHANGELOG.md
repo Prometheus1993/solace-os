@@ -18,6 +18,7 @@ Rules:
 
 ### Changed
 - README is shorter: the roadmap moved to the new `ROADMAP.md`, the Mac app details to `docs/mac-app.md`, the CLI is part of "Development", and the configuration table is replaced by a pointer to `.env.example`. The "Upgrading from ragnarok" note is removed.
+- The desk's route and timing helpers (interpolation, depth projection, fades, repeating schedules) moved from the city code into a shared, tested module (`frontend/src/home/desk/motion.ts`) so other desk animations can reuse them. The city looks and moves exactly as before.
 - The desk keeps only the original style. The floor-companion artwork file now holds just the original cat. A saved desk layout that still names another style opens as the original without error.
 
 ### Removed

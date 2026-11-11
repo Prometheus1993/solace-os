@@ -1,6 +1,6 @@
 import type { StoryArt, StorySprite } from './city-story-art.ts';
 import { CITY_BUILDINGS, type CityBuilding } from './city-building-layout.ts';
-import { chaseRoofs, chaseScale, type ChaseDepth } from './city-story-motion.ts';
+import { cityRoofs, cityScale, type CityDepth } from './city-story-motion.ts';
 
 function spriteRect(art: StorySprite, index: number) { return art.frames[index % art.frames.length]; }
 function sign(context: CanvasRenderingContext2D, art: StorySprite, frame: number, x: number, y: number, width: number, time: number) {
@@ -22,10 +22,10 @@ export function drawBuildingLayer(context: CanvasRenderingContext2D, art: StoryA
   context.restore();
 }
 /** Flat walkable caps line up exactly with the route model; façades continue below them. */
-export function drawCityRoofs(context: CanvasRenderingContext2D, art: StoryArt, width: number, height: number, time: number, depth: ChaseDepth) {
+export function drawCityRoofs(context: CanvasRenderingContext2D, art: StoryArt, width: number, height: number, time: number, depth: CityDepth) {
   context.save();
-  const scale = chaseScale(depth);
-  for (const [index, ledge] of chaseRoofs(depth).entries()) {
+  const scale = cityScale(depth);
+  for (const [index, ledge] of cityRoofs(depth).entries()) {
     const start = Math.max(0, ledge.x0), end = Math.min(1, ledge.x1), roof = ledge.y * height;
     if (art.buildings) {
       const count = Math.ceil((end - start) / (.105 * scale)), tileWidth = (end - start) * width / count;
