@@ -1,12 +1,11 @@
 export type SpriteRect = { x: number; y: number; width: number; height: number };
 
-export function gridRegions(width: number, height: number, columns: number, rows: number, topInsets: Partial<Record<number, number>> = {}): SpriteRect[] {
+export function gridRegions(width: number, height: number, columns: number, rows: number): SpriteRect[] {
   return Array.from({ length: columns * rows }, (_, index) => {
     const column = index % columns, row = Math.floor(index / columns);
     const x = Math.floor(column * width / columns), y = Math.floor(row * height / rows);
     const cellHeight = Math.floor((row + 1) * height / rows) - y;
-    const inset = Math.max(0, Math.min(cellHeight - 1, Math.floor(topInsets[index] ?? 0)));
-    return { x, y: y + inset, width: Math.floor((column + 1) * width / columns) - x, height: cellHeight - inset };
+    return { x, y, width: Math.floor((column + 1) * width / columns) - x, height: cellHeight };
   });
 }
 

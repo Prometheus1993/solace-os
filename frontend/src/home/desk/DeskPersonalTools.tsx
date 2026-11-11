@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { loadScratchpad, saveScratchpad, MOODS, TRACKS, nextRadioTrack, type RadioMood } from './desk-personal-state.ts';
 import { readStored, writeStored } from './desk-browser.ts';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
-import type { DeskStyle } from './desk-sprite-catalog.ts';
 
 export function useDeskRadio() {
   const audio = useRef<HTMLAudioElement>(null);
@@ -152,13 +151,13 @@ const FIGURES = [
     detail: 'DESK COLLECTION / 02 · Box chassis, cyan optics, oversized feet.'
   },
 ];
-export function CollectiblePanel({ selected, onSelect, appearance }: { selected: number; onSelect: (index: number) => void; appearance?: DeskStyle }) {
+export function CollectiblePanel({ selected, onSelect }: { selected: number; onSelect: (index: number) => void }) {
   const figure = FIGURES[selected];
   return <div className="desk-collection-panel">
     <nav aria-label="Collectible figures">
       {FIGURES.map((item, i) => <button key={item.name} aria-pressed={selected === i} onClick={() => onSelect(i)}>{item.name}</button>)}
     </nav>
-    <div key={selected} className="desk-collection-figure"><DeskObjectSprite id={selected === 0 ? 'figure-one' : 'figure-two'} appearance={appearance} /></div>
+    <div key={selected} className="desk-collection-figure"><DeskObjectSprite id={selected === 0 ? 'figure-one' : 'figure-two'} /></div>
     <p className="desk-eyebrow">{figure.detail}</p>
     <h2>{figure.name}</h2>
     <p>{figure.description}</p>

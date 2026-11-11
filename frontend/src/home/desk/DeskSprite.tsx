@@ -9,10 +9,9 @@ function loadSheet(
   columns: number,
   rows: number,
   independent: boolean,
-  split?: number,
-  topInsets?: Partial<Record<number, number>>
+  split?: number
 ): Promise<Sheet> {
-  const key = `${src}/${columns}/${rows}/${independent}/${split}/${JSON.stringify(topInsets ?? {})}`;
+  const key = `${src}/${columns}/${rows}/${independent}/${split}`;
   const cached = sheets.get(key);
   if (cached) return cached;
   const promise = new Promise<Sheet>((resolve, reject) => {
@@ -26,7 +25,7 @@ function loadSheet(
         const pixels = context.getImageData(0, 0, image.width, image.height).data;
         // Keyboard/mouse is an intentionally measured uneven atlas, not a regular grid.
         const divide = Math.floor(image.width * (split ?? .5));
-        const regions = split == null ? gridRegions(image.width, image.height, columns, rows, topInsets) : [
+        const regions = split == null ? gridRegions(image.width, image.height, columns, rows) : [
           { x: 0, y: 0, width: divide, height: image.height },
           { x: divide, y: 0, width: image.width - divide, height: image.height },
         ];
@@ -46,14 +45,13 @@ function loadSheet(
 }
 
 /** Runtime atlas sampling only: source PNGs remain unchanged. No per-frame pixel scan. */
-export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, topInsets, name, onError }: {
+export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, name, onError }: {
   src: string | undefined;
   columns?: number;
   rows?: number;
   frame?: number;
   independent?: boolean;
   split?: number;
-  topInsets?: Partial<Record<number, number>>;
   name: string;
   onError?: () => void;
 }) {
@@ -65,11 +63,11 @@ export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent 
     let cancelled = false;
     setSheet(null); setFailed(false);
     if (!src) { setFailed(true); errorHandler.current?.(); return; }
-    void loadSheet(src, columns, rows, independent, split, topInsets).then(value => { if (!cancelled) setSheet(value); }).catch(() => {
+    void loadSheet(src, columns, rows, independent, split).then(value => { if (!cancelled) setSheet(value); }).catch(() => {
       if (!cancelled) { setFailed(true); errorHandler.current?.(); }
     });
     return () => { cancelled = true; };
-  }, [src, columns, rows, independent, split, topInsets]);
+  }, [src, columns, rows, independent, split]);
   useEffect(() => {
     const element = canvas.current, rect = sheet?.frames[frame];
     if (!element || !sheet || !rect) return;

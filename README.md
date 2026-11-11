@@ -43,7 +43,6 @@ call and goal quests. Formulas are in [`docs/FORMULAS.md`](docs/FORMULAS.md).
 - Demo data (`npm run demo`) and screenshots
 - Docker (`docker compose up`, SQLite in a volume, optional Garmin)
 - Electron app for my own Mac (unsigned): starts the server itself and launches at login
-- Keep one desk style
 - A living desk: a walking cat, a real day/night cycle, city life and weather (Antwerp)
 - One Solace visual style, then COMBAT, MISSIONS and ARCHIVES restyled to it
 - Maybe later: a hosted multi-user version (Postgres/Supabase)

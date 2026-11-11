@@ -210,7 +210,7 @@ export default function DesktopHub(props: DesktopHubProps) {
           {surface.id === 'radio' && <RadioPanel radio={radio} />}
           {surface.id === 'scratchpad' && <Scratchpad />}
           {surface.id === 'collection'
-            && <CollectiblePanel selected={figure} onSelect={setFigure} appearance={layout.values[figure === 0 ? 'figure-one' : 'figure-two']?.sprite} />}
+            && <CollectiblePanel selected={figure} onSelect={setFigure} />}
         </div>
       </section>)}
     </div>

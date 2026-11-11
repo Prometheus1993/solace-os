@@ -11,7 +11,6 @@ import {
 } from 'react';
 import {
   adjustProp,
-  applyDeskStyle,
   decodeDeskLayout,
   DEFAULT_ADJUSTMENT,
   DESK_LAYOUT_KEY,
@@ -25,8 +24,6 @@ import {
   type DeskObjectId,
   type PropAdjustment
 } from './desk-layout-state.ts';
-import { DESK_STYLES, supportsDeskStyle, type DeskStyle } from './desk-sprite-catalog.ts';
-import { DeskObjectSprite } from './DeskObjectSprite.tsx';
 import { writeStored } from './desk-browser.ts';
 import { logicalSelectionBox } from './desk-canvas.ts';
 
@@ -156,7 +153,6 @@ export function useDeskLayout() {
     suppressClick,
     focusProp,
     keyDown,
-    applyStyle: (style: DeskStyle) => setDraft(previous => applyDeskStyle(previous, style)),
     resetSelected: () => setDraft(previous => resetProp(previous, selected)), resetAll: () => setDraft({}) };
 }
 export type DeskLayoutControl = ReturnType<typeof useDeskLayout>;
@@ -184,30 +180,11 @@ export function DeskLayoutEditor({ layout }: { layout: DeskLayoutControl }) {
         {DESK_OBJECTS.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
       </select>
     </label>
-    {supportsDeskStyle(layout.selected)
-      && <fieldset className="desk-sprite-inventory">
-        <legend>Sprite inventory</legend>
-        <div className="desk-inventory-options">
-          {DESK_STYLES.map(style => <button
-            key={style.id}
-            aria-pressed={(value.sprite ?? 'original') === style.id}
-            onClick={() => layout.update(layout.selected, { sprite: style.id })}
-            title={style.description}>
-            <span className="desk-inventory-preview"><DeskObjectSprite id={layout.selected} appearance={style.id} /></span>
-            <span>{style.name}</span>
-          </button>)}
-        </div>
-      </fieldset>}
     <label className="desk-inventory-visibility">
       <input
         type="checkbox"
         checked={!value.hidden}
         onChange={event => layout.update(layout.selected, { hidden: !event.target.checked })} /> Show on desk</label>
-    <details className="desk-inventory-sets">
-      <summary>Change the whole desk vibe</summary>
-      <p>Keeps your positions and sizes.</p>
-      <div>{DESK_STYLES.map(style => <button key={style.id} onClick={() => layout.applyStyle(style.id)}>{style.name}</button>)}</div>
-    </details>
     <label>Size <output>{Math.round(value.scale * 100)}%</output>
       <input
         aria-label="Object size"
@@ -234,7 +211,7 @@ export function DeskLayoutEditor({ layout }: { layout: DeskLayoutControl }) {
       <button onClick={layout.resetSelected}>Reset object</button>
       <button onClick={layout.resetAll}>Reset whole layout</button>
     </div>
-    <p>Save keeps your arrangement and sprite choices in this browser. Reset restores original sprites, sizes, positions and visibility.</p>
+    <p>Save keeps your arrangement in this browser. Reset restores original sizes, positions and visibility.</p>
     </div>
     <footer><button onClick={layout.cancel}>Cancel</button><button onClick={layout.save}>Save layout</button></footer>
   </aside>;

@@ -51,7 +51,7 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
     () => { if (!reaction) return; const timer = window.setTimeout(() => setReaction(''), 2400); return () => window.clearTimeout(timer); },
     [reaction]
   );
-  const propSprite = (id: DeskObjectId, state?: number) => <DeskObjectSprite id={id} appearance={layout.values[id]?.sprite} state={state} onError={onError} />;
+  const propSprite = (id: DeskObjectId, state?: number) => <DeskObjectSprite id={id} state={state} onError={onError} />;
   const accessory = (frame: number, name: string) => <DeskSprite
     src={asset('desk-accessories-atlas')}
     columns={4}
