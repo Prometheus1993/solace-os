@@ -5,8 +5,6 @@ const files = import.meta.glob<string>([
   '../../assets/private/desk-flying-train*-v1.png',
   '../../assets/private/desk-city-buildings-atlas-v1.png',
   '../../assets/private/desk-japanese-billboards-atlas-v1.png',
-  '../../assets/private/desk-edgerunners-chase-atlas-v1.png',
-  '../../assets/private/desk-edgerunners-firing-atlas-v1.png',
 ], { eager: true, query: '?url', import: 'default' });
 
 /** Bundled URL of `assets/private/<name>-v1.png`; undefined when the file is missing. */

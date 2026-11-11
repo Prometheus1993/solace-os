@@ -14,10 +14,14 @@ Rules:
 ## [Unreleased]
 
 ### Added
+- `CREDITS.md` credits the desk, city and avatar artwork and lists the third-party fonts, icons and music with their licenses.
 - Dependabot minor and patch PRs merge automatically once CI is green; major updates still need a manual review. Dependabot waits 7 days before proposing a new version.
 
 ### Changed
 - The desk and avatar artwork in `frontend/src/assets/private/` is now part of the repo, so a fresh clone shows the full desk. `.idea/` is ignored.
+
+### Removed
+- The rooftop chase (two third-party characters, gunfire and their sprite atlases) is gone from the city window. The flying train, buildings, billboards and roofs are unchanged.
 
 ## [0.4.0] - 2026-11-10
 
