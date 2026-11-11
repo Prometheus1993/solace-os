@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Readable } from 'node:stream';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { DEFAULT_CONFIG, type Clock, type UnixSeconds } from '@solace/core';
+import { DEFAULT_CONFIG, type Clock, type Sky, type UnixSeconds } from '@solace/core';
 import { GarminSyncError, migrate, openDatabase, SqliteRepository, type OpenMeteoClient, type syncGarmin } from '@solace/data';
 import type { Deps } from '../src/deps.ts';
 import { archivesRoutes } from '../src/routes/archives.ts';
@@ -78,6 +78,8 @@ describe('dispatch', () => {
   });
 });
 
+const SKY = { sunrise: 1_794_380_000, sunset: 1_794_413_000, weatherCode: 61, fetchedAt: 0 } as Sky;
+
 // The real training + archives route tables over an in-memory repository (no server process).
 function realRoutes(serialize: Deps['serialize'] = (fn) => fn(), doSync?: typeof syncGarmin, fetchImpl?: typeof fetch) {
   const db = openDatabase(':memory:');
@@ -86,7 +88,7 @@ function realRoutes(serialize: Deps['serialize'] = (fn) => fn(), doSync?: typeof
   const clock: Clock = { now: () => 0 as UnixSeconds, today: () => '2026-11-05' };
   const weather = {} as OpenMeteoClient;
   const sync = createSyncRunner({ repo, clock, weather, serialize, doSync });
-  const deps = { repo, clock, weather, serialize, sync, fetch: fetchImpl } as Deps;
+  const deps = { repo, clock, weather, sky: () => Promise.resolve(SKY), serialize, sync, fetch: fetchImpl } as Deps;
   const routes = mergeRoutes(trainingRoutes(deps), archivesRoutes(deps));
   const callWith = async (method: string, url: string, req: Readable, headers: Record<string, string> = {}, opts?: GuardOptions) => {
     const { res, out } = fakeRes();
@@ -225,6 +227,14 @@ describe('PATCH /api/goals', () => {
 });
 
 const seriesBase = { author: null, altTitles: [], type: 'manga' as const, anilistId: null, mangadexId: null, mangaupdatesId: null, malId: null, publicationStatus: 'completed' as const, readingStatus: 'active' as const, totalVolumesKnown: 1, englishPublisher: null, readingDirection: null, coverUrl: null, genres: [], notes: null, sourceHash: null };
+
+describe('GET /api/dashboard sky slice', () => {
+  it('carries the sky reading the server was given', async () => {
+    const { repo, call } = realRoutes();
+    await repo.saveAthleteConfig(DEFAULT_CONFIG);
+    expect((await call('GET', '/api/dashboard')).body['sky']).toEqual(SKY);
+  });
+});
 
 describe('deleting a series / volume leaves no empty purchase behind', () => {
   async function boxed() {

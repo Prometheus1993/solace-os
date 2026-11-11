@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
+import { dayPhase, weatherMood } from '@solace/core/domain';
 import { SchoolTasks } from '../../tabs/SchoolTasks.tsx';
 import { StrengthLog } from '../../tabs/StrengthLog.tsx';
 import { TerminalExplorer } from './TerminalExplorer.tsx';
@@ -65,6 +66,10 @@ export default function DesktopHub(props: DesktopHubProps) {
   const current = SURFACE_LIST.find(item => item.id === view);
   const moving = ambience && visible && !reduced && view === 'desk' && !layout.editing;
   const avatar = avatarState(props.dto);
+  // Not styled yet: the sky, room and weather looks hook onto these two attributes later (#17).
+  const sky = props.dto.sky;
+  const skyPhase = dayPhase(new Date(), sky?.sunrise, sky?.sunset);
+  const skyMood = sky ? weatherMood(sky.weatherCode) : undefined;
   const open = (next: View) => {
     if (layout.editing) return;
     if (next === view) return;
@@ -116,7 +121,7 @@ export default function DesktopHub(props: DesktopHubProps) {
       onTimeUpdate={radio.onTimeUpdate}
       onLoadedMetadata={radio.onTimeUpdate} />
     <DeskCanvas>
-      <div ref={scene} className="desk-scenery" aria-hidden={view !== 'desk' || undefined}>
+      <div ref={scene} className="desk-scenery" data-sky-phase={skyPhase} data-sky-mood={skyMood} aria-hidden={view !== 'desk' || undefined}>
         <DeskSpriteScene
           moving={moving}
           syncing={props.syncing}

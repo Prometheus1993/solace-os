@@ -10,6 +10,7 @@ import { examBestGrade, examNeedsResit, examPassed, examYearAverage, type YearAv
 import { nextVolumeToBuy, seriesCaughtUp, seriesFinished, seriesOwnedCount, seriesReadCount, totalSpent, volumePricePaid } from '../domain/series.ts';
 import { addDaysIso, diffDays, isoWeekStart, withinWindow } from '../domain/dates.ts';
 import { round1 } from '../domain/math.ts';
+import type { Sky } from '../domain/sky.ts';
 import { buildWeeklyReport, type WeeklyReport } from './weekly-report.ts';
 import { reconcileShoeMileage } from '../conventions/shoe-mileage.ts';
 import {
@@ -173,6 +174,8 @@ export interface DashboardDTO {
   /** School tasks & deadlines (SCHOOL TERM): open by deadline asc, then done. */
   schoolTasks: DashboardSchoolTask[];
   lifeSimSummary: LifeSimSummary;
+  /** Sun times + current weather for the desk (additive). null when disabled or Open-Meteo was unreachable. */
+  sky: Sky | null;
   /** How far behind ingestion is, so a silent sync gap is visible (not just a lowered
    * confidence word buried in the readiness rationale). See `computeDataFreshness`. */
   dataFreshness: DataFreshness;
@@ -329,6 +332,7 @@ export interface DashboardInput {
   purchaseItems: PurchaseItem[];
   exams: Exam[];
   schoolTasks: SchoolTask[];
+  sky?: Sky | null;
 }
 
 /** Build the Vitals trend series from weigh-ins + recovery days (chronological, last ~45 points). */
@@ -683,6 +687,7 @@ export function buildDashboard(input: DashboardInput): DashboardDTO {
     missions: missionsView,
     schoolTasks: schoolTasksView,
     lifeSimSummary,
+    sky: input.sky ?? null,
     dataFreshness,
   };
 }

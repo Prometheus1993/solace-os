@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import type { Clock, UnixSeconds } from '@solace/core';
-import { LegacyDbError, isDemoEnv, migrate, openDatabase, OpenMeteoClient, resolveDbPath, SqliteRepository } from '@solace/data';
+import { createSkySource, LegacyDbError, isDemoEnv, migrate, openDatabase, OpenMeteoClient, resolveDbPath, skyLocation, SqliteRepository } from '@solace/data';
 import { createSerializer, type Deps } from './deps.ts';
 import { dispatch, isLoopbackBind, mergeRoutes } from './http.ts';
 import { archivesRoutes } from './routes/archives.ts';
@@ -25,10 +25,13 @@ try {
 }
 
 // Demo mode (`npm run demo`): resolveDbPath pins data/demo.sqlite; sync is disabled; the user's own Google Books key
-// and price table never leak in (the demo uses the made-up example price table).
+// and price table never leak in (the demo uses the made-up example price table), and the desk sky uses the
+// default location instead of the user's own.
 const demo = isDemoEnv();
 if (demo) {
   delete process.env['GOOGLE_BOOKS_API_KEY'];
+  delete process.env['SOLACE_LAT'];
+  delete process.env['SOLACE_LON'];
   process.env['SOLACE_PRICE_TABLE'] = resolve(process.cwd(), 'config', 'price-table.example.json');
 }
 
@@ -57,9 +60,11 @@ const clock: Clock = {
 };
 
 const weather = new OpenMeteoClient(repo);
+const location = skyLocation();
+const sky = location ? createSkySource(() => weather.getSky(location.lat, location.lon), clock) : () => Promise.resolve(null);
 const serialize = createSerializer();
 const sync = createSyncRunner({ repo, clock, weather, serialize, doSync: demo ? demoSyncDisabled : undefined });
-const deps: Deps = { repo, clock, weather, serialize, sync };
+const deps: Deps = { repo, clock, weather, sky, serialize, sync };
 const routes = mergeRoutes(trainingRoutes(deps), examRoutes(deps), schoolTaskRoutes(deps), archivesRoutes(deps), strengthRoutes(deps));
 
 const exposed = !isLoopbackBind(HOST);

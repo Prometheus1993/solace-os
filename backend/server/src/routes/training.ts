@@ -4,11 +4,11 @@ import { BadRequest, json, jsonBody, type Routes } from '../http.ts';
 import { goalField, isoOf, num, str } from '../validate.ts';
 
 /** The dashboard DTO plus everything that feeds the stat tracks: Garmin sync, weigh-ins, goals. */
-export function trainingRoutes({ repo, clock, serialize, sync }: Deps): Routes {
+export function trainingRoutes({ repo, clock, serialize, sync, sky }: Deps): Routes {
   return {
     '/api/dashboard': {
       GET: async ({ res }) => {
-        const dto = await assembleDashboard(repo, clock);
+        const dto = await assembleDashboard(repo, clock, await sky());
         if (dto) json(res, 200, dto);
         else json(res, 503, { error: 'Not seeded — drop your export files to begin.' });
       },
@@ -21,7 +21,7 @@ export function trainingRoutes({ repo, clock, serialize, sync }: Deps): Routes {
         const out = await sync.run(); // a non-Garmin error propagates to dispatch (logged, generic 500)
         if (out.state === 'busy') return json(res, 409, { ok: false, error: 'busy', message: 'A Garmin sync is already running.' });
         if (out.state === 'failed') return json(res, 200, { ok: false, error: out.kind, message: out.message });
-        json(res, 200, { ok: true, summary: out.summary, dashboard: await assembleDashboard(repo, clock) });
+        json(res, 200, { ok: true, summary: out.summary, dashboard: await assembleDashboard(repo, clock, await sky()) });
       },
     },
 

@@ -1,10 +1,13 @@
-import type { RunInput } from '@solace/core';
-import { describe, expect, it } from 'vitest';
+import { fixedClock, type Clock, type RunInput, type UnixSeconds } from '@solace/core';
+import { describe, expect, it, vi } from 'vitest';
 import {
   backfillRunWeather,
+  createSkySource,
+  DEFAULT_SKY_LOCATION,
   migrate,
   openDatabase,
   OpenMeteoClient,
+  skyLocation,
   SqliteRepository,
   type FetchLike,
 } from '../src/index.ts';
@@ -94,5 +97,105 @@ describe('backfillRunWeather', () => {
     expect(gpsRun?.correctedTemperatureC).toBe(26); // apparent at 14:00 = 24 + 2
     expect(updated.find((r) => r.id === noGps.id)?.temperatureSource).toBe('none');
     db.close();
+  });
+});
+
+describe('OpenMeteoClient.getSky', () => {
+  const client = (fetchFn: FetchLike) => {
+    const db = openDatabase(':memory:');
+    migrate(db);
+    return new OpenMeteoClient(new SqliteRepository(db), { fetchFn });
+  };
+  const forecast = { current: { weather_code: 61 }, daily: { sunrise: [1_794_380_000], sunset: [1_794_413_000] } };
+
+  it('reads sunrise, sunset and the current weather code from the forecast API', async () => {
+    const urls: string[] = [];
+    const sky = await client(async (url) => {
+      urls.push(url);
+      return { ok: true, status: 200, json: async () => forecast };
+    }).getSky(51.22, 4.4);
+    expect(sky).toEqual({ sunrise: 1_794_380_000, sunset: 1_794_413_000, weatherCode: 61 });
+    expect(urls).toHaveLength(1);
+    expect(urls[0]).toContain('https://api.open-meteo.com/v1/forecast?latitude=51.22&longitude=4.4&');
+    expect(urls[0]).toContain('current=weather_code');
+    expect(urls[0]).toContain('daily=sunrise,sunset');
+    expect(urls[0]).toContain('timeformat=unixtime');
+  });
+
+  it('throws on a non-200 and on a response without the fields', async () => {
+    await expect(client(async () => ({ ok: false, status: 503, json: async () => ({}) })).getSky(51.22, 4.4)).rejects.toThrow('503');
+    await expect(client(async () => ({ ok: true, status: 200, json: async () => ({ current: {} }) })).getSky(51.22, 4.4)).rejects.toThrow('no sun times');
+  });
+});
+
+describe('createSkySource (30-minute in-memory cache, injected clock)', () => {
+  const reading = { sunrise: 100 as UnixSeconds, sunset: 200 as UnixSeconds, weatherCode: 3 };
+  const tickingClock = () => {
+    const state = { now: 1_000_000 };
+    const clock: Clock = { ...fixedClock(0, '2026-11-11'), now: () => state.now as UnixSeconds };
+    return { state, clock };
+  };
+
+  it('reads once, serves the cache for 30 minutes, then reads again', async () => {
+    const { state, clock } = tickingClock();
+    let reads = 0;
+    const sky = createSkySource(async () => ({ ...reading, weatherCode: ++reads }), clock);
+
+    expect(await sky()).toEqual({ ...reading, weatherCode: 1, fetchedAt: 1_000_000 });
+    state.now += 30 * 60 - 1;
+    expect(await sky()).toEqual({ ...reading, weatherCode: 1, fetchedAt: 1_000_000 });
+    expect(reads).toBe(1);
+    state.now += 1;
+    expect(await sky()).toEqual({ ...reading, weatherCode: 2, fetchedAt: 1_000_000 + 30 * 60 });
+    expect(reads).toBe(2);
+  });
+
+  it('shares one read between concurrent callers', async () => {
+    const { clock } = tickingClock();
+    let reads = 0;
+    const sky = createSkySource(async () => {
+      reads++;
+      return reading;
+    }, clock);
+    const [a, b] = await Promise.all([sky(), sky()]);
+    expect(a).toEqual(b);
+    expect(reads).toBe(1);
+  });
+
+  it('a failed read gives null instead of throwing and is retried after 5 minutes', async () => {
+    const { state, clock } = tickingClock();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    let reads = 0;
+    const sky = createSkySource(async () => {
+      if (++reads === 1) throw new Error('offline');
+      return reading;
+    }, clock);
+
+    expect(await sky()).toBeNull();
+    state.now += 5 * 60 - 1;
+    expect(await sky()).toBeNull();
+    expect(reads).toBe(1);
+    state.now += 1;
+    expect(await sky()).toEqual({ ...reading, fetchedAt: 1_000_000 + 5 * 60 });
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+  });
+});
+
+describe('skyLocation', () => {
+  it('defaults to Antwerp, takes SOLACE_LAT + SOLACE_LON, and SOLACE_SKY=0 turns it off', () => {
+    expect(skyLocation({})).toEqual({ lat: 51.22, lon: 4.4 });
+    expect(skyLocation({ SOLACE_LAT: '48.86', SOLACE_LON: '2.35' })).toEqual({ lat: 48.86, lon: 2.35 });
+    expect(skyLocation({ SOLACE_LAT: '0', SOLACE_LON: '0' })).toEqual({ lat: 0, lon: 0 });
+    expect(skyLocation({ SOLACE_SKY: '0', SOLACE_LAT: '48.86', SOLACE_LON: '2.35' })).toBeNull();
+  });
+
+  it('falls back to the default (with a warning) when the pair is incomplete or out of range', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    expect(skyLocation({ SOLACE_LAT: '48.86' })).toEqual(DEFAULT_SKY_LOCATION);
+    expect(skyLocation({ SOLACE_LAT: 'north', SOLACE_LON: '2.35' })).toEqual(DEFAULT_SKY_LOCATION);
+    expect(skyLocation({ SOLACE_LAT: '91', SOLACE_LON: '2.35' })).toEqual(DEFAULT_SKY_LOCATION);
+    expect(warn).toHaveBeenCalledTimes(3);
+    warn.mockRestore();
   });
 });
