@@ -18,21 +18,23 @@ trademarks belong to their owners, and none of those names is used as the name o
 ![The start screen](docs/screenshots/start.png)
 
 ![The desk](docs/screenshots/desk.png)
-![COMBAT](docs/screenshots/combat.png)
-![ARCHIVES](docs/screenshots/archives.png)
+![BODY](docs/screenshots/body.png)
+![SHELF](docs/screenshots/shelf.png)
 
 You start on a "jack in" start screen. After you enter you land on your desk: a desk above a city, with tools you can
 open (school, terminal, library, biomonitor, Garmin sync, gym log, radio, scratchpad, small companions). You customise the
-desk yourself, and your key stats stay visible in a footer bar. From the desk you reach the main areas:
+desk yourself, and your key stats stay visible in a footer bar. From the desk you reach the main areas (the whole app is
+one dark style, there is no theme switch; the links `#desk`, `#body`, `#study` and `#shelf` open them, and the old
+`#home`, `#training`, `#school` and `#archives` links still work):
 
-- **COMBAT** (training)
+- **BODY** (training)
   - **STATUS**: your three stats, readiness (`go_hard` / `go_easy` / `rest`) and a weekly report (last week vs the week before).
   - **RUNS**: imported runs with heart-rate zones, pace, weather and shoe mileage.
   - **STRENGTH**: log gym sessions in a form (reps x kg, or seconds for holds like a plank); per-lift points for bench,
     squat and sumo deadlift.
   - **VITALS**: HRV, sleep, resting heart rate, Body Battery and weight, plus your goals (goal weight, body fat %, pace, weekly km).
-- **MISSIONS**: exams (Belgian /20 scale, resits, deliberation) and school tasks.
-- **ARCHIVES**: books and manga as Series, Volume, Copy and Purchase, with per-volume ownership and read status,
+- **STUDY**: exams (Belgian /20 scale, resits, deliberation) and school tasks.
+- **SHELF**: books and manga as Series, Volume, Copy and Purchase, with per-volume ownership and read status,
   box-set purchases and price estimates from a price table.
 
 On top of the training data sits a game-like stat layer: STAMINA, STRENGTH and LEANNESS (0 to 100), a daily readiness
