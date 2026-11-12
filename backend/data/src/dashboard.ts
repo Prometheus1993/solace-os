@@ -1,13 +1,13 @@
-import { buildDashboard, type Clock, type DashboardDTO, type Repository } from '@solace/core';
+import { buildDashboard, type Clock, type DashboardDTO, type Repository, type Sky } from '@solace/core';
 import { scoredStrengthSets } from './queries.ts';
 
 /**
  * The single read-only query the UI calls: assemble the whole dashboard
  * DTO from the repository. This is the UI contract — the React app in frontend/
  * imports DashboardDTO and renders it, with no other coupling. Returns
- * null when the DB hasn't been seeded.
+ * null when the DB hasn't been seeded. `sky` (fetched by the server, see weather/sky.ts) is passed through as-is.
  */
-export async function assembleDashboard(repo: Repository, clock: Clock): Promise<DashboardDTO | null> {
+export async function assembleDashboard(repo: Repository, clock: Clock, sky: Sky | null = null): Promise<DashboardDTO | null> {
   const config = await repo.getAthleteConfig();
   if (!config) return null;
 
@@ -45,5 +45,6 @@ export async function assembleDashboard(repo: Repository, clock: Clock): Promise
     purchaseItems,
     exams,
     schoolTasks,
+    sky,
   });
 }

@@ -49,6 +49,7 @@ beforeAll(async () => {
       PORT: String(port),
       HOST: '127.0.0.1',
       SOLACE_DB: dbPath,
+      SOLACE_SKY: '0', // no Open-Meteo call from a test
       SOLACE_TEST_WATCH_PIDS: `${process.pid},${process.ppid}`,
     },
     stdio: ['pipe', 'pipe', 'pipe'],

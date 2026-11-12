@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadStoryArt, type StoryArt } from './city-story-art.ts';
-import { trainAt } from './city-story-motion.ts';
-import { drawBuildingLayer, drawCityRoofs } from './city-building-render.ts';
+import { trainGlint } from './desk-light.ts';
+import { nextTrain, startTrain, trainAt, trainGap, type TrainSchedule } from './city-story-motion.ts';
 import '../../styles/components/city-stories.css';
 
-function drawCityStories(context: CanvasRenderingContext2D, art: StoryArt, time: number, width: number, height: number) {
+// Development preview: `?train=fast` in the page URL sends a train every 5 seconds instead of every 3-6 minutes.
+const fastTrain = import.meta.env.DEV && new URLSearchParams(window.location.search).get('train') === 'fast';
+const trainWait = () => fastTrain ? 5 : trainGap(Math.random);
+
+/** Draws the train for this scene time and returns its flight (null between passes). */
+function drawCityStories(context: CanvasRenderingContext2D, art: StoryArt, train: TrainSchedule, time: number, width: number, height: number) {
   context.clearRect(0, 0, width, height);
-  drawBuildingLayer(context, art, 'far', width, height, time);
-  drawCityRoofs(context, art, width, height, time, 'far');
-  drawBuildingLayer(context, art, 'mid', width, height, time);
-  drawCityRoofs(context, art, width, height, time, 'near');
-  const flight = trainAt(time);
+  const flight = trainAt(train, time);
   const trainArt = flight?.view === 'rear' ? art.trainRear : art.train;
   if (flight && trainArt) {
     const rect = trainArt.frames[0], drawWidth = width * (flight.view === 'rear' ? .09 : .44) * flight.scale;
@@ -20,13 +21,17 @@ function drawCityStories(context: CanvasRenderingContext2D, art: StoryArt, time:
     context.drawImage(trainArt.image, rect.x, rect.y, rect.width, rect.height, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
     context.restore();
   }
-  drawBuildingLayer(context, art, 'front', width, height, time);
+  return flight;
 }
 
-/** One pausable scene clock drives the train and the building animations. */
+/**
+ * The flying train, on one pausable scene clock. Its canvas covers the window glass, between the middle and the near city.
+ * The same pass drives the soft train glow on glass and tabletop (`--glint-x`/`--glint-a` on the room), so there is no second timer.
+ */
 export function CityStories({ moving, onError }: { moving: boolean; onError: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const clock = useRef(0);
+  const train = useRef<TrainSchedule | null>(null);
   const error = useRef(onError); error.current = onError;
   const [art, setArt] = useState<StoryArt | null>(null);
   useEffect(() => {
@@ -38,8 +43,15 @@ export function CityStories({ moving, onError }: { moving: boolean; onError: () 
     const element = canvas.current;
     const context = element?.getContext('2d');
     if (!element || !context || !art) return;
-    let request = 0, previous = 0, lastDraw = 0, width = 0, height = 0;
-    const draw = () => drawCityStories(context, art, clock.current, width, height);
+    let request = 0, previous = 0, lastDraw = 0, width = 0, height = 0, lastGlint = '';
+    const room = element.closest<HTMLElement>('.desk-city');
+    let schedule = train.current ??= startTrain(trainWait(), Math.random);
+    const draw = () => {
+      const glint = trainGlint(drawCityStories(context, art, schedule, clock.current, width, height));
+      const key = `${glint.position.toFixed(1)}/${glint.strength.toFixed(3)}`;
+      if (!room || key === lastGlint) return;
+      lastGlint = key; room.style.setProperty('--glint-x', `${glint.position}%`); room.style.setProperty('--glint-a', String(glint.strength));
+    };
     const resize = () => {
       width = element.clientWidth; height = element.clientHeight;
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -50,6 +62,7 @@ export function CityStories({ moving, onError }: { moving: boolean; onError: () 
     const tick = (now: number) => {
       if (previous) clock.current += Math.min((now - previous) / 1000, .1);
       previous = now;
+      schedule = train.current = nextTrain(schedule, clock.current, trainWait);
       if (now - lastDraw >= 1000 / 30) { draw(); lastDraw = now; }
       request = requestAnimationFrame(tick);
     };

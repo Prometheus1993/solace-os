@@ -22,6 +22,7 @@ export {
   type GarminJsonParse,
 } from './importers/garmin-json-importer.ts';
 export { OpenMeteoClient, type FetchLike, type OpenMeteoOptions } from './weather/open-meteo-client.ts';
+export { createSkySource, skyLocation, DEFAULT_SKY_LOCATION, type SkyLocation, type SkySource } from './weather/sky.ts';
 export {
   searchManga,
   searchMangaByAuthor,

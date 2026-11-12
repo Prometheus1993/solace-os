@@ -1,13 +1,12 @@
 export const DESK_LAYOUT_KEY = 'solace.desk.layout.v1';
 export const DESK_OBJECTS = [
-  ['surface', 'Desk surface'], ['window', 'City window'],
   ['lamp', 'Lamp'], ['books', 'Books'], ['monitor', 'Monitor'], ['keyboard', 'Keyboard'],
   ['mouse', 'Mouse'], ['puck', 'Biomonitor'], ['radio', 'Radio'],
   ['speaker-0', 'Left speaker'], ['speaker-1', 'Right speaker'],
   ['headphones', 'Headphones'], ['notebook', 'Notebook'], ['plant', 'Desk plant'], ['mug', 'Mug'],
   ['hologram', 'Avatar projector'], ['shelf', 'Shelf'], ['figure-one', 'Wayfarer figure'],
   ['figure-two', 'Robot figure'], ['hanging-plant', 'Hanging plant'], ['charm', 'Window charm'], ['pipes', 'Window pipes'],
-  ['companion', 'Floor companion'],
+  ['companion', 'Cat cushion'],
 ] as const;
 export type DeskObjectId = typeof DESK_OBJECTS[number][0];
 export type PropAdjustment = { x: number; y: number; scale: number; hidden?: boolean };

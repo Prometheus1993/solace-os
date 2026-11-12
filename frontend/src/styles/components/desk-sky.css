@@ -1,0 +1,137 @@
+/* Day and night (#17). The desk root carries data-sky-phase and each phase only sets the values below.
+   No art is repainted: the room layers are painted at dusk. The sky gets a colour wash, every city layer its own
+   filter (the far skyline fades most, the near blocks least), and the room light is a filter plus gradients. */
+.desk-scenery[data-sky-phase=dawn] {
+  --sky-tint:#f6c8a473;
+  --sky-far:brightness(1.14) saturate(.6) hue-rotate(14deg);
+  --sky-mid:brightness(1.08) saturate(.75) hue-rotate(10deg);
+  --sky-near:brightness(1.03) saturate(.85) hue-rotate(6deg);
+  --sky-billboard:brightness(1.03) saturate(.85);
+  --sky-lights:.6;
+  --room-light:brightness(.86) saturate(.95);
+  --screen-dim:.95;
+}
+.desk-scenery[data-sky-phase=day] {
+  --sky-tint:#a9d0efd1;
+  --sky-far:brightness(1.38) saturate(.4) hue-rotate(0deg);
+  --sky-mid:brightness(1.26) saturate(.55) hue-rotate(0deg);
+  --sky-near:brightness(1.16) saturate(.68) hue-rotate(0deg);
+  --sky-billboard:brightness(1.16) saturate(.68);
+  --sky-lights:.2;
+  --room-light:brightness(1) saturate(1);
+  --screen-dim:1;
+}
+.desk-scenery[data-sky-phase=dusk] {
+  --sky-tint:#f6c8a400;
+  --sky-far:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-mid:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-near:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-billboard:brightness(1) saturate(1);
+  --sky-lights:1;
+  --room-light:brightness(.8) saturate(.95);
+  --screen-dim:.9;
+}
+.desk-scenery[data-sky-phase=night] {
+  --sky-tint:#060a26d9;
+  --sky-far:brightness(.55) saturate(.8) hue-rotate(8deg);
+  --sky-mid:brightness(.7) saturate(.9) hue-rotate(6deg);
+  --sky-near:brightness(.82) saturate(.95) hue-rotate(4deg);
+  --sky-billboard:brightness(.8) saturate(.95);
+  --sky-lights:1;
+  --room-light:brightness(.62) saturate(.85);
+  --screen-dim:.8;
+}
+.desk-pano-far { filter:var(--sky-far) var(--mood-far); }
+.desk-pano-mid,.desk-city-stories { filter:var(--sky-mid) var(--mood-mid); }
+.desk-pano-near { filter:var(--sky-near) var(--mood-near); }
+.desk-pano-billboard-frame { filter:var(--sky-billboard); }
+.desk-pano-layer,.desk-city-stories { transition:filter 4s ease; }
+/* The sky colour washes over the sky layer only: it sits under the far skyline. */
+.desk-sky-tint { position:absolute; inset:0; background-color:var(--sky-tint); transition:background-color 4s ease; }
+.desk-extra-windows { opacity:var(--sky-lights); transition:opacity 4s ease; }
+/* The room: the window frame, the desk and every prop dim with the daylight, except what is lit by itself (the lamp, an awake monitor). */
+.desk-pano-window,.desk-pano-desk,.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light) var(--mood-room); transition:filter 4s ease; }
+.desk-prop-lamp > .desk-sprite,.desk-prop-monitor[data-awake=true] > .desk-sprite { filter:none; }
+/* Zone lighting (#17). --lamp-level / --screen-level are set on the scene (0 for a hidden lamp or monitor, an asleep monitor);
+   --mood-light scales the light the sources cast; desk-weather.css sets it per weather mood. */
+.desk-prop-lamp > .desk-sprite { filter:var(--room-light) var(--mood-room); }
+.desk-lamp-on { position:absolute; inset:0; opacity:var(--lamp-level); transition:opacity 1.6s cubic-bezier(.25,.6,.3,1); pointer-events:none; }
+.desk-lamp-on > .desk-sprite { filter:none; }
+/* Only the bulb's own bloom; the light on the desk and the props comes from the pools and receiver overlays below. */
+.desk-lamp-glow {
+  position:absolute;
+  left:-120%;
+  top:-40%;
+  width:400%;
+  height:180%;
+  pointer-events:none;
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse 14% 22% at 47% 37%,#ffd9a073,#ffb45c2e 40%,transparent);
+  transition:opacity 1.6s cubic-bezier(.25,.6,.3,1);
+}
+/* Light on a receiver: the same silhouette as its sprite frame (--lit-mask), warm from the lamp and cool from the screen. */
+.desk-lit {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  -webkit-mask:var(--lit-mask) center/contain no-repeat;
+  mask:var(--lit-mask) center/contain no-repeat;
+}
+.desk-prop-books .desk-lit { -webkit-mask-position:bottom center; mask-position:bottom center; }
+.desk-lit > i { position:absolute; inset:0; transition:opacity 1.6s ease; }
+.desk-lit-warm {
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--lit-warm-rx) var(--lit-warm-ry) at var(--lit-warm-x) var(--lit-warm-y),#ffb25cb3,#ff8a3a5c 40%,#ff8a3a1f 70%,transparent);
+}
+.desk-lit-cool {
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--lit-cool-rx) var(--lit-cool-ry) at var(--lit-cool-x) var(--lit-cool-y),#6ee8ecb3,#4fc8d05c 40%,#4fc8d01f 70%,transparent);
+}
+/* Pools on the tabletop, clipped to the desk layer's own shape. */
+.desk-table-light,.desk-train-glint-desk {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  -webkit-mask:var(--desk-mask) 0 0/100% 100% no-repeat;
+  mask:var(--desk-mask) 0 0/100% 100% no-repeat;
+  transition:opacity 1.6s ease;
+}
+.desk-table-warm {
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--pool-warm-rx) var(--pool-warm-ry) at var(--pool-warm-x) var(--pool-warm-y),#ffb25c80,#ff8a3a2e 55%,transparent);
+}
+.desk-table-cool {
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--pool-cool-rx) var(--pool-cool-ry) at var(--pool-cool-x) var(--pool-cool-y),#6ee8ec66,#4fc8d02e 55%,transparent);
+}
+/* Monitor backlight: follows the screen level, so a sleeping display fades its spill with its content. */
+.desk-prop-monitor::before {
+  content:'';
+  position:absolute;
+  left:4%;
+  top:7.5%;
+  width:92%;
+  height:66%;
+  z-index:-1;
+  pointer-events:none;
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  box-shadow:0 0 70px 20px #7fe9e973;
+  transition:opacity 1.6s ease;
+}
+/* The train's glow: one soft band, driven by the real train pass (CityStories). Off with MOTION OFF, reduced motion and the editor. */
+.desk-city { --glint-a:0; --glint-x:0%; }
+.desk-train-glint {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:var(--glint-a);
+  background:linear-gradient(104deg,transparent,#cfe4ff,transparent) no-repeat;
+  background-size:22% 100%;
+  background-position:var(--glint-x) 0;
+}
+.desk-train-glint-desk { opacity:calc(var(--glint-a)*.6); transition:none; }
+.desktop-sprite-hub[data-motion=false] .desk-train-glint { opacity:0; }
+.desktop-sprite-hub[data-motion=false] :is(.desk-pano-layer,.desk-city-stories,.desk-sky-tint,.desk-extra-windows,.desk-sprite,.desk-cat canvas,.desk-lamp-glow,.desk-lamp-on,.desk-lit > i,.desk-table-light),
+.desktop-sprite-hub[data-motion=false] .desk-prop-monitor::before { transition:none; }

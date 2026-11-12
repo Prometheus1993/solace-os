@@ -40,3 +40,11 @@
   .te-folders button { flex-shrink:0; width:auto; white-space:nowrap; }
   .te-content .str-log-set { grid-template-columns:18px minmax(0,1fr) minmax(0,1fr) 32px 32px; }
 }
+/* Terminal polish (#17): a short folder entrance, a steady active dot and a one-off save flash. Nothing moves while typing. */
+.te-content > section:not([hidden]) { animation:te-enter 180ms ease-out; }
+.te-active { display:inline-block; width:6px; height:6px; margin-left:10px; border-radius:50%; background:#7fe9e9; opacity:.7; vertical-align:middle; }
+.te-receipt { font-weight:inherit; }
+.te-receipt[data-confirmed=true] { animation:te-saved 1.2s ease-out; }
+@keyframes te-enter { from { opacity:0; transform:translateY(4px); } }
+@keyframes te-saved { from { background:#7fe9e933; } }
+@media (prefers-reduced-motion:reduce) { .te-content > section:not([hidden]),.te-receipt[data-confirmed=true] { animation:none; } }

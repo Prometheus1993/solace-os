@@ -66,11 +66,11 @@ describe('desk layout adjustments', () => {
     expect(layout.lamp).toEqual({ x: 0, y: 0, scale: 1 });
     expect(encodeDeskLayout(layout)).not.toMatch(/cozy|neon|sprite/);
   });
-  it('saves and resets structural sizes independently of props', () => {
-    const layout = adjustProp(adjustProp({}, 'surface', { scale: 1.3, y: 2 }), 'window', { scale: 1.15, x: -2 });
-    expect(decodeDeskLayout(encodeDeskLayout(layout))).toEqual(layout);
-    expect(resetProp(layout, 'surface').window).toEqual(layout.window);
-    expect(resetProp(layout, 'surface').surface).toBeUndefined();
+  it('loads a layout saved before the window and the desk became fixed, keeping every prop adjustment', () => {
+    const saved = '{"version":1,"props":{"surface":{"x":0,"y":2,"scale":1.3},"window":{"x":-2,"y":0,"scale":1.15,"hidden":true},"lamp":{"x":3,"y":2,"scale":1.1},"companion":{"x":-6,"y":0,"scale":1.2,"hidden":true}}}';
+    expect(decodeDeskLayout(saved)).toEqual({ lamp: { x: 3, y: 2, scale: 1.1 }, companion: { x: -6, y: 0, scale: 1.2, hidden: true } });
+    expect(DESK_OBJECTS.map(([id]) => id as string)).not.toContain('surface');
+    expect(DESK_OBJECTS.map(([id]) => id as string)).not.toContain('window');
   });
   it('keeps existing arrangements when a floor companion is added to the editor', () => {
     const old = decodeDeskLayout('{"version":1,"props":{"monitor":{"x":4,"y":-2,"scale":0.8}}}');

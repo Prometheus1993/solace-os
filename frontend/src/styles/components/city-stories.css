@@ -1,2 +1,2 @@
-/* Inside the resizable window, behind foreground buildings. No railway or hover movement. */
-.desk-city-stories { display:block; position:absolute; inset:0; width:100%; height:100%; z-index:2; pointer-events:none; image-rendering:pixelated; }
+/* Covers the window glass, between the middle and the near city layer. */
+.desk-city-stories { display:block; position:absolute; inset:0; width:100%; height:100%; pointer-events:none; image-rendering:pixelated; }

@@ -1,17 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { DESK_CANVAS, fitDeskCanvas, logicalSelectionBox } from './desk-canvas.ts';
+import { DESK_CANVAS, DESK_SAFE, fitDeskCanvas, logicalSelectionBox } from './desk-canvas.ts';
 import { dragAdjustment } from './desk-layout-state.ts';
 
 describe('fixed desk canvas', () => {
-  it.each([[1440, 700], [2560, 1250], [3440, 1200], [400, 550], [700, 260]])('fits %sx%s without cropping or distorting the scene', (width, height) => {
+  it.each([[1280, 800], [1440, 900], [1024, 640]])('fills a 16:10 viewport of %sx%s exactly', (width, height) => {
     const fit = fitDeskCanvas(width, height);
-    expect(fit.width).toBeLessThanOrEqual(width + 1e-8);
-    expect(fit.height).toBeLessThanOrEqual(height + 1e-8);
+    expect(fit.width).toBeCloseTo(width);
+    expect(fit.height).toBeCloseTo(height);
+  });
+  it('covers a 1920x1080 viewport and crops only sky at the top', () => {
+    const fit = fitDeskCanvas(1920, 1080);
+    expect(fit.width).toBeCloseTo(1920);
+    expect(DESK_CANVAS.height - 1080 / fit.scale).toBeCloseTo(100);
+  });
+  it.each([[1280, 800], [1440, 900], [1920, 1080], [1024, 768], [1366, 768], [1440, 700], [2560, 1250], [3440, 1200], [400, 550], [700, 260]])('keeps the safe part of the scene in view at %sx%s without distorting it', (width, height) => {
+    const fit = fitDeskCanvas(width, height);
     expect(fit.width / fit.height).toBeCloseTo(DESK_CANVAS.width / DESK_CANVAS.height);
-    expect(Math.min(width - fit.width, height - fit.height)).toBeCloseTo(0);
+    expect(width / fit.scale).toBeGreaterThanOrEqual(DESK_SAFE.width - 1e-8);
+    expect(height / fit.scale).toBeGreaterThanOrEqual(DESK_SAFE.height - 1e-8);
+    // Bars appear only where filling the viewport would crop the safe part.
+    const covers = fit.width >= width - 1e-8 && fit.height >= height - 1e-8;
+    const atLimit = Math.abs(width / fit.scale - DESK_SAFE.width) < 1e-8 || Math.abs(height / fit.scale - DESK_SAFE.height) < 1e-8;
+    expect(covers || atLimit).toBe(true);
   });
   it('preserves object coordinates and proportions between laptop and large monitor', () => {
-    const laptop = fitDeskCanvas(1440, 700), monitor = fitDeskCanvas(2560, 1250);
+    const laptop = fitDeskCanvas(1440, 900), monitor = fitDeskCanvas(2560, 1600);
     const object = { x: .42, y: .67, width: .22 };
     for (const fit of [laptop, monitor]) {
       expect(object.x * fit.width / fit.scale).toBeCloseTo(object.x * DESK_CANVAS.width);

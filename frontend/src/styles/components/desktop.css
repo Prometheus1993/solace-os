@@ -28,7 +28,7 @@
 .desktop-hub:not(.desk-view-desk)::after { opacity:1; }
 .desk-stage { position:absolute; }
 .desk-scenery { position:absolute; inset:0; transition:transform 680ms cubic-bezier(.2,.75,.2,1),filter 680ms; }
-.desktop-hub[data-origin=books] .desk-scenery { transform-origin:23% 65%; }
+.desktop-hub[data-origin=books] .desk-scenery { transform-origin:18% 87%; }
 .desktop-hub:not(.desk-view-desk) .desk-scenery { transform:scale(1.28); filter:brightness(.8); }
 .desk-city { --city-play:running; position:absolute; pointer-events:none; }
 /* Local, low-opacity light and fog retain the authored pixel silhouettes. */
@@ -85,19 +85,21 @@
 .desk-distant-traffic i:nth-child(2) { top:33%; animation-delay:-5s; animation-direction:reverse; }
 .desk-distant-traffic i:nth-child(3) { top:17%; animation-delay:-48s; }
 @keyframes desk-distant { from { left:100%; } to { left:-15%; } }
-.desk-rain { position:absolute; opacity:.45; }
-.desk-rain i {
-  position:absolute;
-  top:0;
-  height:7%;
-  width:1px;
-  background:linear-gradient(transparent,#b5def570,transparent);
-  animation-duration:var(--rain-duration);
-  animation-delay:var(--rain-delay);
-  animation-timing-function:linear;
-  animation-iteration-count:infinite;
-}
-.desk-monitor { position:absolute; display:flex; align-items:center; overflow:hidden; color:#9eeeee; }
+.desk-monitor { position:absolute; display:flex; align-items:center; overflow:hidden; color:#9eeeee; opacity:var(--screen-dim,1); }
+/* Decoration only: clock, cursor, wake line and ambient lines never take pointer events and live outside the TERMINAL control. */
+.desk-monitor-clock,.desk-monitor-ambient,.desk-monitor-boot { position:absolute; right:3%; letter-spacing:.12em; pointer-events:none; font-size:clamp(6px,1.4cqw,10px); }
+.desk-monitor-clock { top:5%; opacity:.7; }
+.desk-monitor-ambient,.desk-monitor-boot { bottom:5%; opacity:.5; }
+.desk-cursor { display:inline-block; width:.55em; height:1em; margin-left:.5em; vertical-align:-.12em; background:currentColor; opacity:.8; }
+.desk-monitor-boot { display:none; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor { animation:desk-screen-wake 1.4s ease-out; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor-boot { display:block; animation:desk-screen-boot 3s ease-out both; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor-ambient { animation:desk-screen-line 5s ease-in-out both; }
+.desktop-sprite-hub[data-motion=true] .desk-cursor { animation:desk-cursor 1.6s steps(1) infinite; }
+@keyframes desk-screen-wake { from { opacity:0; } 35% { opacity:calc(var(--screen-dim,1)*.5); } }
+@keyframes desk-screen-boot { 0%,70% { opacity:.6; } to { opacity:0; } }
+@keyframes desk-screen-line { 0%,100% { opacity:0; } 20%,80% { opacity:.5; } }
+@keyframes desk-cursor { 50% { opacity:.1; } }
 .desk-monitor-caption,.desk-monitor-footer { position:absolute; left:3%; letter-spacing:.12em; opacity:.7; pointer-events:none; }
 .desk-monitor-caption { top:5%; }.desk-monitor-footer { bottom:5%; }
 .desk-folders { display:flex; align-items:center; justify-content:space-evenly; gap:2%; }
@@ -273,7 +275,7 @@
   .desk-header nav button { flex:1; border-bottom-color:#5d626e; }
   .desk-settings { margin-left:auto; }
   .desk-settings button { font-size:9px; min-height:40px; }
-  .desk-monitor-caption,.desk-monitor-footer { display:none; }
+  .desk-monitor-caption,.desk-monitor-footer,.desk-monitor-clock,.desk-monitor-ambient,.desktop-sprite-hub .desk-monitor-boot { display:none; }
   .desk-signals { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .desk-surface-header { padding:10px 12px; gap:8px; }
   .desk-surface-header small { font-size:8px; letter-spacing:.03em; }
@@ -312,7 +314,7 @@
   .desk-scenery,.desktop-hub::after,.desk-signals i > i { transition:none; }
   .desktop-hub:not(.desk-view-desk) .desk-scenery { transform:none; }
   .desk-surface { animation:desk-fade 100ms both; }
-  .desk-flight,.desk-distant-traffic i,.desk-rain i { animation-play-state:paused!important; }
+  .desk-flight,.desk-distant-traffic i { animation-play-state:paused!important; }
   @keyframes desk-fade { from { opacity:0; } to { opacity:1; } }
 }
 @media(prefers-reduced-motion:reduce) { .desktop-hub .desk-city { --city-play:paused; } }

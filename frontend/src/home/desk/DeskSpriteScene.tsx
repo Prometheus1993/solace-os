@@ -1,34 +1,44 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import type { DayPhase, WeatherMood } from '@solace/core';
 import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
 import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
-import { Icon } from '../icons.tsx';
 import type { AvatarMood } from './avatar-state.ts';
 import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
+import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
+import { WeatherFx } from './WeatherFx.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
+import { catLight, lightLevels, poolVars, receiverVars, type ReceiverId } from './desk-light.ts';
+import { MonitorScreen } from './MonitorScreen.tsx';
+import { carLaneCount } from './city-story-motion.ts';
 import type { DeskRadio } from './DeskPersonalTools.tsx';
 import { deskAsset as asset } from './desk-assets.ts';
 import { DeskLayoutHandles, type DeskLayoutControl } from './DeskLayoutEditor.tsx';
 
 export const hasDeskSprites = [
-  'desk-city-far',
-  'desk-surface',
+  'desk-pano-sky',
+  'desk-pano-far',
+  'desk-pano-mid',
+  'desk-pano-billboard-frame',
+  'desk-pano-near',
+  'desk-pano-window',
+  'desk-pano-desk',
   'desk-monitor-atlas',
   'desk-books-atlas',
   'desk-puck-atlas',
-  'desk-window-frame',
   'desk-keyboard-mouse-atlas',
-  'desk-lamp'
+  'desk-lamp-atlas'
 ].every(name => !!asset(name));
+// `rank`: lanes below the current car density (carLaneCount) carry traffic, so a quiet hour keeps one car per depth.
 const LANES = [
-  { top: '15%', size: '3.4%', duration: '49s', delay: '-27s', direction: 'reverse', depth: 'far' },
-  { top: '29%', size: '2.4%', duration: '67s', delay: '-41s', direction: 'normal', depth: 'far' },
-  { top: '42%', size: '4.8%', duration: '38s', delay: '-8s', direction: 'normal', depth: 'far' },
-  { top: '61%', size: '7%', duration: '31s', delay: '-19s', direction: 'normal', depth: 'middle' },
-  { top: '74%', size: '9%', duration: '27s', delay: '-2s', direction: 'reverse', depth: 'middle' },
-  { top: '32%', size: '12%', duration: '43s', delay: '-31s', direction: 'normal', depth: 'near' },
+  { rank: 2, top: '15%', size: '3.4%', duration: '49s', delay: '-27s', direction: 'reverse', depth: 'far' },
+  { rank: 4, top: '29%', size: '2.4%', duration: '67s', delay: '-41s', direction: 'normal', depth: 'far' },
+  { rank: 0, top: '42%', size: '4.8%', duration: '38s', delay: '-8s', direction: 'normal', depth: 'far' },
+  { rank: 5, top: '61%', size: '7%', duration: '31s', delay: '-19s', direction: 'normal', depth: 'middle' },
+  { rank: 1, top: '74%', size: '9%', duration: '27s', delay: '-2s', direction: 'reverse', depth: 'middle' },
+  { rank: 3, top: '32%', size: '12%', duration: '43s', delay: '-31s', direction: 'normal', depth: 'near' },
 ] as const;
 
 /** Pointer-hover and keyboard-focus both drive one boolean (a hovered prop swaps to its lit frame). */
@@ -36,8 +46,8 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
-  moving: boolean; syncing: boolean; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
   onOpen: (view: 'terminal' | 'library' | 'signals' | 'radio' | 'scratchpad') => void; onLoad: () => void; onError: () => void;
@@ -51,6 +61,13 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
     () => { if (!reaction) return; const timer = window.setTimeout(() => setReaction(''), 2400); return () => window.clearTimeout(timer); },
     [reaction]
   );
+  const levels = lightLevels(skyPhase, layout.values, awake);
+  const sceneLight = useMemo(() => catLight(layout.values, levels), [layout.values, levels.lamp, levels.screen]);
+  const sceneStyle = {
+    '--lamp-level': levels.lamp, '--screen-level': levels.screen, '--desk-mask': `url(${asset('desk-pano-desk')})`, ...poolVars(layout.values),
+  } as CSSProperties;
+  // A light receiver carries its own warm and cool ellipses (percentages of its box) on top of its layout transform.
+  const lit = (id: ReceiverId) => { const prop = layout.prop(id); return { ...prop, style: { ...prop.style, ...receiverVars(id, layout.values) } }; };
   const propSprite = (id: DeskObjectId, state?: number) => <DeskObjectSprite id={id} state={state} onError={onError} />;
   const accessory = (frame: number, name: string) => <DeskSprite
     src={asset('desk-accessories-atlas')}
@@ -60,15 +77,22 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
     frame={frame}
     name={name}
     onError={onError} />;
+  const panoLayer = (name: string, loaded?: () => void) => <img
+    className={`desk-pano-layer desk-pano-${name}`}
+    src={asset(`desk-pano-${name}`)}
+    alt=""
+    draggable={false}
+    onLoad={loaded}
+    onError={onError} />;
   useEffect(() => {
     if (!moving || !syncing) return;
     const timer = window.setInterval(() => setPhase(previous => previous + 1), 650);
     return () => window.clearInterval(timer);
   }, [moving, syncing]);
   const car = asset('cyberpunk-hovercar');
-  const flightLanes = (near: boolean) => car && LANES.filter(lane => (lane.depth === 'near') === near).map((lane, index) => (
+  const flightLanes = (depth: typeof LANES[number]['depth']) => car && LANES.filter(lane => lane.depth === depth && lane.rank < carLaneCount(skyPhase)).map(lane => (
     <div
-      key={index}
+      key={lane.rank}
       data-direction={lane.direction}
       className={`desk-flight-lane desk-flight-${lane.depth}`}
       style={{
@@ -84,6 +108,7 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
   return <div
     ref={root}
     className="desk-sprite-scene"
+    style={sceneStyle}
     onPointerDownCapture={layout.pointerDown}
     onPointerMoveCapture={layout.pointerMove}
     onPointerUpCapture={layout.pointerUp}
@@ -92,35 +117,46 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
     onClickCapture={layout.suppressClick}
     onFocusCapture={layout.focusProp}
     onKeyDownCapture={layout.keyDown}>
-    <div {...layout.prop('window')} className="desk-prop desk-prop-window-group">
+    {/* The fixed room: seven full-scene layers, bottom to top, with the moving city between them. `desk-glass` = the window opening. */}
     <div className="desk-city" aria-hidden="true">
-      {asset('desk-city-far') && <img className="desk-city-far" src={asset('desk-city-far')} alt="" draggable={false} onLoad={onLoad} onError={onError} />}
-      {asset('desk-city-far') && <img className="desk-city-far desk-city-far-second" src={asset('desk-city-far')} alt="" draggable={false} onError={onError} />}
-      <div className="desk-city-haze desk-haze-far" />
-      <CityStories moving={moving && !layout.values.window?.hidden} onError={onError} />
-      {flightLanes(false)}
-      <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
-      <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
-      <div className="desk-extra-windows">
-        {Array.from(
-          { length: 24 },
-          (_, i) => <i key={i} style={{ left: `${12 + (i * 17) % 76}%`, top: `${21 + (i * 13) % 64}%`, animationDelay: `${-i * 2.3}s` }} />
-        )}
+      {panoLayer('sky', onLoad)}
+      <div className="desk-sky-tint" />
+      {panoLayer('far')}
+      <div className="desk-glass">
+        <div className="desk-city-haze desk-haze-far" />
+        <div className="desk-fog desk-fog-far" />
+        {flightLanes('far')}
+        <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
+        <div className="desk-distant-traffic"><i /><i /><i /></div>
       </div>
-      <div className="desk-city-haze desk-haze-near" />
-      {flightLanes(true)}
-      <div className="desk-distant-traffic"><i /><i /><i /></div>
-      <div className="desk-rain">
-        {Array.from(
-          { length: 18 },
-          (_, index) => <i
-            key={index}
-            style={{ left: `${4 + index * 5.3}%`, '--rain-delay': `${-index * 1.7}s`, '--rain-duration': `${8 + index % 5}s` } as CSSProperties} />
-        )}
+      {panoLayer('mid')}
+      {panoLayer('billboard-frame')}
+      <div className="desk-glass">
+        <div className="desk-fog desk-fog-mid" />
+        <CityStories moving={moving} onError={onError} />
+        <div className="desk-train-glint" />
+        {flightLanes('middle')}
+        <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
+        <div className="desk-extra-windows">
+          {Array.from(
+            { length: 24 },
+            (_, i) => <i key={i} style={{ left: `${12 + (i * 17) % 76}%`, top: `${40 + (i * 13) % 50}%`, animationDelay: `${-i * 2.3}s` }} />
+          )}
+        </div>
       </div>
-      <div className="desk-glass-reflection" />
-    </div>
-    <div className="desk-prop desk-prop-window"><DeskSprite src={asset('desk-window-frame')} name="window frame" onError={onError} /></div>
+      {panoLayer('near')}
+      <div className="desk-glass">
+        <div className="desk-city-haze desk-haze-near" />
+        {flightLanes('near')}
+        <div className="desk-fog desk-fog-near" />
+        <WeatherFx mood={skyMood} moving={moving} still={reduced} />
+        <div className="desk-glass-reflection" />
+      </div>
+      {panoLayer('window')}
+      {panoLayer('desk')}
+      <div className="desk-table-light desk-table-warm" />
+      <div className="desk-table-light desk-table-cool" />
+      <div className="desk-train-glint desk-train-glint-desk" />
     </div>
     <div {...layout.prop('pipes')} className="desk-prop desk-prop-pipes" aria-hidden="true">{propSprite('pipes')}</div>
     <div {...layout.prop('hanging-plant')} className="desk-prop desk-prop-hanging-plant" aria-hidden="true">{propSprite('hanging-plant')}</div>
@@ -142,23 +178,22 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
       {propSprite('figure-two')}
       <span className="desk-prop-label">LITTLE RELAY<small>INSPECT FIGURE</small></span>
     </button>
-    <div {...layout.prop('surface')} className="desk-prop desk-prop-surface">{propSprite('surface')}</div>
-    <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">{propSprite('lamp')}</div>
+    <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">
+      {propSprite('lamp', 0)}
+      <span className="desk-lamp-on">{propSprite('lamp', 1)}</span>
+      <span className="desk-lamp-glow" aria-hidden="true" />
+    </div>
     <button
-      {...layout.prop('books')}
+      {...lit('books')}
       className="desk-prop desk-prop-books"
       aria-label="Open manga and books"
       {...hoverFocus(setBooksHover)}
       onClick={() => onOpen('library')}>
       {propSprite('books', booksHover || view === 'library' ? 1 : 0)}<span className="desk-prop-label">LIBRARY <small>MANGA + BOOKS</small></span>
     </button>
-    <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor">
+    <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor" data-awake={awake}>
       {propSprite('monitor', awake ? 1 : 0)}
-      {awake ? <div className="desk-monitor">
-        <span className="desk-monitor-caption">PERSONAL / ONLINE</span>
-        <div className="desk-folders"><button onClick={() => onOpen('terminal')}><Icon name="folder" size={40} /><span>TERMINAL</span></button></div>
-        <span className="desk-monitor-footer">YOUR FILES. YOUR PACE.</span>
-      </div> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
+      {awake ? <MonitorScreen moving={moving} onOpenTerminal={() => onOpen('terminal')} /> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
       <button
         className="desk-monitor-power"
         aria-label={awake ? 'Put monitor to sleep' : 'Wake monitor'}
@@ -209,7 +244,7 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
       <span className="desk-prop-label">CHANGE FREQUENCY<small>{radio.mood.toUpperCase()} / CLICK TO CYCLE</small></span>
     </button>
     <button
-      {...layout.prop('notebook')}
+      {...lit('notebook')}
       className="desk-prop desk-prop-notebook"
       onClick={() => onOpen('scratchpad')}
       aria-label="Open your saved scratchpad">
@@ -242,8 +277,8 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
         ? 'A little green. Growing at its own pace.'
         : reaction === 'mug' ? 'Coffee break. One slow breath.' : reaction === 'companion' ? 'Your companion perks up and gives a quiet purr.' : ''}
     </span>
-    <div {...layout.prop('keyboard')} className="desk-prop desk-prop-keyboard">{propSprite('keyboard')}</div>
-    <div {...layout.prop('mouse')} className="desk-prop desk-prop-mouse">{propSprite('mouse')}</div>
+    <div {...lit('keyboard')} className="desk-prop desk-prop-keyboard">{propSprite('keyboard')}</div>
+    <div {...lit('mouse')} className="desk-prop desk-prop-mouse">{propSprite('mouse')}</div>
     <button
       {...layout.prop('puck')}
       className="desk-prop desk-prop-puck"
@@ -253,18 +288,15 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
       {propSprite('puck', puckFrame(syncing, puckHover || ['signals', 'sync', 'gym'].includes(view), moving ? phase : 0))}
       <span className="desk-prop-label">BIOMONITOR <small>{syncing ? 'SYNCING…' : 'SIGNALS / SYNC / GYM'}</small></span>
     </button>
-    <button
-      {...layout.prop('companion')}
-      className="desk-prop desk-prop-companion"
-      data-reaction={reaction === 'companion'}
-      onClick={() => setReaction('companion')}
-      aria-label="Pet the resting cyber fox-cat beside your desk">
-      {propSprite('companion', reaction === 'companion' ? 1 : 0)}
-      <span className="desk-prop-label">LITTLE COMPANION<small>
-          {reaction === 'companion' ? 'A QUIET PURR. RIGHT HERE WITH YOU.' : 'RESTING BESIDE YOUR DESK'}
-        </small>
-      </span>
-    </button>
+    <div {...layout.prop('companion')} className="desk-prop desk-prop-companion" aria-hidden="true">{propSprite('companion')}</div>
+    <DeskCat
+      moving={moving}
+      reduced={reduced}
+      layout={layout.values}
+      light={sceneLight}
+      petted={reaction === 'companion'}
+      onPet={() => setReaction('companion')}
+      onError={onError} />
     <DeskLayoutHandles layout={layout} />
   </div>;
 }

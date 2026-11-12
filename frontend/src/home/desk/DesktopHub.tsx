@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
+import { dayPhase, weatherMood } from '@solace/core/domain';
 import { SchoolTasks } from '../../tabs/SchoolTasks.tsx';
 import { StrengthLog } from '../../tabs/StrengthLog.tsx';
 import { TerminalExplorer } from './TerminalExplorer.tsx';
@@ -8,9 +9,13 @@ import { DeckPanel } from './DeckPanel.tsx';
 import { ScannerPanel } from './ScannerPanel.tsx';
 import { SCAN_POINTS, recoveryReading, type ScanMetric } from './scanner-data.ts';
 import { avatarState } from './avatar-state.ts';
+import { forcedSkyPhase } from './desk-sky.ts';
+import { forcedSkyMood } from './desk-weather.ts';
 import '../../styles/components/desk-panels.css';
 import '../../styles/components/desktop.css';
 import '../../styles/components/desktop-sprites.css';
+import '../../styles/components/desk-sky.css';
+import '../../styles/components/desk-weather.css';
 import { DeskSpriteScene, hasDeskSprites } from './DeskSpriteScene.tsx';
 import { CollectiblePanel, RadioPanel, Scratchpad, useDeskRadio } from './DeskPersonalTools.tsx';
 import { DeskLayoutEditor, useDeskLayout } from './DeskLayoutEditor.tsx';
@@ -55,6 +60,7 @@ export default function DesktopHub(props: DesktopHubProps) {
   const [failed, setFailed] = useState(!hasDeskSprites);
   const [visible, setVisible] = useState(() => !document.hidden);
   const [reduced, setReduced] = useState(() => reducedMotionQuery().matches);
+  const [now, setNow] = useState(() => new Date());
   const [ambience, setAmbience] = useState(() => readStored('solace.desk.ambience') !== 'off');
   const scene = useRef<HTMLDivElement>(null);
   const surfaces = useRef<HTMLDivElement>(null);
@@ -65,6 +71,10 @@ export default function DesktopHub(props: DesktopHubProps) {
   const current = SURFACE_LIST.find(item => item.id === view);
   const moving = ambience && visible && !reduced && view === 'desk' && !layout.editing;
   const avatar = avatarState(props.dto);
+  // The sky and room looks hook onto data-sky-phase (desk-sky.css); the weather look hooks onto data-sky-mood (desk-weather.css).
+  const sky = props.dto.sky;
+  const skyPhase = (import.meta.env.DEV ? forcedSkyPhase(window.location.search) : null) ?? dayPhase(now, sky?.sunrise, sky?.sunset);
+  const skyMood = (import.meta.env.DEV ? forcedSkyMood(window.location.search) : null) ?? (sky ? weatherMood(sky.weatherCode) : 'clear');
   const open = (next: View) => {
     if (layout.editing) return;
     if (next === view) return;
@@ -80,6 +90,13 @@ export default function DesktopHub(props: DesktopHubProps) {
     document.addEventListener('visibilitychange', updateVisibility);
     return () => { media.removeEventListener('change', updateMotion); document.removeEventListener('visibilitychange', updateVisibility); };
   }, []);
+  // The phase follows the clock by itself: re-read once a minute, and at once when the page shows again.
+  useEffect(() => {
+    if (!visible) return;
+    setNow(new Date());
+    const timer = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, [visible]);
   useEffect(() => {
     if (scene.current) scene.current.inert = view !== 'desk';
     if (layout.editing) { wasEditing.current = true; return; }
@@ -116,10 +133,13 @@ export default function DesktopHub(props: DesktopHubProps) {
       onTimeUpdate={radio.onTimeUpdate}
       onLoadedMetadata={radio.onTimeUpdate} />
     <DeskCanvas>
-      <div ref={scene} className="desk-scenery" aria-hidden={view !== 'desk' || undefined}>
+      <div ref={scene} className="desk-scenery" data-sky-phase={skyPhase} data-sky-mood={skyMood} aria-hidden={view !== 'desk' || undefined}>
         <DeskSpriteScene
           moving={moving}
+          reduced={reduced}
           syncing={props.syncing}
+          skyPhase={skyPhase}
+          skyMood={skyMood}
           view={view}
           avatar={avatar}
           radio={radio}

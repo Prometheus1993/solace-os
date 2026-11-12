@@ -1,5 +1,5 @@
 import type { Clock } from '@solace/core';
-import type { OpenMeteoClient, SqliteRepository } from '@solace/data';
+import type { OpenMeteoClient, SkySource, SqliteRepository } from '@solace/data';
 import type { SyncRunner } from './sync-runner.ts';
 
 /** What the route modules need. Built once at boot (index.ts) and passed in, so no route opens the DB. */
@@ -7,6 +7,8 @@ export interface Deps {
   repo: SqliteRepository;
   clock: Clock;
   weather: OpenMeteoClient;
+  /** Sun times + current weather for the desk (cached; null when off or unreachable). Never throws. */
+  sky: SkySource;
   /** Run a mutation that recomputes the stat tracks strictly after the previous one finished. */
   serialize: <T>(fn: () => Promise<T>) => Promise<T>;
   /** The one Garmin sync path (the ⟲ SYNC route): busy flag and write queue. */
