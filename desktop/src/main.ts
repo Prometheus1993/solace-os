@@ -6,6 +6,7 @@ import { dirname, join, resolve } from 'node:path';
 import { GARMIN_REAUTH_BODY, isMorning, planNotifications, type MissionDay } from './notifications.ts';
 import { decideStart, decideWebStart, findNode22Bin, isSolaceApi, isSolaceWeb, portsFromEnv, probe, type PortState, type StartDecision } from './services.ts';
 import { parseSettings, type Settings } from './settings.ts';
+import { registerSpotify } from './spotify.ts';
 
 // Solace as a Mac app. This does what start.sh does: it runs the API server and the Vite web UI as child processes
 // from the repo root (on Node 22, so better-sqlite3 needs no rebuild), then shows the web UI in one window.
@@ -224,6 +225,9 @@ async function main(): Promise<void> {
     app.setLoginItemSettings({ openAtLogin: settings.launchAtLogin });
   }
   buildMenu();
+  // .env at the repo root, like the server reads it: here it supplies SOLACE_SPOTIFY_CLIENT_ID (the shell wins over the file).
+  const envFile = join(repoRoot, '.env');
+  if (existsSync(envFile)) process.loadEnvFile(envFile);
 
   try {
     await startServices();
@@ -234,6 +238,7 @@ async function main(): Promise<void> {
     return;
   }
 
+  registerSpotify({ clientId: process.env['SOLACE_SPOTIFY_CLIENT_ID'] || undefined, webPort: ports.web, userData: app.getPath('userData') });
   createWindow();
   if (!globalShortcut.register(SHORTCUT, toggleWindow)) console.error(`[solace] could not register the shortcut ${SHORTCUT}`);
   // The web UI calls this (through preload.cjs) when a Garmin sync answers with the `auth` error.
