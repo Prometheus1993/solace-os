@@ -2,10 +2,10 @@
    Start screen ("jack in"). Scoped under .start-screen; no other area is affected. Uses its own colours so it
    does not depend on the YoRHa theme variables. */
 .start-screen {
-  --ss-red: #ff3545;
-  position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column;
-  background: #050506; color: #c9ccd0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  opacity: 1; transition: opacity 0.18s ease-out;
+  --ss-red: var(--color-red-hot);
+  position: fixed; inset: 0; z-index: var(--z-start); display: flex; flex-direction: column;
+  background: var(--color-void); color: #c9ccd0; font-family: var(--font-mono);
+  opacity: 1; transition: opacity var(--dur-base) ease-out;
 }
 .start-screen.is-leaving { opacity: 0; }
 .start-screen::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px); }
@@ -13,7 +13,7 @@
 .start-screen .ss-bar svg { color: var(--ss-red); }
 .start-screen .ss-term { margin-left: auto; }
 .start-screen .ss-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 clamp(20px, 6vw, 24vw) 6vh; }
-.start-screen .ss-block p { margin: 0 0 6px; font-size: clamp(14px, 1.5vw, 17px); line-height: 1.6; opacity: 0; transition: opacity 0.12s; }
+.start-screen .ss-block p { margin: 0 0 6px; font-size: clamp(14px, 1.5vw, 17px); line-height: 1.6; opacity: 0; transition: opacity var(--dur-fast); }
 .start-screen .ss-block p.is-shown { opacity: 1; }
 .start-screen .ss-block b { font-weight: 400; letter-spacing: 0.16em; color: #e8e8e5; }
 .start-screen .ss-dim { color: #9aa1a8; margin-bottom: 18px !important; }
@@ -28,6 +28,6 @@
 .start-screen .ss-enter:hover .ss-key { color: #c9ccd0; }
 @keyframes ss-blink { 50% { opacity: 0; } }
 @keyframes ss-fade-in { from { opacity: 0; } to { opacity: 1; } }
-.ss-fade-in { animation: ss-fade-in 0.18s ease-out both; }
-.start-screen .ss-enter { transition: transform 0.07s ease-out, filter 0.07s ease-out; }
+.ss-fade-in { animation: ss-fade-in var(--dur-base) ease-out both; }
+.start-screen .ss-enter { transition: transform var(--dur-press) ease-out, filter var(--dur-press) ease-out; }
 .start-screen .ss-enter:active { transform: scale(0.96); filter: brightness(1.6); }

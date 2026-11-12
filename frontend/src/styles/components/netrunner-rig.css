@@ -23,8 +23,8 @@
   right:40px;
   width:28%;
   height:22px;
-  border-top:1px solid #ff7283;
-  border-right:1px solid #ff7283;
+  border-top:1px solid var(--color-magenta);
+  border-right:1px solid var(--color-magenta);
 }
 .te-folders {
   align-self:start;
@@ -33,12 +33,12 @@
   border-top:2px solid #fa465c;
   background:#100f17f7;
   padding:16px 8px;
-  box-shadow:0 16px 35px #0007;
+  box-shadow:var(--shadow-m);
 }
-.te-folders > .te-directory-label { font:600 17px Oxanium,sans-serif; color:#ff8291; margin-bottom:22px; }
+.te-folders > .te-directory-label { font:600 17px var(--font-title); color:#ff8291; margin-bottom:22px; }
 .te-directory-label span {
   display:block;
-  font:12px 'Share Tech Mono',monospace;
+  font:12px var(--font-mono);
   color:#c6b9c1;
   margin-top:8px;
 }
@@ -50,7 +50,7 @@
 }
 .te-folders button small { color:inherit; }
 .te-folders button[aria-current=page] {
-  background:#e94159;
+  background:var(--color-magenta-strong);
   color:#180d15;
   box-shadow:none;
   font-weight:bold;
@@ -61,19 +61,19 @@
 .te-library { display:flex; gap:8px; align-items:center; }
 .te-folders > .te-library { color:#ff8795; }
 .te-nav-note { color:#c5b1bd; padding-top:16px; border-top:1px dashed #66505d; margin-top:22px; }
-.te-workspace { margin-top:22px; background:#100f16; border:1px solid #88606f; border-top:3px solid #ff465d; box-shadow:0 22px 50px #0009; position:relative; }
+.te-workspace { margin-top:22px; background:var(--color-surface-rig); border:1px solid #88606f; border-top:3px solid #ff465d; box-shadow:var(--shadow-l); position:relative; }
 .te-path { background:#261a24; color:#f0b3bf; border-bottom:1px solid #67404e; font-size:12px; padding:11px 16px; }.te-path > span { color:#a7eeeb; }
-.te-content { padding:18px; scrollbar-color:#ae596b #151019; }
+.te-content { padding:18px; scrollbar-color:#ae596b var(--color-base); }
 .te-content .parts-card { background:transparent; border:0; border-top:1px solid #71505c; padding:14px 0; }
 .te-content .parts-card__title-text { color:#ff9cab; font-size:13px; letter-spacing:.1em; }
 .te-content .parts-card__title-dot { background:#ff526c; }
 .te-content .parts-card__divider { background:#49323e; }
 .te-content .yorha-card-row { border-radius:0; background:#201a24; border-color:#4e3543; }
 .te-content .parts-button { border-radius:0; letter-spacing:.06em; }
-.te-content .parts-input { background:#0e0e16; color:#f4eceb; border-color:#765464; }
+.te-content .parts-input { background:var(--color-surface-rig); color:#f4eceb; border-color:#765464; }
 .te-content .parts-input::placeholder { color:#baa8b5; }
-.te-content .str-log-actions { background:#100f16; }
-.te-status { border-color:#805064; color:#b4f1e0; background:#17141e; flex-wrap:wrap; font-size:11px; }.te-status > span { color:#c4afb9; }
+.te-content .str-log-actions { background:var(--color-surface-rig); }
+.te-status { border-color:var(--color-border-rig); color:#b4f1e0; background:#17141e; flex-wrap:wrap; font-size:11px; }.te-status > span { color:#c4afb9; }
 .te-instrument { min-width:0; align-self:start; margin-top:60px; color:#e8dbdf; position:relative; }
 .te-instrument::before {
   content:"";
@@ -101,7 +101,7 @@
   padding:15px;
   box-shadow:0 20px 30px #0006;
 }
-.te-instrument h2 { margin:0 0 17px; font:600 18px Oxanium,sans-serif; color:#ff8f9f; }
+.te-instrument h2 { margin:0 0 17px; font:600 18px var(--font-title); color:#ff8f9f; }
 .te-instrument button {
   display:block;
   width:100%;
@@ -115,19 +115,19 @@
 .te-instrument time {
   display:block;
   color:#ff99ab;
-  font:12px 'Share Tech Mono',monospace;
+  font:12px var(--font-mono);
   margin-bottom:7px;
 }
-.te-instrument strong { display:block; font:600 15px/1.4 system-ui,sans-serif; }
+.te-instrument strong { display:block; font:600 15px/1.4 var(--font-body); }
 .te-instrument button span { display:block; margin-top:7px; color:#d0b5c3; font-size:12px; line-height:1.5; }
-.te-instrument p,.te-instrument label { font:14px/1.5 system-ui,sans-serif; color:#d7c5ce; }
+.te-instrument p,.te-instrument label { font:14px/1.5 var(--font-body); color:#d7c5ce; }
 .te-instrument progress { display:block; width:100%; height:5px; margin-top:12px; accent-color:#91ddd8; }
 .te-power-signal { display:flex; align-items:center; gap:14px; color:#a2eae5; }
-.te-power-signal strong { font:600 30px Oxanium,sans-serif; }
+.te-power-signal strong { font:600 30px var(--font-title); }
 .te-hardware-label { margin:16px 6px; font-size:11px; line-height:1.7; color:#e29aaa; }
 .te-hardware-label span { color:#b6ccce; }
 .terminal-explorer ::selection { background:#cf354e; color:#fff; }.terminal-explorer input { caret-color:#ff6d85; }
-.te-workspace { animation:rig-connect .4s cubic-bezier(.16,1,.3,1); }@keyframes rig-connect { from { clip-path:inset(0 0 92% 0); } to { clip-path:inset(0); } }
+.te-workspace { animation:rig-connect .4s var(--ease-out); }@keyframes rig-connect { from { clip-path:inset(0 0 92% 0); } to { clip-path:inset(0); } }
 /* Same hardware language, distinct instruments. */
 .wp-scanner-panel,.wp-deck-console { color:#f0e7eb; }
 .wp-scanner-panel h1,.wp-deck-console h1 { color:#fff0ed; letter-spacing:-.025em; }

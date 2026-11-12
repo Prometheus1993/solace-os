@@ -4,6 +4,7 @@
    components migrate off inline styles). */
 @import './themes/yorha-light.css';
 @import './themes/yorha-dark.css';
+@import './tokens.css';
 @import './base.css';
 @import './components/ui.css';
 @import './components/app.css';
