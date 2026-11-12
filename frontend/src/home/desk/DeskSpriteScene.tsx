@@ -5,6 +5,7 @@ import { Icon } from '../icons.tsx';
 import type { AvatarMood } from './avatar-state.ts';
 import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
+import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
@@ -36,8 +37,8 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
-  moving: boolean; syncing: boolean; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
   onOpen: (view: 'terminal' | 'library' | 'signals' | 'radio' | 'scratchpad') => void; onLoad: () => void; onError: () => void;
@@ -253,18 +254,14 @@ export function DeskSpriteScene({ moving, syncing, view, avatar, radio, layout, 
       {propSprite('puck', puckFrame(syncing, puckHover || ['signals', 'sync', 'gym'].includes(view), moving ? phase : 0))}
       <span className="desk-prop-label">BIOMONITOR <small>{syncing ? 'SYNCING…' : 'SIGNALS / SYNC / GYM'}</small></span>
     </button>
-    <button
-      {...layout.prop('companion')}
-      className="desk-prop desk-prop-companion"
-      data-reaction={reaction === 'companion'}
-      onClick={() => setReaction('companion')}
-      aria-label="Pet the resting cyber fox-cat beside your desk">
-      {propSprite('companion', reaction === 'companion' ? 1 : 0)}
-      <span className="desk-prop-label">LITTLE COMPANION<small>
-          {reaction === 'companion' ? 'A QUIET PURR. RIGHT HERE WITH YOU.' : 'RESTING BESIDE YOUR DESK'}
-        </small>
-      </span>
-    </button>
+    <div {...layout.prop('companion')} className="desk-prop desk-prop-companion" aria-hidden="true">{propSprite('companion')}</div>
+    <DeskCat
+      moving={moving}
+      reduced={reduced}
+      layout={layout.values}
+      petted={reaction === 'companion'}
+      onPet={() => setReaction('companion')}
+      onError={onError} />
     <DeskLayoutHandles layout={layout} />
   </div>;
 }

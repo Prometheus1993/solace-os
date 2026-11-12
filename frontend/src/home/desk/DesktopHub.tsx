@@ -124,6 +124,7 @@ export default function DesktopHub(props: DesktopHubProps) {
       <div ref={scene} className="desk-scenery" data-sky-phase={skyPhase} data-sky-mood={skyMood} aria-hidden={view !== 'desk' || undefined}>
         <DeskSpriteScene
           moving={moving}
+          reduced={reduced}
           syncing={props.syncing}
           view={view}
           avatar={avatar}

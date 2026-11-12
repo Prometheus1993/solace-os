@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { gridRegions, sharedSpriteBounds, spriteBounds, type SpriteRect } from './sprite-atlas.ts';
 
-type Sheet = { image: HTMLImageElement; frames: SpriteRect[] };
+export type Sheet = { image: HTMLImageElement; frames: SpriteRect[] };
 const sheets = new Map<string, Promise<Sheet>>();
 
-function loadSheet(
+/** Without `independent`, every cell of the sheet shares one crop: the union of all its frames. */
+export function loadSheet(
   src: string,
   columns: number,
   rows: number,

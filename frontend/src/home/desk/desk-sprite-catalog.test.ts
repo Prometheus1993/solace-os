@@ -18,8 +18,7 @@ describe('desk sprite inventory', () => {
     expect(deskSpriteSpec('monitor', 0)).toEqual({ asset: 'desk-monitor-atlas', columns: 2, frame: 0 });
     expect(deskSpriteSpec('puck', 3)).toMatchObject({ columns: 2, rows: 2, frame: 3 });
   });
-  it('samples the floor pet idle and petted frames from the single-column atlas', () => {
-    expect(deskSpriteSpec('companion', 0)).toEqual({ asset: 'desk-floor-companion-spaced-atlas', columns: 1, rows: 2, frame: 0 });
-    expect(deskSpriteSpec('companion', 1)).toEqual({ asset: 'desk-floor-companion-spaced-atlas', columns: 1, rows: 2, frame: 1 });
+  it('draws the empty cushion where the floor companion was', () => {
+    expect(deskSpriteSpec('companion')).toEqual({ asset: 'desk-cat-cushion' });
   });
 });

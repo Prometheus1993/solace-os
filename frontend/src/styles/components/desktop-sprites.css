@@ -68,16 +68,21 @@
 .desk-prop-keyboard { z-index:8; left:45%; bottom:calc(9% + var(--desk-w)*.061); width:22%; height:calc(var(--desk-w)*.0635); }
 .desk-prop-mouse { z-index:8; left:70%; bottom:calc(9% + var(--desk-w)*.071); width:4%; height:calc(var(--desk-w)*.0418); }
 .desk-prop-puck { z-index:8; left:83%; bottom:calc(9% + var(--desk-w)*.062); width:6.5%; height:calc(var(--desk-w)*.0422); }
-/* Floor companion sits below the tabletop lip, at the desk's right-front corner. */
-.desk-prop-companion { z-index:9; left:84%; bottom:5.5%; width:14%; height:calc(var(--desk-w)*.065); }
-.desk-prop-companion > .desk-sprite { transform-origin:bottom center; animation:desk-companion-breathe 5.4s ease-in-out infinite alternate; }
+/* The cat's cushion sits below the tabletop lip, at the desk's right-front corner. */
+.desk-prop-companion { z-index:9; left:86.3%; bottom:5.5%; width:9.4%; height:calc(var(--desk-w)*.034); }
 .desk-prop-companion canvas { object-position:bottom center; }
-.desk-prop-companion .desk-prop-label { left:auto; right:0; bottom:95%; transform:translateY(6px); }
-.desktop-sprite-hub .desk-prop-companion[data-reaction=true] > .desk-sprite {
-  animation:desk-companion-breathe 2.4s ease-in-out infinite alternate;
-  filter:drop-shadow(0 0 5px #70dbd624);
+/* The cat is placed by its paws (--cat-x/y, scene fractions); its sprite box is given in scene widths (DeskCat.tsx). */
+.desk-cat {
+  z-index:10;
+  left:calc(var(--cat-x)*100%);
+  top:calc(var(--cat-y)*100%);
+  width:calc(var(--desk-w)*var(--cat-w));
+  height:calc(var(--desk-w)*var(--cat-h));
+  translate:calc(var(--desk-w)*var(--cat-dx)) calc(var(--desk-w)*var(--cat-dy));
 }
-@keyframes desk-companion-breathe { from { transform:scaleY(1); } to { transform:scaleY(1.015); } }
+.desk-cat canvas { display:block; width:100%; height:100%; image-rendering:pixelated; pointer-events:none; }
+.desk-cat[data-flip=true] canvas { transform:scaleX(-1); }
+.desktop-sprite-hub[data-editing=true] .desk-cat { pointer-events:none; }
 .desk-prop-radio { z-index:8; left:28%; bottom:calc(9% + var(--desk-w)*.069); width:8.5%; height:calc(var(--desk-w)*.0657); }
 .desk-prop-speaker { z-index:7; bottom:calc(9% + var(--desk-w)*.145); width:3%; height:calc(var(--desk-w)*.0471); }
 .desk-prop-speaker-0 { left:36%; }.desk-prop-speaker-1 { left:77%; }

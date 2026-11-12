@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clamp01, cycleAt, fadeInOut, lerp, projectPoint } from './motion.ts';
+import { arcPoint, clamp01, cycleAt, fadeInOut, lerp, lerpPoint, projectPoint } from './motion.ts';
 
 describe('shared desk motion helpers', () => {
   it('clamps and interpolates', () => {
@@ -29,5 +29,12 @@ describe('shared desk motion helpers', () => {
     expect(cycleAt(7, 10, 2, 4)).toBeNull();
     expect(cycleAt(33, 10, 2, 4)).toEqual({ cycle: 3, progress: .25 });
     expect(cycleAt(-5, 10, 0, 4)).toEqual({ cycle: 0, progress: 0 });
+  });
+  it('moves along a straight line or a hop that peaks in the middle', () => {
+    const a = { x: 0, y: 1 }, b = { x: 2, y: 0 };
+    expect(lerpPoint(a, b, .25)).toEqual({ x: .5, y: .75 });
+    expect(arcPoint(a, b, 0, .5)).toEqual(a);
+    expect(arcPoint(a, b, .5, .5)).toEqual({ x: 1, y: 0 });
+    expect(arcPoint(a, b, 1, .5).y).toBeCloseTo(0);
   });
 });
