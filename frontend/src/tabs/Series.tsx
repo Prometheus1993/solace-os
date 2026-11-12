@@ -748,7 +748,7 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
   if (detailId != null) {
     const detail = list.find(s => s.id === detailId);
     return <TabShell>
-      {onBack ? <button className="yorha-btn parts-button" onClick={onBack}>← Back to folder</button> : <a className="yorha-btn parts-button" href={`#archives/${kind === 'manga' ? 'manga' : 'books'}`}>← Back to shelf</a>}
+      {onBack ? <button className="yorha-btn parts-button" onClick={onBack}>← Back to folder</button> : <a className="yorha-btn parts-button" href={`#shelf/${kind === 'manga' ? 'manga' : 'books'}`}>← Back to shelf</a>}
       {!detail ? <Card title="Shard unavailable"><p>This book or series is no longer in this archive.</p></Card> : <Card title={detail.title}>
         <div style={{ display:'flex', gap:24, alignItems:'flex-start', marginBottom:24 }}>
           <Cover url={detail.coverUrl} w={100} h={150} />

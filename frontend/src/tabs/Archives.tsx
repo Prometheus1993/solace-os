@@ -9,7 +9,7 @@ const VIEWS: { id: View; label: string }[] = [
   { id: 'books', label: 'BOOKS' },
   { id: 'manga', label: 'MANGA' },
 ];
-/** ARCHIVES area — Books + Manga behind a YoRHa segmented sub-nav (hash `#archives/<view>`). Both views
+/** SHELF area — Books + Manga behind a YoRHa segmented sub-nav (hash `#shelf/<view>`; the old `#archives/…` ids still resolve). Both views
  *  render the SAME unified `dto.series` (migration v13), filtered by type inside {@link Series}. The old
  *  TROPHIES sub-tab was dropped. */
 export function Archives({ dto, onReload }: { dto: DashboardDTO; onReload: () => void | Promise<void> }) {
@@ -17,7 +17,7 @@ export function Archives({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
   useEffect(() => { const update = () => setHash(window.location.hash); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
   const segment = hash.split('/')[2];
   const detailId = segment && /^\d+$/.test(segment) ? Number(segment) : undefined;
-  const [view, setView] = useHashView('archives', VIEWS, 'books');
+  const [view, setView] = useHashView('shelf', VIEWS, 'books');
   return (
     <div>
       <SubNav views={VIEWS} view={view} setView={setView} />

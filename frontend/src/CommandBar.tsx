@@ -1,6 +1,6 @@
 import type { DataFreshness } from '@solace/core';
 import { round1 } from './tokens.ts';
-import { AREAS, type Area } from './BottomNav.tsx';
+import { AREAS, type Area } from './areas.ts';
 import { useMobile } from './responsive.ts';
 
 /** A silent ingestion gap (DB behind the export file) needs to be visibly wrong, not buried in a

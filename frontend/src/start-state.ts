@@ -1,3 +1,5 @@
+import { canonicalHash, resolveArea } from './areas.ts';
+
 /** Start-screen entry state (pure, so it can be tested without a DOM). */
 export interface StorageLike { getItem(k: string): string | null; setItem(k: string, v: string): void }
 
@@ -18,8 +20,9 @@ export function createEntryState(getStorage: () => StorageLike) {
   };
 }
 
-/** The hash to land on after entering: a valid deep link is kept untouched, anything else becomes home. */
-export function entryHash(hash: string, areas: readonly string[]): string {
+/** The hash to land on after entering: a valid deep link (an old area id is renamed to its new one) is kept, anything else becomes the desk. */
+export function entryHash(hash: string): string {
   const h = hash.replace(/^#/, '');
-  return areas.includes(h.split('/')[0] ?? '') ? h : 'home';
+  const area = resolveArea(h.split('/')[0] ?? '');
+  return area ? canonicalHash(h) : 'desk';
 }

@@ -50,7 +50,7 @@ export function DeckPanel({
     <button className="wp-sync" type="button" disabled={active || busy} onClick={onSync}>{active ? 'SYNC IN PROGRESS…' : '↗ INITIATE SYNC'}</button>
     <div className="wp-deck-links">
       <button type="button" onClick={onScanner}>OPEN SCANNER ↗</button>
-      <button type="button" onClick={() => navigate('training/running')}>VIEW RUNS ↗</button>
+      <button type="button" onClick={() => navigate('body/running')}>VIEW RUNS ↗</button>
     </div>
   </section>;
 }

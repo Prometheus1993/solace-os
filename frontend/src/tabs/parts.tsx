@@ -10,7 +10,7 @@ export function TabShell({ children }: { children: ReactNode }) {
   return <div className="yorha-fade parts-tab-shell">{children}</div>;
 }
 
-/** Hash-synced sub-view state shared by the COMBAT / MISSIONS / ARCHIVES areas (hash `#<area>/<view>`). */
+/** Hash-synced sub-view state shared by the BODY / STUDY / SHELF areas (hash `#<area>/<view>`). */
 export function useHashView<T extends string>(area: string, views: readonly { id: T }[], def: T): [T, (v: T) => void] {
   const fromHash = (): T => viewFromHash(window.location.hash, views, def);
   const [view, setViewState] = useState<T>(fromHash);

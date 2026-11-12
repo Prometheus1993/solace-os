@@ -110,7 +110,7 @@ function Directive({ data }: { data: DashboardDTO }) {
       {/* The 4 vitals tiles live only at VITALS/Body.tsx (canonical per 3.2 #2) — STATUS keeps
           just the composite verdict above plus this drill-in reference. */}
       <div className="dash-directive-footer">
-        <StatRef label="Vitals" value={rec.bodyBattery.value != null ? `${Math.round(rec.bodyBattery.value)}% battery` : '—'} hash="training/body" />
+        <StatRef label="Vitals" value={rec.bodyBattery.value != null ? `${Math.round(rec.bodyBattery.value)}% battery` : '—'} hash="body/vitals" />
       </div>
     </OsBlock>
   );
@@ -237,7 +237,7 @@ function BattleLog({ data }: { data: DashboardDTO }) {
           <RunRow key={run.date + run.distanceKm} run={run} />
         ))}
         <div className="dash-battlelog-divider">
-          <StatRef label="All runs" value={String(data.totals.runCount)} hash="training/running" />
+          <StatRef label="All runs" value={String(data.totals.runCount)} hash="body/running" />
         </div>
       </div>
     </OsBlock>
