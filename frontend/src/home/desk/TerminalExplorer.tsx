@@ -19,6 +19,7 @@ export function TerminalExplorer({ dto, onReload }: { dto: DashboardDTO; onReloa
   const [course, setCourse] = useState<string | undefined>();
   const [detail, setDetail] = useState<number | undefined>();
   const [receipt, setReceipt] = useState('LOCAL FILESYSTEM READY');
+  const [confirmed, setConfirmed] = useState(0);
   const content = useRef<HTMLDivElement>(null);
   const courses = courseNames(dto.schoolTasks);
   const open = (next: Folder, nextCourse?: string, id?: number) => {
@@ -30,6 +31,7 @@ export function TerminalExplorer({ dto, onReload }: { dto: DashboardDTO; onReloa
     setReceipt('✓ CHANGES SAVED · REFRESHING FILES');
     await onReload();
     setReceipt('✓ CHANGES SAVED · FILES UPDATED');
+    setConfirmed(count => count + 1);
   };
   const selectedTitle = detail == null ? null : dto.series.find(s => s.id === detail)?.title;
   const path = `PERSONAL / ${PATHS[folder]}${course ? ` / ${course}` : ''}${selectedTitle ? ` / ${selectedTitle}` : ''}`;
@@ -63,7 +65,7 @@ export function TerminalExplorer({ dto, onReload }: { dto: DashboardDTO; onReloa
         <span className="te-nav-note">SELECT A FOLDER<br />OPEN · EDIT · SAVE</span>
       </nav>
       <main className="te-workspace" aria-label="Terminal files">
-        <div className="te-path" title={path}><span aria-hidden="true">&gt;_</span> {path}</div>
+        <div className="te-path" title={path}><span aria-hidden="true">&gt;_</span> {path}<i className="te-active" aria-hidden="true" /></div>
         <div className="te-content" ref={content}>
           {/* Keep folder forms mounted so browsing files never discards a draft. */}
           <section hidden={folder !== 'school'}>
@@ -96,7 +98,11 @@ export function TerminalExplorer({ dto, onReload }: { dto: DashboardDTO; onReloa
                 onBack={() => open('books')} />
             </section>}
         </div>
-        <footer className="te-status" role="status">{receipt}<span>MANUAL INPUT / LOCAL SAVE</span></footer>
+        <footer className="te-status" role="status">
+          {/* Re-keyed by every finished save: the confirmation flash plays once per real save callback, never on its own. */}
+          <b key={confirmed} className="te-receipt" data-confirmed={confirmed > 0 && receipt.endsWith('FILES UPDATED')}>{receipt}</b>
+          <span>MANUAL INPUT / LOCAL SAVE</span>
+        </footer>
       </main>
       <RigContext dto={dto} folder={folder} onOpen={open} />
     </div>

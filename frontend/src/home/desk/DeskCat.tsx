@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { deskAsset } from './desk-assets.ts';
 import { advanceCat, CAT_SEQUENCES, CAT_SHEETS, catBox, catGround, catSheet, catSpots, catView, petCat, skipToMove, startCat, type CatSequenceId, type CatState } from './desk-cat.ts';
 import type { DeskLayout } from './desk-layout-state.ts';
+import { catTint, tintKey, type CatLight } from './desk-light.ts';
 import { loadSheet, type Sheet } from './DeskSprite.tsx';
 
 type CatSheets = Record<string, Sheet>;
@@ -9,12 +10,13 @@ type CatSheets = Record<string, Sheet>;
 const previewMove = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('catMove') : null;
 
 /** The walking cat. Its state machine only advances while `moving`; otherwise the current frame stays up. */
-export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
-  moving: boolean; reduced: boolean; layout: DeskLayout; petted: boolean; onPet: () => void; onError: () => void;
+export function DeskCat({ moving, reduced, layout, light, petted, onPet, onError }: {
+  moving: boolean; reduced: boolean; layout: DeskLayout; light: CatLight; petted: boolean; onPet: () => void; onError: () => void;
 }) {
   const button = useRef<HTMLButtonElement>(null), canvas = useRef<HTMLCanvasElement>(null);
   const brain = useRef<CatState | null>(null), drawn = useRef('');
   const error = useRef(onError); error.current = onError;
+  const lighting = useRef(light); lighting.current = light;
   const [sheets, setSheets] = useState<CatSheets | null>(null);
   const spots = useMemo(() => catSpots(layout), [layout]);
   // The cat was one sprite with its cushion, so it keeps the cushion's size setting.
@@ -38,12 +40,18 @@ export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
       element.style.setProperty(`--cat-${name}`, String(value));
     }
     element.dataset.flip = String(view.facing === -1);
-    const key = `${view.sequence}/${view.frame}`;
+    // Amber and cyan by where the paws are now: the tint is painted into the frame, only over the cat's own pixels.
+    const tint = catTint(lighting.current, view.point), key = `${view.sequence}/${view.frame}/${tintKey(tint)}`;
     if (drawn.current === key) return;
     const context = target.getContext('2d');
     if (!context) return;
     target.width = frame.width; target.height = frame.height;
     context.drawImage(sheet.image, frame.x, frame.y, frame.width, frame.height, 0, 0, frame.width, frame.height);
+    if (tint.a > 0) {
+      context.globalCompositeOperation = 'source-atop';
+      context.fillStyle = `rgb(${tint.r} ${tint.g} ${tint.b} / ${tint.a})`;
+      context.fillRect(0, 0, frame.width, frame.height);
+    }
     drawn.current = key;
   };
   // A moved or hidden prop moves or drops its spot: the cat settles again where it was, or at home.
@@ -53,6 +61,8 @@ export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
     if (previewMove && previewMove in CAT_SEQUENCES && !reduced) brain.current = skipToMove(brain.current, previewMove as CatSequenceId, spots, Math.random);
     paint();
   }, [spots, reduced]);
+  // A phase change, a hidden source or a moved lamp recolours a resting cat at once.
+  useEffect(() => { paint(); }, [light]);
   useEffect(() => {
     paint();
     if (!moving || !sheets) return;

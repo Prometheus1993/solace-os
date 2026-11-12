@@ -1,8 +1,7 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { DayPhase } from '@solace/core';
 import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
 import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
-import { Icon } from '../icons.tsx';
 import type { AvatarMood } from './avatar-state.ts';
 import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
@@ -10,7 +9,8 @@ import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
-import { lampFrame } from './desk-sky.ts';
+import { catLight, lightLevels, poolVars, receiverVars, type ReceiverId } from './desk-light.ts';
+import { MonitorScreen } from './MonitorScreen.tsx';
 import { carLaneCount } from './city-story-motion.ts';
 import type { DeskRadio } from './DeskPersonalTools.tsx';
 import { deskAsset as asset } from './desk-assets.ts';
@@ -60,6 +60,13 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
     () => { if (!reaction) return; const timer = window.setTimeout(() => setReaction(''), 2400); return () => window.clearTimeout(timer); },
     [reaction]
   );
+  const levels = lightLevels(skyPhase, layout.values, awake);
+  const sceneLight = useMemo(() => catLight(layout.values, levels), [layout.values, levels.lamp, levels.screen]);
+  const sceneStyle = {
+    '--lamp-level': levels.lamp, '--screen-level': levels.screen, '--desk-mask': `url(${asset('desk-pano-desk')})`, ...poolVars(layout.values),
+  } as CSSProperties;
+  // A light receiver carries its own warm and cool ellipses (percentages of its box) on top of its layout transform.
+  const lit = (id: ReceiverId) => { const prop = layout.prop(id); return { ...prop, style: { ...prop.style, ...receiverVars(id, layout.values) } }; };
   const propSprite = (id: DeskObjectId, state?: number) => <DeskObjectSprite id={id} state={state} onError={onError} />;
   const accessory = (frame: number, name: string) => <DeskSprite
     src={asset('desk-accessories-atlas')}
@@ -100,6 +107,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
   return <div
     ref={root}
     className="desk-sprite-scene"
+    style={sceneStyle}
     onPointerDownCapture={layout.pointerDown}
     onPointerMoveCapture={layout.pointerMove}
     onPointerUpCapture={layout.pointerUp}
@@ -123,6 +131,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {panoLayer('billboard-frame')}
       <div className="desk-glass">
         <CityStories moving={moving} onError={onError} />
+        <div className="desk-train-glint" />
         {flightLanes('middle')}
         <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
         <div className="desk-extra-windows">
@@ -148,6 +157,9 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       </div>
       {panoLayer('window')}
       {panoLayer('desk')}
+      <div className="desk-table-light desk-table-warm" />
+      <div className="desk-table-light desk-table-cool" />
+      <div className="desk-train-glint desk-train-glint-desk" />
     </div>
     <div {...layout.prop('pipes')} className="desk-prop desk-prop-pipes" aria-hidden="true">{propSprite('pipes')}</div>
     <div {...layout.prop('hanging-plant')} className="desk-prop desk-prop-hanging-plant" aria-hidden="true">{propSprite('hanging-plant')}</div>
@@ -170,11 +182,12 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       <span className="desk-prop-label">LITTLE RELAY<small>INSPECT FIGURE</small></span>
     </button>
     <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">
-      {propSprite('lamp', lampFrame(skyPhase))}
+      {propSprite('lamp', 0)}
+      <span className="desk-lamp-on">{propSprite('lamp', 1)}</span>
       <span className="desk-lamp-glow" aria-hidden="true" />
     </div>
     <button
-      {...layout.prop('books')}
+      {...lit('books')}
       className="desk-prop desk-prop-books"
       aria-label="Open manga and books"
       {...hoverFocus(setBooksHover)}
@@ -183,11 +196,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
     </button>
     <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor" data-awake={awake}>
       {propSprite('monitor', awake ? 1 : 0)}
-      {awake ? <div className="desk-monitor">
-        <span className="desk-monitor-caption">PERSONAL / ONLINE</span>
-        <div className="desk-folders"><button onClick={() => onOpen('terminal')}><Icon name="folder" size={40} /><span>TERMINAL</span></button></div>
-        <span className="desk-monitor-footer">YOUR FILES. YOUR PACE.</span>
-      </div> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
+      {awake ? <MonitorScreen moving={moving} onOpenTerminal={() => onOpen('terminal')} /> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
       <button
         className="desk-monitor-power"
         aria-label={awake ? 'Put monitor to sleep' : 'Wake monitor'}
@@ -238,7 +247,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       <span className="desk-prop-label">CHANGE FREQUENCY<small>{radio.mood.toUpperCase()} / CLICK TO CYCLE</small></span>
     </button>
     <button
-      {...layout.prop('notebook')}
+      {...lit('notebook')}
       className="desk-prop desk-prop-notebook"
       onClick={() => onOpen('scratchpad')}
       aria-label="Open your saved scratchpad">
@@ -271,8 +280,8 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
         ? 'A little green. Growing at its own pace.'
         : reaction === 'mug' ? 'Coffee break. One slow breath.' : reaction === 'companion' ? 'Your companion perks up and gives a quiet purr.' : ''}
     </span>
-    <div {...layout.prop('keyboard')} className="desk-prop desk-prop-keyboard">{propSprite('keyboard')}</div>
-    <div {...layout.prop('mouse')} className="desk-prop desk-prop-mouse">{propSprite('mouse')}</div>
+    <div {...lit('keyboard')} className="desk-prop desk-prop-keyboard">{propSprite('keyboard')}</div>
+    <div {...lit('mouse')} className="desk-prop desk-prop-mouse">{propSprite('mouse')}</div>
     <button
       {...layout.prop('puck')}
       className="desk-prop desk-prop-puck"
@@ -287,6 +296,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       moving={moving}
       reduced={reduced}
       layout={layout.values}
+      light={sceneLight}
       petted={reaction === 'companion'}
       onPet={() => setReaction('companion')}
       onError={onError} />

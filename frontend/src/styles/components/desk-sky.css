@@ -9,7 +9,7 @@
   --sky-billboard:brightness(1.03) saturate(.85);
   --sky-lights:.6;
   --room-light:brightness(.86) saturate(.95);
-  --room-glow:0;
+  --screen-dim:.95;
 }
 .desk-scenery[data-sky-phase=day] {
   --sky-tint:#a9d0efd1;
@@ -19,7 +19,7 @@
   --sky-billboard:brightness(1.16) saturate(.68);
   --sky-lights:.2;
   --room-light:brightness(1) saturate(1);
-  --room-glow:0;
+  --screen-dim:1;
 }
 .desk-scenery[data-sky-phase=dusk] {
   --sky-tint:#f6c8a400;
@@ -29,7 +29,7 @@
   --sky-billboard:brightness(1) saturate(1);
   --sky-lights:1;
   --room-light:brightness(.8) saturate(.95);
-  --room-glow:.7;
+  --screen-dim:.9;
 }
 .desk-scenery[data-sky-phase=night] {
   --sky-tint:#060a26d9;
@@ -39,7 +39,7 @@
   --sky-billboard:brightness(.8) saturate(.95);
   --sky-lights:1;
   --room-light:brightness(.62) saturate(.85);
-  --room-glow:1;
+  --screen-dim:.8;
 }
 .desk-pano-far { filter:var(--sky-far); }
 .desk-pano-mid,.desk-city-stories { filter:var(--sky-mid); }
@@ -52,7 +52,13 @@
 /* The room: the window frame, the desk and every prop dim with the daylight, except what is lit by itself (the lamp, an awake monitor). */
 .desk-pano-window,.desk-pano-desk,.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light); transition:filter 4s ease; }
 .desk-prop-lamp > .desk-sprite,.desk-prop-monitor[data-awake=true] > .desk-sprite { filter:none; }
-/* Lamp light: a halo around the bulb and a pool on the desk to the right of the base. */
+/* Zone lighting (#17). --lamp-level / --screen-level are set on the scene (0 for a hidden lamp or monitor, an asleep monitor);
+   --mood-light is the phase-4 weather hook: a weather look only has to set it on .desk-scenery[data-sky-mood=...]. */
+.desk-scenery { --mood-light:1; }
+.desk-prop-lamp > .desk-sprite { filter:var(--room-light); }
+.desk-lamp-on { position:absolute; inset:0; opacity:var(--lamp-level); transition:opacity 1.6s cubic-bezier(.25,.6,.3,1); pointer-events:none; }
+.desk-lamp-on > .desk-sprite { filter:none; }
+/* Only the bulb's own bloom; the light on the desk and the props comes from the pools and receiver overlays below. */
 .desk-lamp-glow {
   position:absolute;
   left:-120%;
@@ -60,13 +66,48 @@
   width:400%;
   height:180%;
   pointer-events:none;
-  opacity:var(--room-glow);
-  background:
-    radial-gradient(ellipse 22% 32% at 47% 37%,#ffd9a073,#ffb45c2e 40%,transparent),
-    radial-gradient(ellipse 34% 14% at 57% 79%,#ffc87a61,transparent);
-  transition:opacity 4s ease;
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse 14% 22% at 47% 37%,#ffd9a073,#ffb45c2e 40%,transparent);
+  transition:opacity 1.6s cubic-bezier(.25,.6,.3,1);
 }
-/* Monitor light: spills out from behind the screen. */
+/* Light on a receiver: the same silhouette as its sprite frame (--lit-mask), warm from the lamp and cool from the screen. */
+.desk-lit {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  -webkit-mask:var(--lit-mask) center/contain no-repeat;
+  mask:var(--lit-mask) center/contain no-repeat;
+}
+.desk-prop-books .desk-lit { -webkit-mask-position:bottom center; mask-position:bottom center; }
+.desk-lit > i { position:absolute; inset:0; transition:opacity 1.6s ease; }
+.desk-lit-warm {
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--lit-warm-rx) var(--lit-warm-ry) at var(--lit-warm-x) var(--lit-warm-y),#ffb25cb3,#ff8a3a5c 40%,#ff8a3a1f 70%,transparent);
+}
+.desk-lit-cool {
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--lit-cool-rx) var(--lit-cool-ry) at var(--lit-cool-x) var(--lit-cool-y),#6ee8ecb3,#4fc8d05c 40%,#4fc8d01f 70%,transparent);
+}
+/* Pools on the tabletop, clipped to the desk layer's own shape. */
+.desk-table-light,.desk-train-glint-desk {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  -webkit-mask:var(--desk-mask) 0 0/100% 100% no-repeat;
+  mask:var(--desk-mask) 0 0/100% 100% no-repeat;
+  transition:opacity 1.6s ease;
+}
+.desk-table-warm {
+  opacity:calc(var(--lamp-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--pool-warm-rx) var(--pool-warm-ry) at var(--pool-warm-x) var(--pool-warm-y),#ffb25c80,#ff8a3a2e 55%,transparent);
+}
+.desk-table-cool {
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  background:radial-gradient(ellipse var(--pool-cool-rx) var(--pool-cool-ry) at var(--pool-cool-x) var(--pool-cool-y),#6ee8ec66,#4fc8d02e 55%,transparent);
+}
+/* Monitor backlight: follows the screen level, so a sleeping display fades its spill with its content. */
 .desk-prop-monitor::before {
   content:'';
   position:absolute;
@@ -76,10 +117,22 @@
   height:66%;
   z-index:-1;
   pointer-events:none;
-  opacity:0;
-  box-shadow:0 0 90px 40px #7fe9e973;
-  transition:opacity 4s ease;
+  opacity:calc(var(--screen-level)*var(--mood-light));
+  box-shadow:0 0 70px 20px #7fe9e973;
+  transition:opacity 1.6s ease;
 }
-.desk-prop-monitor[data-awake=true]::before { opacity:var(--room-glow); }
-.desktop-sprite-hub[data-motion=false] :is(.desk-pano-layer,.desk-city-stories,.desk-sky-tint,.desk-extra-windows,.desk-sprite,.desk-cat canvas,.desk-lamp-glow),
+/* The train's glow: one soft band, driven by the real train pass (CityStories). Off with MOTION OFF, reduced motion and the editor. */
+.desk-city { --glint-a:0; --glint-x:0%; }
+.desk-train-glint {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:var(--glint-a);
+  background:linear-gradient(104deg,transparent,#cfe4ff,transparent) no-repeat;
+  background-size:22% 100%;
+  background-position:var(--glint-x) 0;
+}
+.desk-train-glint-desk { opacity:calc(var(--glint-a)*.6); transition:none; }
+.desktop-sprite-hub[data-motion=false] .desk-train-glint { opacity:0; }
+.desktop-sprite-hub[data-motion=false] :is(.desk-pano-layer,.desk-city-stories,.desk-sky-tint,.desk-extra-windows,.desk-sprite,.desk-cat canvas,.desk-lamp-glow,.desk-lamp-on,.desk-lit > i,.desk-table-light),
 .desktop-sprite-hub[data-motion=false] .desk-prop-monitor::before { transition:none; }

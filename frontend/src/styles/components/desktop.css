@@ -97,7 +97,21 @@
   animation-timing-function:linear;
   animation-iteration-count:infinite;
 }
-.desk-monitor { position:absolute; display:flex; align-items:center; overflow:hidden; color:#9eeeee; }
+.desk-monitor { position:absolute; display:flex; align-items:center; overflow:hidden; color:#9eeeee; opacity:var(--screen-dim,1); }
+/* Decoration only: clock, cursor, wake line and ambient lines never take pointer events and live outside the TERMINAL control. */
+.desk-monitor-clock,.desk-monitor-ambient,.desk-monitor-boot { position:absolute; right:3%; letter-spacing:.12em; pointer-events:none; font-size:clamp(6px,1.4cqw,10px); }
+.desk-monitor-clock { top:5%; opacity:.7; }
+.desk-monitor-ambient,.desk-monitor-boot { bottom:5%; opacity:.5; }
+.desk-cursor { display:inline-block; width:.55em; height:1em; margin-left:.5em; vertical-align:-.12em; background:currentColor; opacity:.8; }
+.desk-monitor-boot { display:none; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor { animation:desk-screen-wake 1.4s ease-out; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor-boot { display:block; animation:desk-screen-boot 3s ease-out both; }
+.desktop-sprite-hub[data-motion=true] .desk-monitor-ambient { animation:desk-screen-line 5s ease-in-out both; }
+.desktop-sprite-hub[data-motion=true] .desk-cursor { animation:desk-cursor 1.6s steps(1) infinite; }
+@keyframes desk-screen-wake { from { opacity:0; } 35% { opacity:calc(var(--screen-dim,1)*.5); } }
+@keyframes desk-screen-boot { 0%,70% { opacity:.6; } to { opacity:0; } }
+@keyframes desk-screen-line { 0%,100% { opacity:0; } 20%,80% { opacity:.5; } }
+@keyframes desk-cursor { 50% { opacity:.1; } }
 .desk-monitor-caption,.desk-monitor-footer { position:absolute; left:3%; letter-spacing:.12em; opacity:.7; pointer-events:none; }
 .desk-monitor-caption { top:5%; }.desk-monitor-footer { bottom:5%; }
 .desk-folders { display:flex; align-items:center; justify-content:space-evenly; gap:2%; }
@@ -273,7 +287,7 @@
   .desk-header nav button { flex:1; border-bottom-color:#5d626e; }
   .desk-settings { margin-left:auto; }
   .desk-settings button { font-size:9px; min-height:40px; }
-  .desk-monitor-caption,.desk-monitor-footer { display:none; }
+  .desk-monitor-caption,.desk-monitor-footer,.desk-monitor-clock,.desk-monitor-ambient,.desktop-sprite-hub .desk-monitor-boot { display:none; }
   .desk-signals { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .desk-surface-header { padding:10px 12px; gap:8px; }
   .desk-surface-header small { font-size:8px; letter-spacing:.03em; }

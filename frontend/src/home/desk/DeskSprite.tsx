@@ -46,17 +46,19 @@ export function loadSheet(
 }
 
 /** Runtime atlas sampling only: source PNGs remain unchanged. No per-frame pixel scan. */
-export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, name, onError }: {
+export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, lit = false, name, onError }: {
   src: string | undefined;
   columns?: number;
   rows?: number;
   frame?: number;
   independent?: boolean;
   split?: number;
+  /** Adds a silhouette-clipped light overlay (`desk-sky.css`) whose mask is the sprite's own current frame. */
+  lit?: boolean;
   name: string;
   onError?: () => void;
 }) {
-  const canvas = useRef<HTMLCanvasElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null), light = useRef<HTMLSpanElement>(null);
   const [sheet, setSheet] = useState<Sheet | null>(null);
   const [failed, setFailed] = useState(false);
   const errorHandler = useRef(onError); errorHandler.current = onError;
@@ -77,8 +79,12 @@ export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent 
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, rect.width, rect.height);
     context.drawImage(sheet.image, rect.x, rect.y, rect.width, rect.height, 0, 0, rect.width, rect.height);
-  }, [sheet, frame]);
-  return <span className="desk-sprite" data-sprite={name} data-frame={frame} data-ready={!!sheet && !failed} aria-hidden="true">
-    <canvas ref={canvas} />{failed && <span className="desk-sprite-missing">{name}</span>}
-  </span>;
+    if (lit) light.current?.style.setProperty('--lit-mask', `url(${element.toDataURL()})`);
+  }, [sheet, frame, lit]);
+  return <>
+    <span className="desk-sprite" data-sprite={name} data-frame={frame} data-ready={!!sheet && !failed} aria-hidden="true">
+      <canvas ref={canvas} />{failed && <span className="desk-sprite-missing">{name}</span>}
+    </span>
+    {lit && <span ref={light} className="desk-lit" aria-hidden="true"><i className="desk-lit-warm" /><i className="desk-lit-cool" /></span>}
+  </>;
 }
