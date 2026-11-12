@@ -8,6 +8,7 @@
   overflow:hidden;
   color:var(--color-text-1);
   font:14px var(--font-mono);
+  letter-spacing:.32px; /* the desk text has always inherited .02em of the 16px body (the old body rule) */
 }
 .desktop-hub *,.desktop-hub *::before,.desktop-hub *::after { box-sizing:border-box; }
 .desktop-hub button { font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
