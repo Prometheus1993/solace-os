@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { deskAsset } from './desk-assets.ts';
-import { advanceCat, CAT_SEQUENCE_IDS, catBox, catSpots, catView, petCat, startCat, type CatSequenceId, type CatState } from './desk-cat.ts';
+import { advanceCat, CAT_SEQUENCES, CAT_SHEETS, catBox, catSheet, catSpots, catView, petCat, skipToMove, startCat, type CatSequenceId, type CatState } from './desk-cat.ts';
 import type { DeskLayout } from './desk-layout-state.ts';
 import { loadSheet, type Sheet } from './DeskSprite.tsx';
 
-type CatSheets = Record<CatSequenceId, Sheet>;
+type CatSheets = Record<string, Sheet>;
+// Development preview: `?catMove=turn-around` in the page URL runs the cat ahead to just before that move.
+const previewMove = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('catMove') : null;
 
 /** The walking cat. Its state machine only advances while `moving`; otherwise the current frame stays up. */
 export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
@@ -19,17 +21,17 @@ export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
   const scale = layout.companion?.scale ?? 1;
   useEffect(() => {
     let disposed = false;
-    const sources = CAT_SEQUENCE_IDS.map(id => deskAsset(`desk-cat-${id}-atlas`));
+    const sources = CAT_SHEETS.map(sheet => deskAsset(`desk-cat-${sheet.id}-atlas`));
     if (sources.some(src => !src)) { error.current(); return; }
-    void Promise.all(sources.map(src => loadSheet(src!, 4, 2, false)))
-      .then(loaded => { if (!disposed) setSheets(Object.fromEntries(CAT_SEQUENCE_IDS.map((id, index) => [id, loaded[index]])) as CatSheets); })
+    void Promise.all(sources.map((src, index) => loadSheet(src!, 4, CAT_SHEETS[index].rows, false)))
+      .then(loaded => { if (!disposed) setSheets(Object.fromEntries(CAT_SHEETS.map((sheet, index) => [sheet.id, loaded[index]]))); })
       .catch(() => { if (!disposed) error.current(); });
     return () => { disposed = true; };
   }, []);
   const paint = () => {
     const state = brain.current, element = button.current, target = canvas.current;
     if (!state || !element || !target || !sheets) return;
-    const view = catView(state), sheet = sheets[view.sequence], frame = sheet.frames[view.frame];
+    const view = catView(state), sheet = sheets[catSheet(view.sequence)], frame = sheet.frames[view.frame];
     // Cell 0 starts at the sheet's origin, so its frame is the sequence's shared crop in cell pixels.
     const box = catBox(sheet.frames[0], view.facing, scale);
     for (const [name, value] of [['x', view.point.x], ['y', view.point.y], ['dx', box.dx], ['dy', box.dy], ['w', box.width], ['h', box.height]] as const) {
@@ -48,6 +50,7 @@ export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
   // Reduced motion: seated at home, and it stays there because `moving` is off.
   useEffect(() => {
     brain.current = startCat(spots, Math.random, reduced ? undefined : brain.current?.spot);
+    if (previewMove && previewMove in CAT_SEQUENCES && !reduced) brain.current = skipToMove(brain.current, previewMove as CatSequenceId, spots, Math.random);
     paint();
   }, [spots, reduced]);
   useEffect(() => {
