@@ -3,13 +3,13 @@
 .app-root {
   min-height: 100vh;
   font-family: var(--font-body);
-  color: var(--text);
-  background: var(--pageBg);
+  color: var(--color-text-1);
+  background: var(--color-base);
   -webkit-font-smoothing: antialiased;
 }
 
 .app-loading {
-  color: var(--muted);
+  color: var(--color-text-2);
   font-family: var(--font-body);
   padding: 40px;
 }
@@ -28,7 +28,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--gold);
+  background: var(--color-cyan);
   z-index: 90;
 }
 
@@ -42,9 +42,9 @@
   font-size: 12px;
   white-space: pre-line;
   line-height: 1.5;
-  background: var(--panel);
+  background: var(--color-surface-1);
   border: 1px solid var(--toast-tone);
-  border-radius: var(--radius);
+  border-radius: var(--radius-none);
   padding: 12px 16px;
   z-index: 90;
   color: var(--toast-tone);

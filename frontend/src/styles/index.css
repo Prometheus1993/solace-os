@@ -1,9 +1,5 @@
-/* Entry point for all web styling — imported once from main.tsx. Order matters: themes first
-   (yorha-dark must come after yorha-light so its equal-specificity `[data-theme]` overrides win —
-   see the note in themes/yorha-dark.css), then base, then per-component stylesheets (added as
-   components migrate off inline styles). */
-@import './themes/yorha-light.css';
-@import './themes/yorha-dark.css';
+/* Entry point for all web styling — imported once from main.tsx. Order matters: the one token layer
+   first, then base, then per-component stylesheets. */
 @import './tokens.css';
 @import './base.css';
 @import './components/ui.css';

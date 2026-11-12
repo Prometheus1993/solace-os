@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import type { DataFreshness } from '@solace/core';
 import { round1 } from './tokens.ts';
 import { AREAS, type Area } from './BottomNav.tsx';
 import { useMobile } from './responsive.ts';
-import { currentTheme, setTheme } from './theme.ts';
-import { nextTheme, THEMES, type ThemeId } from './styles/themes/index.ts';
 
 /** A silent ingestion gap (DB behind the export file) needs to be visibly wrong, not buried in a
  *  confidence word — so once wellness is ≥2 days stale, render one compact marker; below that,
@@ -27,8 +24,6 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
   syncing: boolean;
 }) {
   const mobile = useMobile();
-  const [theme, setThemeState] = useState<ThemeId>(currentTheme);
-  const next = nextTheme(theme);
   const stale = staleLabel(dataFreshness);
   return (
     <header className="cb-bar">
@@ -64,17 +59,6 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
             {stale}
           </span>
         )}
-        <button
-          onClick={() => {
-            setTheme(next);
-            setThemeState(next);
-          }}
-          title={`Theme: ${THEMES[theme].label} — switch to ${THEMES[next].label}`}
-          aria-label={`Switch theme to ${THEMES[next].label}`}
-          className="cb-theme-btn"
-        >
-          {theme === 'yorha-dark' ? '☾' : '☀'}
-        </button>
         <button
           onClick={onSyncGarmin}
           disabled={syncing}

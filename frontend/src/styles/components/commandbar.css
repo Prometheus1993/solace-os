@@ -14,8 +14,8 @@
   padding: 11px clamp(14px, 2vw, 26px);
   /* Respect the Dynamic Island when launched full-screen from the Home Screen (0 in a browser tab). */
   padding-top: calc(11px + env(safe-area-inset-top));
-  background: var(--gold);
-  color: var(--onAccent);
+  background: var(--color-cyan);
+  color: var(--color-text-on-accent);
 }
 .cb-wordmark {
   font-family: var(--font-mono);
@@ -43,7 +43,7 @@
 }
 .cb-nav-btn.is-active {
   opacity: 1;
-  border-bottom-color: var(--onAccent);
+  border-bottom-color: var(--color-text-on-accent);
 }
 .cb-right {
   margin-left: auto;
@@ -65,9 +65,9 @@
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: .14em;
-  color: var(--danger);
+  color: var(--color-danger);
   border: 1px solid currentColor;
-  border-radius: var(--radius);
+  border-radius: var(--radius-none);
   padding: 5px 9px;
   white-space: nowrap;
 }
@@ -78,7 +78,7 @@
   color: inherit;
   background: transparent;
   border: 1px solid currentColor;
-  border-radius: var(--radius);
+  border-radius: var(--radius-none);
   padding: 5px 8px;
   cursor: pointer;
 }
@@ -92,7 +92,7 @@
   color: inherit;
   background: transparent;
   border: 1px solid currentColor;
-  border-radius: var(--radius);
+  border-radius: var(--radius-none);
   padding: 5px 9px;
   opacity: 1;
   cursor: pointer;

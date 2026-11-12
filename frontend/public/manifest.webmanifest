@@ -1,13 +1,13 @@
 {
   "name": "Solace — Personal OS",
   "short_name": "Solace",
-  "description": "Local-first hybrid training + life dashboard (YoRHa status-screen).",
+  "description": "Local-first hybrid training + life dashboard (dark neon-noir room).",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#B6B19C",
-  "theme_color": "#B6B19C",
+  "background_color": "#131019",
+  "theme_color": "#131019",
   "icons": [
     { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
     { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" },

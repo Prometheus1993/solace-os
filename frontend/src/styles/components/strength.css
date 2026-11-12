@@ -1,27 +1,27 @@
 /* frontend/src/tabs/StrengthLog.tsx — log-a-session form + logged-sessions list (STRENGTH view). */
 .str-log-form { display: flex; flex-direction: column; gap: 12px; }
 .str-log-head { display: grid; grid-template-columns: 180px 1fr; gap: 12px; }
-.str-log-hint { font-family: var(--font-body); font-size: 12px; color: var(--faint); }
-.str-log-block { background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.str-log-hint { font-family: var(--font-body); font-size: 12px; color: var(--color-text-3); }
+.str-log-block { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-none); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .str-log-block__top { display: grid; grid-template-columns: 1fr 38px; gap: 8px; }
 .str-log-set { display: grid; grid-template-columns: 22px 110px 110px 38px 38px; gap: 8px; align-items: center; }
 .str-log-set__secs { grid-column: span 2; }
-.str-log-set .str-log-x.is-on { color: var(--gold); border-color: var(--gold); }
-.str-log-set__n { font-family: var(--font-mono); font-size: 11px; color: var(--faint); text-align: right; }
+.str-log-set .str-log-x.is-on { color: var(--color-cyan); border-color: var(--color-cyan); }
+.str-log-set__n { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); text-align: right; }
 .str-log-x { padding: 0; height: 38px; }
 .str-log-block__foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .str-log-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.str-log-chip { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted2); border: 1px solid var(--subBorder); border-radius: var(--radius); padding: 3px 8px; }
-.str-log-chip.is-warn { color: var(--gold); border-color: var(--gold); text-transform: none; }
+.str-log-chip { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-2); border: 1px solid var(--color-border); border-radius: var(--radius-none); padding: 3px 8px; }
+.str-log-chip.is-warn { color: var(--color-cyan); border-color: var(--color-cyan); text-transform: none; }
 .str-log-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.str-log-confirm { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-family: var(--font-body); font-size: 13px; color: var(--muted); padding: 8px 0; }
-.str-log-msg { font-family: var(--font-body); font-size: 13px; color: var(--muted); margin-top: 8px; }
-.str-log-msg.is-error { color: var(--gold); }
+.str-log-confirm { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-family: var(--font-body); font-size: 13px; color: var(--color-text-2); padding: 8px 0; }
+.str-log-msg { font-family: var(--font-body); font-size: 13px; color: var(--color-text-2); margin-top: 8px; }
+.str-log-msg.is-error { color: var(--color-cyan); }
 .str-log-list { max-height: 480px; overflow-y: auto; }
-.str-log-row { background: var(--subTile); border: 1px solid var(--subBorder); border-radius: var(--radius); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.str-log-row { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-none); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 .str-log-row__line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.str-log-row__date { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
-.str-log-row__notes { font-family: var(--font-body); font-size: 12.5px; color: var(--muted); }
-.str-log-row__meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted2); }
+.str-log-row__date { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-1); }
+.str-log-row__notes { font-family: var(--font-body); font-size: 12.5px; color: var(--color-text-2); }
+.str-log-row__meta { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-2); }
 .str-log-row__btns { margin-left: auto; display: flex; gap: 6px; }
-.str-log-row__sets { font-family: var(--font-body); font-size: 12px; color: var(--faint); line-height: 1.5; }
+.str-log-row__sets { font-family: var(--font-body); font-size: 12px; color: var(--color-text-3); line-height: 1.5; }

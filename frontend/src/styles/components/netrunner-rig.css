@@ -1,18 +1,6 @@
 /* Netrunner Rig: hardware frames surround quiet, opaque work surfaces. */
 .terminal-explorer {
   background:transparent;
-  --text:#f0ece7;
-  --muted:#d1c5c8;
-  --muted2:#c3b7bd;
-  --faint:#beb0b8;
-  --panel:#17151d;
-  --panelBorder:#58414c;
-  --subTile:#211c25;
-  --subBorder:#55414e;
-  --gold:#ff7a89;
-  --onAccent:#140c12;
-  --tile:#18151c;
-  --radius:0;
 }
 .te-layout { grid-template-columns:185px minmax(0,1fr) 230px; gap:14px; padding-top:12px; position:relative; }
 .te-layout::before {

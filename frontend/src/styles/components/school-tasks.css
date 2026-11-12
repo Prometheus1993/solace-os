@@ -1,4 +1,4 @@
 /* frontend/src/tabs/SchoolTasks.tsx — SCHOOL TERM (school tasks & deadlines; prefix `st-`). Rows, form and
    buttons reuse the `mis-` classes from missions.css; only the kind chip is new. */
 
-.st-kind-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--muted); border: 1px solid var(--subBorder); white-space: nowrap; }
+.st-kind-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--color-text-2); border: 1px solid var(--color-border); white-space: nowrap; }

@@ -3,8 +3,8 @@ import type { DashboardDTO } from '@solace/core';
 import { C, cssVars, ddmm, todayIso } from '../tokens.ts';
 import { Card, Field, LineChart, StatTile, TabShell } from './parts.tsx';
 
-const STAMINA_C = 'var(--stamina)';
-const LEANNESS_C = 'var(--leanness)';
+const STAMINA_C = 'var(--stat-stamina)';
+const LEANNESS_C = 'var(--stat-leanness)';
 type Win = DashboardDTO['recovery']['hrv'];
 type Series = DashboardDTO['vitals']['weight'];
 type Point = Series[number];
@@ -25,7 +25,7 @@ function bmiCategory(bmi: number | null): string {
  *  title, so the app never loses its "how thin is this data" honesty. */
 function VitalTile({ label, point, win, unit, fmt }: { label: string; point: Point | undefined; win: Win; unit: string; fmt?: (v: number) => string }) {
   const v = point?.value ?? null;
-  const dot = win.confidence === 'high' ? C.ok : win.confidence === 'medium' ? 'var(--z3)' : C.muted3;
+  const dot = win.confidence === 'high' ? C.ok : win.confidence === 'medium' ? 'var(--zone-3)' : C.muted3;
   return (
     <div className="vitals-tile">
       <div className="vitals-tile__header">
@@ -73,7 +73,7 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
     { title: '◆ Weight trend (kg)', series: v.weight, color: LEANNESS_C, unit: ' kg', precision: 1, hint: 'Trend over weeks.' },
     { title: '◆ Resting HR trend (bpm)', series: v.restingHr, color: C.danger, unit: '', precision: 0, hint: 'Lower = fitter.' },
     { title: '◆ Overnight HRV trend (ms)', series: v.hrv, color: STAMINA_C, unit: '', precision: 0, hint: 'Higher = better recovered.' },
-    { title: '◆ Sleep trend (/100)', series: v.sleep, color: 'var(--z3)', unit: '', precision: 0, hint: 'Garmin sleep score.' },
+    { title: '◆ Sleep trend (/100)', series: v.sleep, color: 'var(--zone-3)', unit: '', precision: 0, hint: 'Garmin sleep score.' },
   ].filter((t) => t.series.length >= 2);
 
   async function send(method: 'POST' | 'PATCH', path: string, body: unknown, ok: string) {

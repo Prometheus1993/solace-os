@@ -1,17 +1,5 @@
 /* Artwork owns the room; HTML owns readable text, actions and actual signals. */
 .desktop-hub {
-  --text:var(--color-text-1);
-  --muted:var(--color-text-2);
-  --muted2:#b9cbd0;
-  --faint:var(--color-text-3);
-  --panel:var(--color-surface-1);
-  --panelBorder:var(--color-border);
-  --subTile:var(--color-surface-2);
-  --subBorder:var(--color-border);
-  --tile:var(--color-surface-2);
-  --border:var(--color-border);
-  --gold:var(--color-cyan-soft);
-  --onAccent:var(--color-text-on-accent);
   position:relative;
   isolation:isolate;
   width:100%;

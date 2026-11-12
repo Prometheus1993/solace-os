@@ -13,7 +13,6 @@ import { Training } from './tabs/Training.tsx';
 import { School } from './tabs/School.tsx';
 import { Archives } from './tabs/Archives.tsx';
 import { FxOverlay } from './FxOverlay.tsx';
-import { ScanlineOverlay } from './ScanlineOverlay.tsx';
 import { C, cssVars } from './tokens.ts';
 import type { SolaceSpotify } from './home/desk/spotify-api.ts';
 
@@ -198,12 +197,11 @@ export function App() {
 
   return (
     <div className={`app-root${fadeIn ? ' ss-fade-in' : ''}`}>
-      {/* HOME is the desk and brings its own chrome, so the old shell (texture, CommandBar, BottomNav) is for the other areas only. */}
+      {/* HOME is the desk and brings its own chrome, so the old shell (CommandBar, BottomNav) is for the other areas only. */}
       {area === 'home' ? (
         <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} onSyncGarmin={() => void syncGarmin()} />
       ) : (
         <>
-          <ScanlineOverlay />
           <CommandBar area={area} setArea={setArea} totals={dto.totals} dataFreshness={dto.dataFreshness} onSyncGarmin={() => void syncGarmin()} syncing={syncing} />
 
           <main className={mobile ? 'app-main is-mobile' : 'app-main'}>

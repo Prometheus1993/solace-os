@@ -1,80 +1,80 @@
 /* frontend/src/tabs/parts.tsx — shared tab-content primitives (TabShell/SubNav/Card/InsetPanel/
    AccordionList/TileGrid/StatTile/LineChart/BarChart/Field/Countdown/StatRef/FilterTabs). */
 
-.parts-tooltip { position: absolute; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--panelBorder); border-radius: var(--radius); padding: 4px 8px; font-size: 10.5px; font-family: var(--font-mono); color: var(--text); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 5; }
+.parts-tooltip { position: absolute; transform: translateX(-50%); background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-none); padding: 4px 8px; font-size: 10.5px; font-family: var(--font-mono); color: var(--color-text-1); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 5; }
 
 .parts-tab-shell { max-width: 1500px; margin: 0 auto; padding: 18px clamp(14px, 4vw, 30px) 20px; display: flex; flex-direction: column; gap: 18px; }
 
 .parts-subnav { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px clamp(14px, 4vw, 30px) 0; max-width: 1500px; margin: 0 auto; }
-.parts-subnav__btn { min-height: 36px; padding: 6px 14px; border: 1px solid var(--panelBorder); border-radius: var(--radius); cursor: pointer; font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); background: transparent; }
-.parts-subnav__btn.is-active { color: var(--onAccent); background: var(--gold); border-color: var(--gold); }
+.parts-subnav__btn { min-height: 36px; padding: 6px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-none); cursor: pointer; font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-2); background: transparent; }
+.parts-subnav__btn.is-active { color: var(--color-text-on-accent); background: var(--color-cyan); border-color: var(--color-cyan); }
 
-.parts-card { position: relative; background: var(--panel); border: 1px solid var(--panelBorder); border-top: 2px solid var(--card-accent); border-radius: var(--radius); padding: clamp(13px, 3.2vw, 20px); }
+.parts-card { position: relative; background: var(--color-surface-1); border: 1px solid var(--color-border); border-top: 2px solid var(--card-accent); border-radius: var(--radius-none); padding: clamp(13px, 3.2vw, 20px); }
 .parts-card__title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 .parts-card__title-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .parts-card__title-dot { width: 9px; height: 9px; background: var(--card-accent); flex: 0 0 auto; }
-.parts-card__title-text { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.parts-card__divider { height: 1px; margin-bottom: 14px; background: var(--subBorder); }
+.parts-card__title-text { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--color-text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parts-card__divider { height: 1px; margin-bottom: 14px; background: var(--color-border); }
 
-.parts-inset-panel { background: var(--subTile); border: 1px solid var(--subBorder); border-left: 2px solid var(--gold); padding: clamp(13px, 3.2vw, 20px); margin-top: 2px; }
+.parts-inset-panel { background: var(--color-surface-2); border: 1px solid var(--color-border); border-left: 2px solid var(--color-cyan); padding: clamp(13px, 3.2vw, 20px); margin-top: 2px; }
 
 .parts-accordion-list { display: flex; flex-direction: column; }
-.parts-accordion-list__empty { font-size: 13px; color: var(--faint); }
+.parts-accordion-list__empty { font-size: 13px; color: var(--color-text-3); }
 
 .parts-tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 12px; }
 
-.parts-stat-tile { position: relative; background: var(--subTile); border: 1px solid var(--subBorder); border-top: 2px solid var(--tile-accent); border-radius: var(--radius); padding: 14px 16px; }
-.parts-stat-tile__label { font-family: var(--font-mono); font-weight: 500; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); }
+.parts-stat-tile { position: relative; background: var(--color-surface-2); border: 1px solid var(--color-border); border-top: 2px solid var(--tile-accent); border-radius: var(--radius-none); padding: 14px 16px; }
+.parts-stat-tile__label { font-family: var(--font-mono); font-weight: 500; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text-2); }
 .parts-stat-tile__value { font-family: var(--font-mono); font-weight: 500; font-size: clamp(20.2px, 3.333vw, 28px); color: var(--tile-value-color); margin-top: 4px; font-variant-numeric: tabular-nums; }
-.parts-stat-tile__sub { font-size: 11px; color: var(--faint); margin-top: 3px; line-height: 1.4; }
+.parts-stat-tile__sub { font-size: 11px; color: var(--color-text-3); margin-top: 3px; line-height: 1.4; }
 
 .parts-linechart__area { position: relative; cursor: crosshair; }
 .parts-linechart__svg { width: 100%; height: 100%; display: block; }
 .parts-linechart__hoverline { position: absolute; top: 0; bottom: 0; width: 1px; pointer-events: none; }
 .parts-linechart__dot { position: absolute; transform: translate(-50%,-50%); pointer-events: none; }
-.parts-linechart__extreme { position: absolute; right: 2px; font-family: var(--font-mono); font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.parts-linechart__extreme { position: absolute; right: 2px; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-3); font-variant-numeric: tabular-nums; }
 .parts-linechart__extreme.is-max { top: 0; }
 .parts-linechart__extreme.is-min { bottom: 0; }
-.parts-linechart__footer { display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.parts-linechart__footer { display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-3); }
 
 .parts-barchart__bars { position: relative; display: flex; align-items: flex-end; gap: 4px; }
 .parts-barchart__bar-wrap { flex: 1; min-width: 4px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; cursor: pointer; }
-.parts-barchart__bar { border-radius: var(--radius); }
+.parts-barchart__bar { border-radius: var(--radius-none); }
 .parts-barchart__labels { display: flex; gap: 4px; margin-top: 6px; }
-.parts-barchart__label { flex: 1; min-width: 4px; text-align: center; font-family: var(--font-mono); font-size: 9px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.parts-barchart__label.is-active { color: var(--muted); }
+.parts-barchart__label { flex: 1; min-width: 4px; text-align: center; font-family: var(--font-mono); font-size: 9px; color: var(--color-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parts-barchart__label.is-active { color: var(--color-text-2); }
 
-.parts-chart-muted { color: var(--muted); }
-.parts-chart-text { color: var(--text); }
-.parts-chart-empty { color: var(--faint); font-size: 12px; }
+.parts-chart-muted { color: var(--color-text-2); }
+.parts-chart-text { color: var(--color-text-1); }
+.parts-chart-empty { color: var(--color-text-3); font-size: 12px; }
 
 .parts-field { display: flex; flex-direction: column; gap: 5px; }
-.parts-field__label { font-family: var(--font-body); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted2); }
+.parts-field__label { font-family: var(--font-body); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-text-2); }
 
-.parts-countdown-pending { font-family: var(--font-mono); font-size: 12px; color: var(--gold); }
-.parts-countdown-dash { color: var(--faint); }
-.parts-countdown { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--text); font-variant-numeric: tabular-nums; }
-.parts-countdown.is-overdue { color: var(--danger); }
+.parts-countdown-pending { font-family: var(--font-mono); font-size: 12px; color: var(--color-cyan); }
+.parts-countdown-dash { color: var(--color-text-3); }
+.parts-countdown { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--color-text-1); font-variant-numeric: tabular-nums; }
+.parts-countdown.is-overdue { color: var(--color-danger); }
 
-.parts-statref { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; background: transparent; border: none; border-radius: var(--radius); padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
-.parts-statref__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted2); }
+.parts-statref { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; background: transparent; border: none; border-radius: var(--radius-none); padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.parts-statref__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-text-2); }
 .parts-statref__value-wrap { display: inline-flex; align-items: baseline; gap: 7px; }
-.parts-statref__value { font-family: var(--font-mono); font-size: 13px; color: var(--text); font-variant-numeric: tabular-nums; }
-.parts-statref__arrow { font-family: var(--font-mono); font-size: 11px; color: var(--gold); }
+.parts-statref__value { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-1); font-variant-numeric: tabular-nums; }
+.parts-statref__arrow { font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan); }
 
 .parts-filtertabs { display: flex; flex-wrap: wrap; gap: 6px; }
-.parts-filtertabs__btn { min-height: 34px; padding: 5px 12px; border: 1px solid var(--panelBorder); background: transparent; color: var(--muted); border-radius: var(--radius); cursor: pointer; font-family: var(--font-body); font-weight: 300; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
-.parts-filtertabs__btn.is-active { border-color: var(--gold); background: var(--gold); color: var(--onAccent); }
+.parts-filtertabs__btn { min-height: 34px; padding: 5px 12px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-2); border-radius: var(--radius-none); cursor: pointer; font-family: var(--font-body); font-weight: 300; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
+.parts-filtertabs__btn.is-active { border-color: var(--color-cyan); background: var(--color-cyan); color: var(--color-text-on-accent); }
 
 /* Form-control base classes — pair with `className="yorha-input"` / `"yorha-btn"` for the
    focus/hover treatment in base.css. */
 .parts-input {
   font-family: var(--font-body);
   font-size: 14px;
-  color: var(--text);
-  background: var(--trackBg);
-  border: 1px solid var(--trackBorder);
-  border-radius: var(--radius);
+  color: var(--color-text-1);
+  background: var(--color-surface-input);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-none);
   padding: 8px 10px;
   /* Explicit height so a native <select> matches the <input>s exactly (it renders a different
      intrinsic height otherwise). Textareas add an extra class overriding this to override this. */
@@ -83,5 +83,5 @@
   width: 100%;
   box-sizing: border-box;
 }
-.parts-button { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); background: transparent; border: 1px solid var(--gold); border-radius: var(--radius); padding: 9px 16px; cursor: pointer; }
+.parts-button { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-cyan); background: transparent; border: 1px solid var(--color-cyan); border-radius: var(--radius-none); padding: 9px 16px; cursor: pointer; }
 .parts-button:disabled { opacity: .5; }

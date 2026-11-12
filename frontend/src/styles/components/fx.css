@@ -42,7 +42,7 @@
   font-family: var(--font-mono);
   font-size: clamp(16.4px, 2.381vw, 20px);
   letter-spacing: .1em;
-  color: var(--text);
+  color: var(--color-text-1);
   margin-top: 6px;
 }
 
