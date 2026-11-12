@@ -15,7 +15,11 @@ const PING_PONG = [0, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1];
 /** The jump sheets also hold a crouch (0-3) and a landing (6-7); their own longer sheets play those parts now. */
 const AIRBORNE = [4, 5];
 const sequence = (fps: number, from: CatPose, to: CatPose = from, loop = false, order: readonly number[] = FRAMES, extra: Pick<Sequence, 'turns' | 'sheet'> = {}): Sequence => ({ fps, order, loop, from, to, ...extra });
-/** One sheet (`desk-cat-<id>-atlas-v1.png`, 4 columns, 8 or 12 frames) per sequence; `from`/`to` are the poses it connects. */
+/**
+ * One sheet (`desk-cat-<id>-atlas-v1.png`, 4 columns, 8 or 12 frames) per sequence; `from`/`to` are the poses it connects.
+ * The quiet loops and idles (stand-idle, sniff, balance, sit, groom, yawn, watch-city, knead, loaf, sleep, react-sleeping) run at
+ * half speed (2-4 fps); walking, turning, jumping and landing keep 7-10 fps. All fps values live in this table.
+ */
 export const CAT_SEQUENCES = {
   'walk-start': sequence(10, 'standing', 'walking'),
   walk: sequence(10, 'walking', 'walking', true),
@@ -32,27 +36,27 @@ export const CAT_SEQUENCES = {
   // Both turn sheets rotate from facing right to facing left; facing left, the whole sheet is mirrored.
   'head-led-turn': sequence(8, 'standing', 'standing', false, FRAMES, { turns: true }),
   'turn-around': sequence(8, 'standing', 'standing', false, FRAMES_12, { turns: true }),
-  'stand-idle': sequence(4, 'standing', 'standing', true, PING_PONG),
-  sniff: sequence(8, 'standing', 'standing', true),
-  balance: sequence(4, 'standing', 'standing', true, PING_PONG),
+  'stand-idle': sequence(2, 'standing', 'standing', true, PING_PONG),
+  sniff: sequence(4, 'standing', 'standing', true),
+  balance: sequence(2, 'standing', 'standing', true, PING_PONG),
   stretch: sequence(7, 'standing'),
   'sit-down': sequence(7, 'standing', 'seated'),
-  sit: sequence(4, 'seated', 'seated', true, PING_PONG),
-  groom: sequence(7, 'seated', 'seated', true),
-  yawn: sequence(8, 'seated'),
-  'watch-city': sequence(4, 'seated', 'seated', true, PING_PONG),
-  knead: sequence(4, 'seated', 'seated', true, PING_PONG),
+  sit: sequence(2, 'seated', 'seated', true, PING_PONG),
+  groom: sequence(3.5, 'seated', 'seated', true),
+  yawn: sequence(4, 'seated'),
+  'watch-city': sequence(2, 'seated', 'seated', true, PING_PONG),
+  knead: sequence(2, 'seated', 'seated', true, PING_PONG),
   'stand-up': sequence(7, 'seated', 'standing'),
   'sit-to-loaf': sequence(8, 'seated', 'loaf'),
-  loaf: sequence(4, 'loaf', 'loaf', true, PING_PONG),
+  loaf: sequence(2, 'loaf', 'loaf', true, PING_PONG),
   'loaf-to-sit': sequence(8, 'loaf', 'seated', false, [...FRAMES].reverse(), { sheet: 'sit-to-loaf' }),
   'lie-down': sequence(7, 'seated', 'sleeping'),
   'circle-before-sleep': sequence(8, 'standing', 'sleeping', false, FRAMES_12),
-  sleep: sequence(4, 'sleeping', 'sleeping', true, PING_PONG),
+  sleep: sequence(2, 'sleeping', 'sleeping', true, PING_PONG),
   'wake-up': sequence(7, 'sleeping', 'seated'),
   'react-standing': sequence(7, 'standing'),
   'react-seated': sequence(7, 'seated'),
-  'react-sleeping': sequence(4, 'sleeping', 'sleeping', false, PING_PONG),
+  'react-sleeping': sequence(2, 'sleeping', 'sleeping', false, PING_PONG),
 };
 export type CatSequenceId = keyof typeof CAT_SEQUENCES;
 export const CAT_SEQUENCE_IDS = Object.keys(CAT_SEQUENCES) as CatSequenceId[];
@@ -259,12 +263,36 @@ export function catView(state: CatState): { sequence: CatSequenceId; frame: numb
 
 /** Every sheet cell is 512 px with the paws at (256, 464). One cell is `CAT_CELL` scene widths wide. */
 const CAT_CELL = .115, CELL_PIXELS = 512, PAWS = { x: 256, y: 464 };
+/** The whole cat sits this far below its spot so the paws rest on the surface: 3 logical px of the 1600 px scene. */
+const CAT_SINK = 3 / DESK_CANVAS.width;
 /**
- * Where a sequence's crop (in cell pixels) goes relative to the paws, in scene widths.
+ * Cell row where each pose touches the ground. Every sheet's opaque base is row 463, but in sitting, loafing and
+ * sleeping poses that is only the tail tip: the paws and body end higher (sleep: 444, so 19 cell px = 7 logical px
+ * too high). Measured per sheet as the lowest row holding at least a quarter of the frame's widest row. A number holds
+ * for the whole sheet (idle loops keep their breathing); a list gives one row per frame (the sheet changes pose).
+ * Sheets not listed (walking, standing, turning, jumping) stand on row 463.
+ */
+export const CAT_BASE_ROW = 463;
+const CAT_GROUND: Partial<Record<string, number | readonly number[]>> = {
+  sit: 458, groom: 461, knead: 457, 'watch-city': 460, yawn: 459, loaf: 458, sleep: 444, 'react-seated': 458, 'react-sleeping': 444, 'sit-to-loaf': 459,
+  'sit-down': [462, 462, 461, 462, 458, 459, 459, 458],
+  'stand-up': [458, 461, 460, 459, 459, 459, 461, 462],
+  'lie-down': [458, 462, 461, 462, 457, 453, 452, 443],
+  'wake-up': [443, 456, 457, 460, 460, 460, 460, 458],
+  'circle-before-sleep': [462, 449, 441, 462, 452, 461, 455, 461, 455, 459, 444, 447],
+};
+/** The cell row of `sequence`'s frame that rests on the ground. */
+export function catGround(sequence: CatSequenceId, frame: number): number {
+  const ground = CAT_GROUND[catSheet(sequence)];
+  return ground === undefined ? CAT_BASE_ROW : typeof ground === 'number' ? ground : ground[frame];
+}
+/**
+ * Where a sequence's crop (in cell pixels) goes relative to the paws, in scene widths: one scale for every sheet, and
+ * the frame's `ground` row on the same line as the walk's paws (`CAT_BASE_ROW`), lowered by `CAT_SINK`.
  * Facing left mirrors the crop around the paws, so a flipped cat stays on its spot.
  */
-export function catBox(crop: { x: number; y: number; width: number; height: number }, facing: Facing, scale: number) {
+export function catBox(crop: { x: number; y: number; width: number; height: number }, facing: Facing, scale: number, ground = CAT_BASE_ROW) {
   const unit = CAT_CELL * scale / CELL_PIXELS;
   const left = facing === 1 ? crop.x - PAWS.x : PAWS.x - crop.x - crop.width;
-  return { dx: left * unit, dy: (crop.y - PAWS.y) * unit, width: crop.width * unit, height: crop.height * unit };
+  return { dx: left * unit, dy: (crop.y - PAWS.y - (ground - CAT_BASE_ROW)) * unit + CAT_SINK, width: crop.width * unit, height: crop.height * unit };
 }

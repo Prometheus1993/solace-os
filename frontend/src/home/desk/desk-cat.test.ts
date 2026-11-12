@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  adjustedBox, advanceCat, canChain, CAT_SEQUENCE_IDS, CAT_SEQUENCES, CAT_SHEETS, catBox, catSheet, catSpots, catView, facingAfter, petCat, restSteps, skipToMove,
+  adjustedBox, advanceCat, canChain, CAT_SEQUENCE_IDS, CAT_SEQUENCES, CAT_SHEETS, catBox, catGround, catSheet, catSpots, catView, facingAfter, petCat, restSteps, skipToMove,
   startCat, travelSteps, type CatSequenceId, type CatSpotId, type CatSpots, type CatState, type CatStep,
 } from './desk-cat.ts';
 import { adjustProp } from './desk-layout-state.ts';
@@ -212,8 +212,23 @@ describe('cat routes and facing', () => {
     const right = catBox(crop, 1, 1), left = catBox(crop, -1, 1);
     expect(right.dx).toBeCloseTo(-206 * .115 / 512);
     expect(left.dx).toBeCloseTo(-(right.dx + right.width));
-    expect(right.dy + right.height).toBeCloseTo(.115 / 512);
+    expect(right.dy + right.height).toBeCloseTo(.115 / 512 + 3 / 1600);
     expect(catBox(crop, 1, 2).width).toBeCloseTo(right.width * 2);
+  });
+  it('draws every frame of every sequence at the walk scale with its ground row on the walk baseline', () => {
+    const walk = catBox({ x: 0, y: 0, width: 512, height: 512 }, 1, 1, catGround('walk', 0));
+    const baseline = walk.dy + 463 * .115 / 512;
+    for (const id of CAT_SEQUENCE_IDS) for (const frame of CAT_SEQUENCES[id].order) {
+      const ground = catGround(id, frame);
+      expect(ground, `${id} ${frame}`).toBeGreaterThan(400);
+      const box = catBox({ x: 0, y: 0, width: 512, height: 512 }, 1, 1, ground);
+      expect(box.width).toBeCloseTo(.115);
+      expect(box.height).toBeCloseTo(.115);
+      expect(box.dy + ground * .115 / 512, `${id} ${frame}`).toBeCloseTo(baseline);
+    }
+  });
+  it('lowers the sleeping cat to its paws, not its tail tip', () => {
+    expect(catBox({ x: 0, y: 0, width: 512, height: 512 }, 1, 1, catGround('sleep', 0)).dy).toBeGreaterThan(catBox({ x: 0, y: 0, width: 512, height: 512 }, 1, 1, catGround('walk', 0)).dy);
   });
 });
 

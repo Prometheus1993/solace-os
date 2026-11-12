@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { deskAsset } from './desk-assets.ts';
-import { advanceCat, CAT_SEQUENCES, CAT_SHEETS, catBox, catSheet, catSpots, catView, petCat, skipToMove, startCat, type CatSequenceId, type CatState } from './desk-cat.ts';
+import { advanceCat, CAT_SEQUENCES, CAT_SHEETS, catBox, catGround, catSheet, catSpots, catView, petCat, skipToMove, startCat, type CatSequenceId, type CatState } from './desk-cat.ts';
 import type { DeskLayout } from './desk-layout-state.ts';
 import { loadSheet, type Sheet } from './DeskSprite.tsx';
 
@@ -33,7 +33,7 @@ export function DeskCat({ moving, reduced, layout, petted, onPet, onError }: {
     if (!state || !element || !target || !sheets) return;
     const view = catView(state), sheet = sheets[catSheet(view.sequence)], frame = sheet.frames[view.frame];
     // Cell 0 starts at the sheet's origin, so its frame is the sequence's shared crop in cell pixels.
-    const box = catBox(sheet.frames[0], view.facing, scale);
+    const box = catBox(sheet.frames[0], view.facing, scale, catGround(view.sequence, view.frame));
     for (const [name, value] of [['x', view.point.x], ['y', view.point.y], ['dx', box.dx], ['dy', box.dy], ['w', box.width], ['h', box.height]] as const) {
       element.style.setProperty(`--cat-${name}`, String(value));
     }
