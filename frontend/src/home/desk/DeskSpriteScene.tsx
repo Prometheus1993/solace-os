@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import type { DayPhase } from '@solace/core';
 import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
 import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
 import { Icon } from '../icons.tsx';
@@ -9,6 +10,7 @@ import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
+import { lampFrame } from './desk-sky.ts';
 import type { DeskRadio } from './DeskPersonalTools.tsx';
 import { deskAsset as asset } from './desk-assets.ts';
 import { DeskLayoutHandles, type DeskLayoutControl } from './DeskLayoutEditor.tsx';
@@ -21,7 +23,7 @@ export const hasDeskSprites = [
   'desk-puck-atlas',
   'desk-window-frame',
   'desk-keyboard-mouse-atlas',
-  'desk-lamp'
+  'desk-lamp-atlas'
 ].every(name => !!asset(name));
 const LANES = [
   { top: '15%', size: '3.4%', duration: '49s', delay: '-27s', direction: 'reverse', depth: 'far' },
@@ -37,8 +39,8 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
-  moving: boolean; reduced: boolean; syncing: boolean; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
   onOpen: (view: 'terminal' | 'library' | 'signals' | 'radio' | 'scratchpad') => void; onLoad: () => void; onError: () => void;
@@ -98,6 +100,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, view, avatar, radio,
       {asset('desk-city-far') && <img className="desk-city-far" src={asset('desk-city-far')} alt="" draggable={false} onLoad={onLoad} onError={onError} />}
       {asset('desk-city-far') && <img className="desk-city-far desk-city-far-second" src={asset('desk-city-far')} alt="" draggable={false} onError={onError} />}
       <div className="desk-city-haze desk-haze-far" />
+      <div className="desk-sky-tint" />
       <CityStories moving={moving && !layout.values.window?.hidden} onError={onError} />
       {flightLanes(false)}
       <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
@@ -144,7 +147,10 @@ export function DeskSpriteScene({ moving, reduced, syncing, view, avatar, radio,
       <span className="desk-prop-label">LITTLE RELAY<small>INSPECT FIGURE</small></span>
     </button>
     <div {...layout.prop('surface')} className="desk-prop desk-prop-surface">{propSprite('surface')}</div>
-    <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">{propSprite('lamp')}</div>
+    <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">
+      {propSprite('lamp', lampFrame(skyPhase))}
+      <span className="desk-lamp-glow" aria-hidden="true" />
+    </div>
     <button
       {...layout.prop('books')}
       className="desk-prop desk-prop-books"
@@ -153,7 +159,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, view, avatar, radio,
       onClick={() => onOpen('library')}>
       {propSprite('books', booksHover || view === 'library' ? 1 : 0)}<span className="desk-prop-label">LIBRARY <small>MANGA + BOOKS</small></span>
     </button>
-    <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor">
+    <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor" data-awake={awake}>
       {propSprite('monitor', awake ? 1 : 0)}
       {awake ? <div className="desk-monitor">
         <span className="desk-monitor-caption">PERSONAL / ONLINE</span>
