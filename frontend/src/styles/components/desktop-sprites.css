@@ -5,40 +5,20 @@
   width:var(--desk-w);
   height:var(--desk-h);
   left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(var(--desk-scene-scale,1));
+  bottom:0;
+  transform-origin:50% 100%;
+  transform:translateX(-50%) scale(var(--desk-scene-scale,1));
 }
 .desk-sprite-scene { position:absolute; inset:0; container-type:size; }
-/* Opening coordinates are local to the frame so both resize/move as one object. */
-.desk-sprite-scene .desk-city {
-  inset:auto;
-  left:5.918367%;
-  top:12.96875%;
-  width:88.265306%;
-  height:77.03125%;
-  overflow:hidden;
-  clip-path:inset(0 round 12px);
-  background:#342334;
-}
-.desk-city-far {
-  position:absolute;
-  left:-3%;
-  bottom:0;
-  width:56%;
-  height:104%;
-  object-fit:cover;
-  object-position:center 40%;
-  image-rendering:pixelated;
-  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-}
-.desk-city-far-second { left:47%; transform:scaleX(-1); }
-.desk-sprite-scene .desk-flight-far,.desk-sprite-scene .desk-flight-middle { z-index:2; clip-path:none; }
-.desk-sprite-scene .desk-flight-near { z-index:5; }
-.desk-sprite-scene .desk-haze-far { z-index:1; top:0; height:100%; }.desk-sprite-scene .desk-haze-near { z-index:4; top:35%; height:65%; }
-.desk-sprite-scene .desk-distant-traffic { z-index:2; clip-path:none; }
-.desk-sprite-scene .desk-rain { inset:0; z-index:6; }.desk-sprite-scene .desk-glass-reflection { z-index:7; }
+/* The fixed room fills the scene. Its layers stack in document order; nothing in it carries a z-index. */
+.desk-sprite-scene .desk-city { inset:0; }
+.desk-pano-layer { position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; }
+/* The window opening (logical 21,20 1559x834): everything that moves in the city is clipped to it. */
+.desk-glass { position:absolute; left:1.3125%; top:2%; width:97.4375%; height:83.4%; overflow:hidden; }
+.desk-sprite-scene .desk-haze-far { top:0; height:100%; }.desk-sprite-scene .desk-haze-near { top:35%; height:65%; }
+.desk-sprite-scene .desk-rain { inset:0; }
 .desk-sprite-scene .desk-rain i { animation-name:desk-sprite-rain; }
-@keyframes desk-sprite-rain { from { transform:translateY(-40px); opacity:0; } 15%,70% { opacity:.6; } to { transform:translateY(400px); opacity:0; } }
+@keyframes desk-sprite-rain { from { transform:translateY(-40px); opacity:0; } 15%,70% { opacity:.6; } to { transform:translateY(860px); opacity:0; } }
 .desk-sprite { display:block; position:relative; width:100%; height:100%; pointer-events:none; }
 .desk-sprite canvas { display:block; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
 .desk-sprite[data-ready=false] canvas { visibility:hidden; }
@@ -56,20 +36,17 @@
 .desk-prop { position:absolute; padding:0; border:0; background:transparent; }
 .desk-prop[data-layout-id] { transform:translate(var(--layout-x,0px),var(--layout-y,0px)) scale(var(--layout-scale,1)); transform-origin:bottom center; }
 .desk-prop[hidden] { display:none!important; }
-.desk-prop-window-group { z-index:3; left:1%; top:8%; width:98%; height:64%; }
-.desk-prop-window { z-index:3; inset:0; width:100%; height:100%; pointer-events:none; }
-.desk-prop-window canvas,.desk-prop-surface canvas,.desk-prop-monitor > .desk-sprite canvas { object-fit:fill; }
-.desk-prop-surface { z-index:5; left:0; bottom:9%; width:100%; height:calc(var(--desk-w)*.2025); }
-/* Rear and front rows have separate footprints, including the monitor stand. */
-.desk-prop-lamp { z-index:7; left:4%; bottom:calc(9% + var(--desk-w)*.14); width:8%; height:calc(var(--desk-w)*.1226); }
-.desk-prop-books { z-index:7; left:14%; bottom:calc(9% + var(--desk-w)*.117); width:11%; height:calc(var(--desk-w)*.0758); }
+.desk-prop-monitor > .desk-sprite canvas { object-fit:fill; }
+/* Everything stands on the tabletop (logical y 881 and down): a rear row against the window and a front row. */
+.desk-prop-lamp { z-index:7; left:4.5%; bottom:8.5%; width:9%; height:calc(var(--desk-w)*.1379); }
+.desk-prop-books { z-index:7; left:14%; bottom:10%; width:9%; height:calc(var(--desk-w)*.062); }
 .desk-prop-books canvas { object-position:bottom center; }
-.desk-prop-monitor { z-index:7; left:41%; bottom:calc(9% + var(--desk-w)*.14); width:34%; height:calc(var(--desk-w)*.1564); container-type:inline-size; }
-.desk-prop-keyboard { z-index:8; left:45%; bottom:calc(9% + var(--desk-w)*.061); width:22%; height:calc(var(--desk-w)*.0635); }
-.desk-prop-mouse { z-index:8; left:70%; bottom:calc(9% + var(--desk-w)*.071); width:4%; height:calc(var(--desk-w)*.0418); }
-.desk-prop-puck { z-index:8; left:83%; bottom:calc(9% + var(--desk-w)*.062); width:6.5%; height:calc(var(--desk-w)*.0422); }
-/* The cat's cushion sits below the tabletop lip, at the desk's right-front corner. */
-.desk-prop-companion { z-index:9; left:86.3%; bottom:5.5%; width:9.4%; height:calc(var(--desk-w)*.034); }
+.desk-prop-monitor { z-index:7; left:54%; bottom:10.3%; width:24%; height:calc(var(--desk-w)*.1104); container-type:inline-size; }
+.desk-prop-keyboard { z-index:8; left:57.5%; bottom:6.5%; width:17%; height:calc(var(--desk-w)*.0491); }
+.desk-prop-mouse { z-index:8; left:75.5%; bottom:7%; width:3.2%; height:calc(var(--desk-w)*.0334); }
+.desk-prop-puck { z-index:8; left:44%; bottom:6.5%; width:5.5%; height:calc(var(--desk-w)*.0357); }
+/* The cat's cushion lies on the right of the tabletop. */
+.desk-prop-companion { z-index:9; left:83%; bottom:6%; width:10%; height:calc(var(--desk-w)*.0362); }
 .desk-prop-companion canvas { object-position:bottom center; }
 /* The cat is placed by its paws (--cat-x/y, scene fractions); its sprite box is given in scene widths (DeskCat.tsx). */
 .desk-cat {
@@ -83,19 +60,19 @@
 .desk-cat canvas { display:block; width:100%; height:100%; image-rendering:pixelated; pointer-events:none; }
 .desk-cat[data-flip=true] canvas { transform:scaleX(-1); }
 .desktop-sprite-hub[data-editing=true] .desk-cat { pointer-events:none; }
-.desk-prop-radio { z-index:8; left:28%; bottom:calc(9% + var(--desk-w)*.069); width:8.5%; height:calc(var(--desk-w)*.0657); }
-.desk-prop-speaker { z-index:7; bottom:calc(9% + var(--desk-w)*.145); width:3%; height:calc(var(--desk-w)*.0471); }
-.desk-prop-speaker-0 { left:36%; }.desk-prop-speaker-1 { left:77%; }
-.desk-prop-headphones { z-index:8; left:21%; bottom:calc(9% + var(--desk-w)*.065); width:5%; height:calc(var(--desk-w)*.0417); }
-.desk-prop-notebook { z-index:8; left:12%; bottom:calc(9% + var(--desk-w)*.064); width:6%; height:calc(var(--desk-w)*.0386); }
-.desk-prop-plant { z-index:7; left:29%; bottom:calc(9% + var(--desk-w)*.17); width:5%; height:calc(var(--desk-w)*.0577); }
-.desk-prop-mug { z-index:8; left:38%; bottom:calc(9% + var(--desk-w)*.065); width:3.5%; height:calc(var(--desk-w)*.047); }
-.desk-prop-pipes { z-index:4; left:1.5%; top:31%; width:5%; height:26%; }
-.desk-prop-hanging-plant { z-index:4; left:29%; top:13%; width:7%; height:20%; }
-.desk-prop-charm { z-index:4; right:19%; top:16%; width:3%; height:18%; animation:desk-charm-sway 9s ease-in-out infinite alternate; }
-.desk-prop-shelf { z-index:4; left:9%; top:33%; width:17%; height:calc(var(--desk-w)*.045); }
-.desk-prop-figure { z-index:5; top:calc(33% - var(--desk-w)*.054); width:4%; height:calc(var(--desk-w)*.066); transition:filter 180ms,translate 180ms; }
-.desk-prop-figure-one { left:12%; }.desk-prop-figure-two { left:19%; }
+.desk-prop-radio { z-index:8; left:32%; bottom:7.5%; width:6.5%; height:calc(var(--desk-w)*.0502); }
+.desk-prop-speaker { z-index:7; bottom:10%; width:3%; height:calc(var(--desk-w)*.0471); }
+.desk-prop-speaker-0 { left:50.5%; }.desk-prop-speaker-1 { left:78.6%; }
+.desk-prop-headphones { z-index:8; left:22.5%; bottom:7%; width:4.5%; height:calc(var(--desk-w)*.0375); }
+.desk-prop-notebook { z-index:8; left:15.5%; bottom:6.5%; width:6%; height:calc(var(--desk-w)*.0386); }
+.desk-prop-plant { z-index:7; left:25.5%; bottom:10%; width:6%; height:calc(var(--desk-w)*.0692); }
+.desk-prop-mug { z-index:8; left:39%; bottom:7%; width:3.5%; height:calc(var(--desk-w)*.047); }
+.desk-prop-pipes { z-index:4; right:.4%; top:20%; width:5%; height:26%; }
+.desk-prop-hanging-plant { z-index:4; left:30%; top:1.5%; width:7%; height:20%; }
+.desk-prop-charm { z-index:4; right:19%; top:1.5%; width:3%; height:18%; animation:desk-charm-sway 9s ease-in-out infinite alternate; }
+.desk-prop-shelf { z-index:4; left:1.2%; top:48%; width:17%; height:calc(var(--desk-w)*.045); }
+.desk-prop-figure { z-index:5; top:calc(48% - var(--desk-w)*.054); width:4%; height:calc(var(--desk-w)*.066); transition:filter 180ms,translate 180ms; }
+.desk-prop-figure-one { left:4.2%; }.desk-prop-figure-two { left:11.2%; }
 .desk-prop-figure:hover,.desk-prop-figure:focus-visible { translate:0 -4px; filter:drop-shadow(0 0 8px #8ddbd94d); }
 .desk-prop-figure:active { rotate:-5deg; }
 .desk-prop[data-reaction=true] > .desk-sprite { animation:desk-prop-bob 700ms ease-in-out; }
@@ -105,7 +82,7 @@
 .desk-reaction-announcement { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .desk-radio-led { position:absolute; left:16%; top:31%; width:48%; height:5%; background:#ffd09a; opacity:0; box-shadow:0 0 12px #e9a54e; pointer-events:none; }
 .desk-prop-radio[data-playing=true] .desk-radio-led { animation:desk-radio-light 2s ease-in-out infinite alternate; }
-.desk-prop-hologram { z-index:7; left:83%; bottom:calc(9% + var(--desk-w)*.14); width:10.5%; height:calc(var(--desk-w)*.1969); }
+.desk-prop-hologram { z-index:7; left:41.5%; bottom:10%; width:8.5%; height:calc(var(--desk-w)*.1594); }
 .desk-hologram-person {
   position:absolute;
   left:10%;
@@ -137,9 +114,9 @@
 }
 .desk-hologram-base { position:absolute; left:9%; bottom:0; width:82%; height:20%; }
 .desk-prop-hologram .desk-prop-label { left:auto; right:0; transform:translateY(6px); bottom:94%; }
-.desk-delivery-drone { position:absolute; z-index:5; left:0; top:36%; width:8%; height:10%; animation:desk-drone-flight 41s -17s linear infinite; }
+.desk-delivery-drone { position:absolute; left:0; top:36%; width:8%; height:10%; animation:desk-drone-flight 41s -17s linear infinite; }
 .desk-delivery-drone-far { top:13%; width:3%; height:5%; opacity:.65; animation-duration:63s; animation-delay:-42s; animation-direction:reverse; }
-.desk-extra-windows { position:absolute; z-index:3; inset:0; pointer-events:none; }
+.desk-extra-windows { position:absolute; inset:0; pointer-events:none; }
 .desk-extra-windows i {
   position:absolute;
   width:2px;
@@ -215,12 +192,12 @@
 }
 .desktop-sprite-hub .desk-header { top:auto; bottom:0; padding:10px 22px; background:linear-gradient(transparent,#100e18ed); }
 .desktop-sprite-hub .desk-surfaces { inset:108px 4% 70px; }
-.desktop-sprite-hub[data-origin=puck] .desk-scenery { transform-origin:86% 85%; }
-.desktop-sprite-hub[data-origin=puck] .desk-surface { transform-origin:85% 100%; }
-.desktop-sprite-hub[data-origin=monitor] .desk-scenery { transform-origin:57% 55%; }
-.desktop-sprite-hub[data-origin=radio] .desk-scenery { transform-origin:30% 80%; }
-.desktop-sprite-hub[data-origin=notebook] .desk-scenery { transform-origin:16% 85%; }
-.desktop-sprite-hub[data-origin=shelf] .desk-scenery { transform-origin:17% 33%; }
+.desktop-sprite-hub[data-origin=puck] .desk-scenery { transform-origin:47% 91%; }
+.desktop-sprite-hub[data-origin=puck] .desk-surface { transform-origin:47% 100%; }
+.desktop-sprite-hub[data-origin=monitor] .desk-scenery { transform-origin:66% 80%; }
+.desktop-sprite-hub[data-origin=radio] .desk-scenery { transform-origin:35% 90%; }
+.desktop-sprite-hub[data-origin=notebook] .desk-scenery { transform-origin:18% 91%; }
+.desktop-sprite-hub[data-origin=shelf] .desk-scenery { transform-origin:10% 46%; }
 .desktop-sprite-hub .desk-header { gap:10px; }.desktop-sprite-hub .desk-header nav { flex-wrap:wrap; gap:8px; }
 .desktop-sprite-hub .desk-header nav button { font-size:12px; }
 .desk-radio-panel,.desk-collection-panel { max-width:800px; margin:auto; padding:30px; line-height:1.6; }

@@ -1,46 +1,56 @@
 /* Day and night (#17). The desk root carries data-sky-phase and each phase only sets the values below.
-   No art is repainted: the city (painted at dusk) is graded with filters and a sky tint, the room light is gradients. */
+   No art is repainted: the room layers are painted at dusk. The sky gets a colour wash, every city layer its own
+   filter (the far skyline fades most, the near blocks least), and the room light is a filter plus gradients. */
 .desk-scenery[data-sky-phase=dawn] {
-  --sky-city:brightness(1.08) saturate(.8) hue-rotate(14deg);
   --sky-tint:#f6c8a473;
+  --sky-far:brightness(1.14) saturate(.6) hue-rotate(14deg);
+  --sky-mid:brightness(1.08) saturate(.75) hue-rotate(10deg);
+  --sky-near:brightness(1.03) saturate(.85) hue-rotate(6deg);
+  --sky-billboard:brightness(1.03) saturate(.85);
   --sky-lights:.6;
   --room-light:brightness(.86) saturate(.95);
   --room-glow:0;
 }
 .desk-scenery[data-sky-phase=day] {
-  --sky-city:brightness(1.28) saturate(.55) hue-rotate(0deg);
   --sky-tint:#a9d0efd1;
+  --sky-far:brightness(1.38) saturate(.4) hue-rotate(0deg);
+  --sky-mid:brightness(1.26) saturate(.55) hue-rotate(0deg);
+  --sky-near:brightness(1.16) saturate(.68) hue-rotate(0deg);
+  --sky-billboard:brightness(1.16) saturate(.68);
   --sky-lights:.2;
   --room-light:brightness(1) saturate(1);
   --room-glow:0;
 }
 .desk-scenery[data-sky-phase=dusk] {
-  --sky-city:brightness(1) saturate(1) hue-rotate(0deg);
   --sky-tint:#f6c8a400;
+  --sky-far:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-mid:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-near:brightness(1) saturate(1) hue-rotate(0deg);
+  --sky-billboard:brightness(1) saturate(1);
   --sky-lights:1;
   --room-light:brightness(.8) saturate(.95);
   --room-glow:.7;
 }
 .desk-scenery[data-sky-phase=night] {
-  --sky-city:brightness(.72) saturate(.9) hue-rotate(-24deg);
   --sky-tint:#060a26d9;
+  --sky-far:brightness(.55) saturate(.8) hue-rotate(8deg);
+  --sky-mid:brightness(.7) saturate(.9) hue-rotate(6deg);
+  --sky-near:brightness(.82) saturate(.95) hue-rotate(4deg);
+  --sky-billboard:brightness(.8) saturate(.95);
   --sky-lights:1;
   --room-light:brightness(.62) saturate(.85);
   --room-glow:1;
 }
-.desk-city-far,.desk-city-stories { filter:var(--sky-city); transition:filter 4s ease; }
-/* The sky colour: strongest at the top of the window, gone before the near rooftops. */
-.desk-sky-tint {
-  position:absolute;
-  inset:0;
-  z-index:1;
-  background-color:var(--sky-tint);
-  mask-image:linear-gradient(#000 18%,transparent 78%);
-  transition:background-color 4s ease;
-}
+.desk-pano-far { filter:var(--sky-far); }
+.desk-pano-mid,.desk-city-stories { filter:var(--sky-mid); }
+.desk-pano-near { filter:var(--sky-near); }
+.desk-pano-billboard-frame { filter:var(--sky-billboard); }
+.desk-pano-layer,.desk-city-stories { transition:filter 4s ease; }
+/* The sky colour washes over the sky layer only: it sits under the far skyline. */
+.desk-sky-tint { position:absolute; inset:0; background-color:var(--sky-tint); transition:background-color 4s ease; }
 .desk-extra-windows { opacity:var(--sky-lights); transition:opacity 4s ease; }
-/* The room: every prop dims with the daylight, except what is lit by itself (the lamp, an awake monitor). */
-.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light); transition:filter 4s ease; }
+/* The room: the window frame, the desk and every prop dim with the daylight, except what is lit by itself (the lamp, an awake monitor). */
+.desk-pano-window,.desk-pano-desk,.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light); transition:filter 4s ease; }
 .desk-prop-lamp > .desk-sprite,.desk-prop-monitor[data-awake=true] > .desk-sprite { filter:none; }
 /* Lamp light: a halo around the bulb and a pool on the desk to the right of the base. */
 .desk-lamp-glow {
@@ -71,5 +81,5 @@
   transition:opacity 4s ease;
 }
 .desk-prop-monitor[data-awake=true]::before { opacity:var(--room-glow); }
-.desktop-sprite-hub[data-motion=false] :is(.desk-city-far,.desk-city-stories,.desk-sky-tint,.desk-extra-windows,.desk-sprite,.desk-cat canvas,.desk-lamp-glow),
+.desktop-sprite-hub[data-motion=false] :is(.desk-pano-layer,.desk-city-stories,.desk-sky-tint,.desk-extra-windows,.desk-sprite,.desk-cat canvas,.desk-lamp-glow),
 .desktop-sprite-hub[data-motion=false] .desk-prop-monitor::before { transition:none; }

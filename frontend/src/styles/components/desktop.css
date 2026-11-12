@@ -28,7 +28,7 @@
 .desktop-hub:not(.desk-view-desk)::after { opacity:1; }
 .desk-stage { position:absolute; }
 .desk-scenery { position:absolute; inset:0; transition:transform 680ms cubic-bezier(.2,.75,.2,1),filter 680ms; }
-.desktop-hub[data-origin=books] .desk-scenery { transform-origin:23% 65%; }
+.desktop-hub[data-origin=books] .desk-scenery { transform-origin:18% 87%; }
 .desktop-hub:not(.desk-view-desk) .desk-scenery { transform:scale(1.28); filter:brightness(.8); }
 .desk-city { --city-play:running; position:absolute; pointer-events:none; }
 /* Local, low-opacity light and fog retain the authored pixel silhouettes. */

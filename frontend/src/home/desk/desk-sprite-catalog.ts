@@ -8,8 +8,6 @@ const ACCESSORY_FRAMES: Partial<Record<DeskObjectId, number>> = {
 /** State semantics match the original sheets: monitor0 asleep/1 awake, book0 closed/1 open, lamp0 off/1 on, puck0..3. */
 export function deskSpriteSpec(id: DeskObjectId, state = id === 'monitor' ? 1 : 0): DeskSpriteSpec {
   if (id === 'companion') return { asset: 'desk-cat-cushion' };
-  if (id === 'surface') return { asset: 'desk-surface' };
-  if (id === 'window') return { asset: 'desk-window-frame' };
   if (id === 'monitor' || id === 'books' || id === 'lamp') return { asset: `desk-${id}-atlas`, columns: 2, frame: state };
   if (id === 'puck') return { asset: 'desk-puck-atlas', columns: 2, rows: 2, frame: state };
   if (id === 'keyboard' || id === 'mouse') return { asset: 'desk-keyboard-mouse-atlas', columns: 2, independent: true, split: .63, frame: id === 'keyboard' ? 0 : 1 };

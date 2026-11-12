@@ -1,17 +1,6 @@
 import type { DayPhase } from '@solace/core';
-import { clamp01, fadeInOut, lerp, projectPoint, type Point } from './motion.ts';
+import { clamp01, fadeInOut, lerp } from './motion.ts';
 
-export type CityDepth = 'near' | 'far';
-const CITY_VIEWS = { near: { scale: 1, x: 0, y: 0 }, far: { scale: .58, x: .22, y: .02 } } as const;
-export function cityScale(depth: CityDepth) { return CITY_VIEWS[depth].scale; }
-export function projectCityPoint(point: Point, depth: CityDepth): Point { return projectPoint(point, CITY_VIEWS[depth]); }
-export const CITY_LEDGES = [
-  { x0: -.35, x1: .34, y: .56 }, { x0: .40, x1: .66, y: .56 }, { x0: .72, x1: 1.3, y: .56 },
-  { x0: -.35, x1: .29, y: .79 }, { x0: .35, x1: .64, y: .79 }, { x0: .70, x1: 1.3, y: .79 },
-] as const;
-export function cityRoofs(depth: CityDepth) {
-  return CITY_LEDGES.map(roof => ({ x0: projectCityPoint({ x: roof.x0, y: roof.y }, depth).x, x1: projectCityPoint({ x: roof.x1, y: roof.y }, depth).x, y: projectCityPoint({ x: 0, y: roof.y }, depth).y }));
-}
 export function trainFlight(route: number, progress: number) {
   const t = clamp01(progress);
   const fade = fadeInOut(t, .06, .12);

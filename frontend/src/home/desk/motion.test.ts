@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arcPoint, clamp01, cycleAt, fadeInOut, lerp, lerpPoint, projectPoint } from './motion.ts';
+import { arcPoint, clamp01, cycleAt, fadeInOut, lerp, lerpPoint } from './motion.ts';
 
 describe('shared desk motion helpers', () => {
   it('clamps and interpolates', () => {
@@ -9,10 +9,6 @@ describe('shared desk motion helpers', () => {
     expect(lerp(2, 6, 0)).toBe(2);
     expect(lerp(2, 6, .25)).toBe(3);
     expect(lerp(2, 6, 1)).toBe(6);
-  });
-  it('projects a point into a scaled, shifted view', () => {
-    expect(projectPoint({ x: .5, y: .2 }, { scale: 1, x: 0, y: 0 })).toEqual({ x: .5, y: .2 });
-    expect(projectPoint({ x: .5, y: .5 }, { scale: .5, x: .25, y: .1 })).toEqual({ x: .5, y: .35 });
   });
   it('fades in at the start and out at the end of an action', () => {
     expect(fadeInOut(0, .1, .2)).toBe(0);

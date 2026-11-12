@@ -68,21 +68,19 @@ export const CAT_SHEETS = CAT_SEQUENCE_IDS.filter(id => catSheet(id) === id).map
 export const canChain = (previous: CatSequenceId, next: CatSequenceId) => CAT_SEQUENCES[previous].to === CAT_SEQUENCES[next].from;
 const playTime = (id: CatSequenceId) => CAT_SEQUENCES[id].order.length / CAT_SEQUENCES[id].fps;
 
-export type CatSpotId = 'cushion' | 'windowsill' | 'monitor';
+export type CatSpotId = 'cushion' | 'monitor';
 /** A place the cat rests, plus the stretch (`x0..x1`, at the same height) it can walk along there. */
 export type CatSpot = { id: CatSpotId; point: Point; x0: number; x1: number };
 export type CatSpots = { home: CatSpot; spots: CatSpot[] };
 type Box = { left: number; top: number; width: number; height: number };
-const FLOOR = [.05, .95] as const;
+const TABLETOP = [.05, .95] as const;
 /**
  * Each spot hangs on a prop: `box` mirrors that prop's default box in `desktop-sprites.css`, `u`/`v` is the
- * resting point inside it and `span` the walkable part of its width (none = the floor).
- * The lower window edge sits behind the desk, so the windowsill spot is where the desk's back rail meets the glass.
+ * resting point inside it and `span` the walkable part of its width (none = the whole tabletop, at the cushion's height).
  */
 const ANCHORS: { id: CatSpotId; prop: DeskObjectId; box: Box; u: number; v: number; span?: readonly [number, number] }[] = [
-  { id: 'cushion', prop: 'companion', box: { left: .863, top: .8906, width: .094, height: .0544 }, u: .5, v: .45 },
-  { id: 'windowsill', prop: 'window', box: { left: .01, top: .08, width: .98, height: .64 }, u: .2, v: .79, span: [.05, .38] },
-  { id: 'monitor', prop: 'monitor', box: { left: .41, top: .43576, width: .34, height: .25024 }, u: .3, v: 0, span: [.1, .9] },
+  { id: 'cushion', prop: 'companion', box: { left: .83, top: .88208, width: .1, height: .05792 }, u: .5, v: .45 },
+  { id: 'monitor', prop: 'monitor', box: { left: .54, top: .72036, width: .24, height: .17664 }, u: .3, v: 0, span: [.1, .9] },
 ];
 /** The layout editor moves a prop by `x`/`y` percent of the scene and scales it around its bottom centre. */
 export function adjustedBox(box: Box, { x, y, scale }: PropAdjustment): Box {
@@ -93,7 +91,7 @@ export function adjustedBox(box: Box, { x, y, scale }: PropAdjustment): Box {
 export function catSpots(layout: DeskLayout): CatSpots {
   const all = ANCHORS.map(anchor => {
     const box = adjustedBox(anchor.box, layout[anchor.prop] ?? DEFAULT_ADJUSTMENT);
-    const [x0, x1] = anchor.span ? anchor.span.map(u => lerp(box.left, box.left + box.width, u)) : FLOOR;
+    const [x0, x1] = anchor.span ? anchor.span.map(u => lerp(box.left, box.left + box.width, u)) : TABLETOP;
     return { id: anchor.id, point: { x: lerp(box.left, box.left + box.width, anchor.u), y: lerp(box.top, box.top + box.height, anchor.v) }, x0, x1 };
   });
   return { home: all[0], spots: all.filter((_, index) => !layout[ANCHORS[index].prop]?.hidden) };
@@ -115,7 +113,7 @@ const play = (id: CatSequenceId, at: Point, facing: Facing, times = 1): CatStep 
 export const facingAfter = (step: CatStep): Facing => CAT_SEQUENCES[step.sequence].turns ? (-step.facing as Facing) : step.facing;
 
 /**
- * Sit and follow some habits (groom, knead on the cushion only, watch the city mostly from the windowsill, yawn),
+ * Sit and follow some habits (groom, knead on the cushion only, watch the city now and then, yawn),
  * then nap one of three ways: lie down, tuck into a loaf, or get up and circle before sleeping.
  * Starts seated, ends standing.
  */
@@ -126,7 +124,7 @@ export function restSteps(spots: CatSpots, spot: CatSpot, facing: Facing, random
   if (random() < .5) { add('groom', between(random, 2, 4)); add('sit', between(random, 1, 2)); }
   // Home is the cushion's place even when the cushion itself is hidden: no cushion, no kneading.
   if (spot.id === 'cushion' && spots.spots.some(item => item.id === 'cushion') && random() < .5) { add('knead', between(random, 2, 3)); add('sit'); }
-  if (random() < (spot.id === 'windowsill' ? .8 : .15)) { add('watch-city', between(random, 2, 4)); add('sit'); }
+  if (random() < .15) { add('watch-city', between(random, 2, 4)); add('sit'); }
   if (random() < .4) add('yawn');
   const nap = random();
   if (nap < .4) { add('lie-down'); add('sleep', between(random, 4, 10)); add('wake-up'); }

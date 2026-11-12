@@ -90,35 +90,41 @@ describe('cat sequences', () => {
 });
 
 describe('cat spots', () => {
-  it('has a cushion, windowsill and monitor-top spot on the default desk', () => {
+  it('has a cushion on the right of the tabletop and a monitor-top spot on the default desk', () => {
     const { home, spots } = catSpots({});
-    expect(spots.map(item => item.id)).toEqual(['cushion', 'windowsill', 'monitor']);
+    expect(spots.map(item => item.id)).toEqual(['cushion', 'monitor']);
     expect(home).toBe(spots[0]);
-    expect(spot({ home, spots }, 'monitor').point.x).toBeCloseTo(.512);
-    expect(spot({ home, spots }, 'monitor').point.y).toBeCloseTo(.43576);
+    expect(home.point.x).toBeCloseTo(.88);
+    // On the cushion, below the tabletop's back edge (logical y 881).
+    expect(home.point.y).toBeGreaterThan(.881);
+    expect(home.point.y).toBeLessThan(.94);
+    // No stretch of its own: from the cushion the cat walks the whole tabletop.
+    expect([home.x0, home.x1]).toEqual([.05, .95]);
+    expect(spot({ home, spots }, 'monitor').point.x).toBeCloseTo(.612);
+    expect(spot({ home, spots }, 'monitor').point.y).toBeCloseTo(.72036);
   });
   it('moves a spot with its prop', () => {
     const before = catSpots({}), after = catSpots(adjustProp({}, 'monitor', { x: 10, y: -5 }));
     expect(spot(after, 'monitor').point.x).toBeCloseTo(spot(before, 'monitor').point.x + .1);
     expect(spot(after, 'monitor').point.y).toBeCloseTo(spot(before, 'monitor').point.y - .05);
     expect(spot(after, 'monitor').x0).toBeCloseTo(spot(before, 'monitor').x0 + .1);
-    expect(spot(after, 'windowsill')).toEqual(spot(before, 'windowsill'));
+    expect(spot(after, 'cushion')).toEqual(spot(before, 'cushion'));
   });
   it('scales a prop around its bottom centre, like the editor does', () => {
     expect(adjustedBox({ left: .4, top: .4, width: .2, height: .2 }, { x: 0, y: 0, scale: 2 })).toEqual({ left: .3, top: expect.closeTo(.2), width: .4, height: .4 });
   });
   it('drops the spot of a hidden prop but keeps home', () => {
-    const { home, spots } = catSpots(adjustProp({}, 'window', { hidden: true }));
-    expect(spots.map(item => item.id)).toEqual(['cushion', 'monitor']);
+    const { home, spots } = catSpots(adjustProp({}, 'monitor', { hidden: true }));
+    expect(spots.map(item => item.id)).toEqual(['cushion']);
     const noCushion = catSpots(adjustProp({}, 'companion', { hidden: true }));
-    expect(noCushion.spots.map(item => item.id)).toEqual(['windowsill', 'monitor']);
+    expect(noCushion.spots.map(item => item.id)).toEqual(['monitor']);
     expect(noCushion.home).toEqual(home);
   });
 });
 
 describe('cat routes and facing', () => {
   const spots = catSpots({}), random = () => .9;
-  it('turns round, walks left along the floor and jumps up onto the monitor', () => {
+  it('turns round, walks left along the tabletop and jumps up onto the monitor', () => {
     const steps = travelSteps(spot(spots, 'cushion'), spot(spots, 'monitor'), 1, random);
     expect(names(steps)).toEqual(['reposition', 'turn-around', 'walk-start', 'walk', 'walk-stop', 'look-up', 'jump-prepare', 'jump-up', 'landing-recover', 'sit-down']);
     expect(steps.map(step => step.facing)).toEqual([1, 1, -1, -1, -1, -1, -1, -1, -1, -1]);
@@ -136,14 +142,10 @@ describe('cat routes and facing', () => {
     expect(down[4].to.x - down[4].from.x).toBeCloseTo(.08);
     expect(down[6].to).toEqual(spot(spots, 'cushion').point);
     expect(names(travelSteps(spot(spots, 'monitor'), spot(spots, 'cushion'), 1, () => .1))).toContain('look-down');
-    const up = travelSteps(spot(spots, 'windowsill'), spot(spots, 'monitor'), 1, random);
-    expect(names(up)).toEqual(['walk-start', 'walk', 'walk-stop', 'look-up', 'jump-prepare', 'jump-up', 'landing-recover', 'walk-start', 'walk-stop', 'sit-down']);
-    expect(up[2].to.x).toBeCloseTo(spot(spots, 'windowsill').x1);
-    expect(up[5].to.x - up[5].from.x).toBeCloseTo(.08);
   });
   it('recovers from a landing when it has nowhere left to walk', () => {
-    const sill = spot(spots, 'windowsill'), below = { ...spot(spots, 'cushion'), point: { x: sill.point.x + .08, y: .9 } };
-    expect(names(travelSteps(sill, below, 1, random))).toEqual(['edge-peek', 'jump-down', 'landing-recover', 'sit-down']);
+    const top = spot(spots, 'monitor'), below = { ...spot(spots, 'cushion'), point: { x: top.point.x + .08, y: .9 } };
+    expect(names(travelSteps(top, below, 1, random))).toEqual(['edge-peek', 'jump-down', 'landing-recover', 'sit-down']);
   });
   it('turns right to left with the sheet as drawn and left to right with the whole sheet mirrored', () => {
     for (const [pick, turn] of [[.1, 'head-led-turn'], [.9, 'turn-around']] as const) {
@@ -176,14 +178,14 @@ describe('cat routes and facing', () => {
     expect(at(walk, walk.duration / 2)).toBeCloseTo((walk.from.x + walk.to.x) / 2);
   });
   it('shares a short distance between the start and the stop instead of walking a stride on the spot', () => {
-    const sill = spot(spots, 'windowsill'), near = { ...sill, point: { x: sill.point.x + .05, y: sill.point.y } };
-    const steps = travelSteps(sill, near, 1, random);
+    const home = spot(spots, 'cushion'), near = { ...home, point: { x: home.point.x + .05, y: home.point.y } };
+    const steps = travelSteps(home, near, 1, random);
     expect(names(steps)).toEqual(['walk-start', 'walk-stop', 'sit-down']);
-    expect(steps[0].to.x).toBeCloseTo(sill.point.x + .025);
+    expect(steps[0].to.x).toBeCloseTo(home.point.x + .025);
     expect(steps[1].to.x).toBe(near.point.x);
   });
   it('plays only the airborne frames of a jump, stretched over the flight, and lands at the height of the target', () => {
-    const jump = travelSteps(spot(spots, 'windowsill'), spot(spots, 'monitor'), 1, random)[5];
+    const jump = travelSteps(spot(spots, 'cushion'), spot(spots, 'monitor'), -1, random)[5];
     const at = (elapsed: number) => catView({ spot: 'monitor', steps: [jump], elapsed, reaction: null, petted: false });
     expect(jump.sequence).toBe('jump-up');
     expect(jump.duration).toBeGreaterThanOrEqual(.3);
@@ -201,11 +203,9 @@ describe('cat routes and facing', () => {
   it('balances only on the monitor and may sniff on arrival anywhere', () => {
     const eager = () => .1;
     expect(names(travelSteps(spot(spots, 'cushion'), spot(spots, 'monitor'), 1, eager)).slice(-3)).toEqual(['sniff', 'balance', 'sit-down']);
-    for (const [from, to] of [['monitor', 'cushion'], ['monitor', 'windowsill'], ['cushion', 'windowsill'], ['windowsill', 'cushion']] as const) {
-      const steps = names(travelSteps(spot(spots, from), spot(spots, to), 1, eager));
-      expect(steps).not.toContain('balance');
-      expect(steps.slice(-2)).toEqual(['sniff', 'sit-down']);
-    }
+    const steps = names(travelSteps(spot(spots, 'monitor'), spot(spots, 'cushion'), 1, eager));
+    expect(steps).not.toContain('balance');
+    expect(steps.slice(-2)).toEqual(['sniff', 'sit-down']);
   });
   it('mirrors the sprite box around the paws when facing left', () => {
     const crop = { x: 50, y: 152, width: 412, height: 313 };
@@ -254,20 +254,19 @@ describe('cat state machine', () => {
   it('kneads only on a cushion that is there', () => {
     const eager = () => .1, noCushion = catSpots(adjustProp({}, 'companion', { hidden: true }));
     expect(names(restSteps(spots, spot(spots, 'cushion'), 1, eager))).toContain('knead');
-    expect(names(restSteps(spots, spot(spots, 'windowsill'), 1, eager))).not.toContain('knead');
     expect(names(restSteps(spots, spot(spots, 'monitor'), 1, eager))).not.toContain('knead');
     expect(names(restSteps(noCushion, noCushion.home, 1, eager))).not.toContain('knead');
   });
-  it('watches the city mostly from the windowsill', () => {
-    const maybe = () => .5;
-    expect(names(restSteps(spots, spot(spots, 'windowsill'), 1, maybe))).toContain('watch-city');
-    expect(names(restSteps(spots, spot(spots, 'cushion'), 1, maybe))).not.toContain('watch-city');
-    expect(names(restSteps(spots, spot(spots, 'monitor'), 1, maybe))).not.toContain('watch-city');
+  it('watches the city now and then, from either spot', () => {
+    for (const id of ['cushion', 'monitor'] as const) {
+      expect(names(restSteps(spots, spot(spots, id), 1, () => .1))).toContain('watch-city');
+      expect(names(restSteps(spots, spot(spots, id), 1, () => .5))).not.toContain('watch-city');
+    }
   });
   it('visits every spot, plays every move and never plays a sequence its pose does not allow', () => {
     const { started, played, visited } = run(spots, 6 * 3600);
     for (let i = 1; i < played.length; i++) expect(canChain(played[i - 1], played[i]), `${played[i - 1]} -> ${played[i]}`).toBe(true);
-    expect([...visited].sort()).toEqual(['cushion', 'monitor', 'windowsill']);
+    expect([...visited].sort()).toEqual(['cushion', 'monitor']);
     expect([...new Set(played)].sort()).toEqual(CAT_SEQUENCE_IDS.filter(id => !id.startsWith('react-')).sort());
     // The cat only ever faces the other way after a whole turn.
     for (let i = 1; i < started.length; i++) expect(started[i].facing, `${played[i - 1]} -> ${played[i]}`).toBe(facingAfter(started[i - 1]));
@@ -288,19 +287,16 @@ describe('cat state machine', () => {
     expect(run(spots, 600, 42).played).not.toEqual(run(spots, 600, 43).played);
   });
   it('never targets a hidden prop', () => {
-    const { visited } = run(catSpots(adjustProp({}, 'window', { hidden: true })), 3600);
-    expect([...visited].sort()).toEqual(['cushion', 'monitor']);
-    const noCushion = run(catSpots(adjustProp({}, 'companion', { hidden: true })), 3600);
-    expect([...noCushion.visited].sort()).toEqual(['cushion', 'monitor', 'windowsill']);
-    expect(noCushion.state.spot).not.toBe('cushion');
+    const { visited } = run(catSpots(adjustProp({}, 'monitor', { hidden: true })), 3600);
+    expect([...visited]).toEqual(['cushion']);
   });
   it('stays on the cushion when fewer than two spots remain', () => {
-    const lonely = catSpots(adjustProp(adjustProp({}, 'window', { hidden: true }), 'monitor', { hidden: true }));
+    const lonely = catSpots(adjustProp({}, 'monitor', { hidden: true }));
     const { visited, points, played } = run(lonely, 1800);
     expect([...visited]).toEqual(['cushion']);
     expect(points.every(point => point.x === lonely.home.point.x && point.y === lonely.home.point.y)).toBe(true);
     expect(played).not.toContain('walk');
-    const onlyMonitor = catSpots(adjustProp(adjustProp({}, 'window', { hidden: true }), 'companion', { hidden: true }));
+    const onlyMonitor = catSpots(adjustProp({}, 'companion', { hidden: true }));
     expect(startCat(onlyMonitor, seeded(1), 'monitor').spot).toBe('cushion');
     expect([...run(onlyMonitor, 1800).visited]).toEqual(['cushion']);
   });

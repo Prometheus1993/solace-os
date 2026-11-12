@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { carLaneCount, cityRoofs, cityScale, CITY_LEDGES, nextTrain, projectCityPoint, startTrain, trainAt, trainFlight, trainGap, TRAIN_FLIGHT_SECONDS } from './city-story-motion.ts';
+import { carLaneCount, nextTrain, startTrain, trainAt, trainFlight, trainGap, TRAIN_FLIGHT_SECONDS } from './city-story-motion.ts';
 
 describe('background city choreography', () => {
   it('alternates level, banking and receding flights instead of following rails', () => {
@@ -39,18 +39,6 @@ describe('background city choreography', () => {
     expect(trainAt(second, 200)).toBeNull();
     expect(trainAt(second, 248.5 + 9)).toEqual(trainFlight(1, .5));
     expect(nextTrain(second, 100, () => 0)).toBe(second);
-  });
-  it('projects roofs onto the same rendered positions at both depths', () => {
-    expect(cityScale('far')).toBeLessThan(cityScale('near'));
-    for (const depth of ['near','far'] as const) {
-      const roofs = cityRoofs(depth);
-      expect(roofs).toHaveLength(CITY_LEDGES.length);
-      CITY_LEDGES.forEach((ledge, i) => {
-        const left = projectCityPoint({ x: ledge.x0, y: ledge.y }, depth);
-        expect(roofs[i].x0).toBeCloseTo(left.x);
-        expect(roofs[i].y).toBeCloseTo(left.y);
-      });
-    }
   });
   it('keeps traffic busy by day and dusk and sparse at night', () => {
     expect(carLaneCount('day')).toBe(6);

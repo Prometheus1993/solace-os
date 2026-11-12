@@ -17,12 +17,16 @@ import { deskAsset as asset } from './desk-assets.ts';
 import { DeskLayoutHandles, type DeskLayoutControl } from './DeskLayoutEditor.tsx';
 
 export const hasDeskSprites = [
-  'desk-city-far',
-  'desk-surface',
+  'desk-pano-sky',
+  'desk-pano-far',
+  'desk-pano-mid',
+  'desk-pano-billboard-frame',
+  'desk-pano-near',
+  'desk-pano-window',
+  'desk-pano-desk',
   'desk-monitor-atlas',
   'desk-books-atlas',
   'desk-puck-atlas',
-  'desk-window-frame',
   'desk-keyboard-mouse-atlas',
   'desk-lamp-atlas'
 ].every(name => !!asset(name));
@@ -65,13 +69,20 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
     frame={frame}
     name={name}
     onError={onError} />;
+  const panoLayer = (name: string, loaded?: () => void) => <img
+    className={`desk-pano-layer desk-pano-${name}`}
+    src={asset(`desk-pano-${name}`)}
+    alt=""
+    draggable={false}
+    onLoad={loaded}
+    onError={onError} />;
   useEffect(() => {
     if (!moving || !syncing) return;
     const timer = window.setInterval(() => setPhase(previous => previous + 1), 650);
     return () => window.clearInterval(timer);
   }, [moving, syncing]);
   const car = asset('cyberpunk-hovercar');
-  const flightLanes = (near: boolean) => car && LANES.filter(lane => (lane.depth === 'near') === near && lane.rank < carLaneCount(skyPhase)).map(lane => (
+  const flightLanes = (depth: typeof LANES[number]['depth']) => car && LANES.filter(lane => lane.depth === depth && lane.rank < carLaneCount(skyPhase)).map(lane => (
     <div
       key={lane.rank}
       data-direction={lane.direction}
@@ -97,36 +108,46 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
     onClickCapture={layout.suppressClick}
     onFocusCapture={layout.focusProp}
     onKeyDownCapture={layout.keyDown}>
-    <div {...layout.prop('window')} className="desk-prop desk-prop-window-group">
+    {/* The fixed room: seven full-scene layers, bottom to top, with the moving city between them. `desk-glass` = the window opening. */}
     <div className="desk-city" aria-hidden="true">
-      {asset('desk-city-far') && <img className="desk-city-far" src={asset('desk-city-far')} alt="" draggable={false} onLoad={onLoad} onError={onError} />}
-      {asset('desk-city-far') && <img className="desk-city-far desk-city-far-second" src={asset('desk-city-far')} alt="" draggable={false} onError={onError} />}
-      <div className="desk-city-haze desk-haze-far" />
+      {panoLayer('sky', onLoad)}
       <div className="desk-sky-tint" />
-      <CityStories moving={moving && !layout.values.window?.hidden} onError={onError} />
-      {flightLanes(false)}
-      <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
-      <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
-      <div className="desk-extra-windows">
-        {Array.from(
-          { length: 24 },
-          (_, i) => <i key={i} style={{ left: `${12 + (i * 17) % 76}%`, top: `${21 + (i * 13) % 64}%`, animationDelay: `${-i * 2.3}s` }} />
-        )}
+      {panoLayer('far')}
+      <div className="desk-glass">
+        <div className="desk-city-haze desk-haze-far" />
+        {flightLanes('far')}
+        <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
+        <div className="desk-distant-traffic"><i /><i /><i /></div>
       </div>
-      <div className="desk-city-haze desk-haze-near" />
-      {flightLanes(true)}
-      <div className="desk-distant-traffic"><i /><i /><i /></div>
-      <div className="desk-rain">
-        {Array.from(
-          { length: 18 },
-          (_, index) => <i
-            key={index}
-            style={{ left: `${4 + index * 5.3}%`, '--rain-delay': `${-index * 1.7}s`, '--rain-duration': `${8 + index % 5}s` } as CSSProperties} />
-        )}
+      {panoLayer('mid')}
+      {panoLayer('billboard-frame')}
+      <div className="desk-glass">
+        <CityStories moving={moving} onError={onError} />
+        {flightLanes('middle')}
+        <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
+        <div className="desk-extra-windows">
+          {Array.from(
+            { length: 24 },
+            (_, i) => <i key={i} style={{ left: `${12 + (i * 17) % 76}%`, top: `${40 + (i * 13) % 50}%`, animationDelay: `${-i * 2.3}s` }} />
+          )}
+        </div>
       </div>
-      <div className="desk-glass-reflection" />
-    </div>
-    <div className="desk-prop desk-prop-window"><DeskSprite src={asset('desk-window-frame')} name="window frame" onError={onError} /></div>
+      {panoLayer('near')}
+      <div className="desk-glass">
+        <div className="desk-city-haze desk-haze-near" />
+        {flightLanes('near')}
+        <div className="desk-rain">
+          {Array.from(
+            { length: 18 },
+            (_, index) => <i
+              key={index}
+              style={{ left: `${4 + index * 5.3}%`, '--rain-delay': `${-index * 1.7}s`, '--rain-duration': `${8 + index % 5}s` } as CSSProperties} />
+          )}
+        </div>
+        <div className="desk-glass-reflection" />
+      </div>
+      {panoLayer('window')}
+      {panoLayer('desk')}
     </div>
     <div {...layout.prop('pipes')} className="desk-prop desk-prop-pipes" aria-hidden="true">{propSprite('pipes')}</div>
     <div {...layout.prop('hanging-plant')} className="desk-prop desk-prop-hanging-plant" aria-hidden="true">{propSprite('hanging-plant')}</div>
@@ -148,7 +169,6 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {propSprite('figure-two')}
       <span className="desk-prop-label">LITTLE RELAY<small>INSPECT FIGURE</small></span>
     </button>
-    <div {...layout.prop('surface')} className="desk-prop desk-prop-surface">{propSprite('surface')}</div>
     <div {...layout.prop('lamp')} className="desk-prop desk-prop-lamp">
       {propSprite('lamp', lampFrame(skyPhase))}
       <span className="desk-lamp-glow" aria-hidden="true" />

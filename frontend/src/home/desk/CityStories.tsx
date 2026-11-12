@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadStoryArt, type StoryArt } from './city-story-art.ts';
 import { nextTrain, startTrain, trainAt, trainGap, type TrainSchedule } from './city-story-motion.ts';
-import { drawBuildingLayer, drawCityRoofs } from './city-building-render.ts';
 import '../../styles/components/city-stories.css';
 
 // Development preview: `?train=fast` in the page URL sends a train every 5 seconds instead of every 3-6 minutes.
@@ -10,10 +9,6 @@ const trainWait = () => fastTrain ? 5 : trainGap(Math.random);
 
 function drawCityStories(context: CanvasRenderingContext2D, art: StoryArt, train: TrainSchedule, time: number, width: number, height: number) {
   context.clearRect(0, 0, width, height);
-  drawBuildingLayer(context, art, 'far', width, height, time);
-  drawCityRoofs(context, art, width, height, time, 'far');
-  drawBuildingLayer(context, art, 'mid', width, height, time);
-  drawCityRoofs(context, art, width, height, time, 'near');
   const flight = trainAt(train, time);
   const trainArt = flight?.view === 'rear' ? art.trainRear : art.train;
   if (flight && trainArt) {
@@ -24,10 +19,9 @@ function drawCityStories(context: CanvasRenderingContext2D, art: StoryArt, train
     context.drawImage(trainArt.image, rect.x, rect.y, rect.width, rect.height, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
     context.restore();
   }
-  drawBuildingLayer(context, art, 'front', width, height, time);
 }
 
-/** One pausable scene clock drives the train and the building animations. */
+/** The flying train, on one pausable scene clock. Its canvas covers the window glass, between the middle and the near city. */
 export function CityStories({ moving, onError }: { moving: boolean; onError: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const clock = useRef(0);
