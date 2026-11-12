@@ -4,15 +4,16 @@ import { gridRegions, sharedSpriteBounds, spriteBounds, type SpriteRect } from '
 export type Sheet = { image: HTMLImageElement; frames: SpriteRect[] };
 const sheets = new Map<string, Promise<Sheet>>();
 
-/** Without `independent`, every cell of the sheet shares one crop: the union of all its frames. */
+/** Without `independent`, every cell of the sheet shares one crop: the union of all its frames. `whole`: no crop at all, each frame is its full grid cell. */
 export function loadSheet(
   src: string,
   columns: number,
   rows: number,
   independent: boolean,
-  split?: number
+  split?: number,
+  whole?: boolean
 ): Promise<Sheet> {
-  const key = `${src}/${columns}/${rows}/${independent}/${split}`;
+  const key = `${src}/${columns}/${rows}/${independent}/${split}/${whole}`;
   const cached = sheets.get(key);
   if (cached) return cached;
   const promise = new Promise<Sheet>((resolve, reject) => {
@@ -30,6 +31,7 @@ export function loadSheet(
           { x: 0, y: 0, width: divide, height: image.height },
           { x: divide, y: 0, width: image.width - divide, height: image.height },
         ];
+        if (whole) { resolve({ image, frames: regions }); return; }
         const bounds = regions.map(region => spriteBounds(pixels, image.width, region));
         const common = independent ? null : sharedSpriteBounds(bounds);
         const frames = regions.map((region, index) => {
@@ -46,13 +48,14 @@ export function loadSheet(
 }
 
 /** Runtime atlas sampling only: source PNGs remain unchanged. No per-frame pixel scan. */
-export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, lit = false, name, onError }: {
+export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent = false, split, whole = false, lit = false, name, onError }: {
   src: string | undefined;
   columns?: number;
   rows?: number;
   frame?: number;
   independent?: boolean;
   split?: number;
+  whole?: boolean;
   /** Adds a silhouette-clipped light overlay (`desk-sky.css`) whose mask is the sprite's own current frame. */
   lit?: boolean;
   name: string;
@@ -66,11 +69,11 @@ export function DeskSprite({ src, columns = 1, rows = 1, frame = 0, independent 
     let cancelled = false;
     setSheet(null); setFailed(false);
     if (!src) { setFailed(true); errorHandler.current?.(); return; }
-    void loadSheet(src, columns, rows, independent, split).then(value => { if (!cancelled) setSheet(value); }).catch(() => {
+    void loadSheet(src, columns, rows, independent, split, whole).then(value => { if (!cancelled) setSheet(value); }).catch(() => {
       if (!cancelled) { setFailed(true); errorHandler.current?.(); }
     });
     return () => { cancelled = true; };
-  }, [src, columns, rows, independent, split]);
+  }, [src, columns, rows, independent, split, whole]);
   useEffect(() => {
     const element = canvas.current, rect = sheet?.frames[frame];
     if (!element || !sheet || !rect) return;

@@ -2,6 +2,8 @@ const files = import.meta.glob<string>([
   '../../assets/private/desk-pano-*-v1.png',
   '../../assets/private/{desk-monitor-atlas,desk-books-atlas,desk-puck-atlas}-v1.png',
   '../../assets/private/{desk-keyboard-mouse-atlas,desk-lamp-atlas,desk-accessories-atlas,cyberpunk-hovercar}-v1.png',
+  '../../assets/private/{desk-speaker-play-atlas,spotify-logo}-v1.png',
+  '../../assets/private/radio-closeup-*-v1.png',
   '../../assets/private/desk-cat-*-v1.png',
   '../../assets/private/desk-flying-train*-v1.png',
 ], { eager: true, query: '?url', import: 'default' });

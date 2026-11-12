@@ -15,12 +15,13 @@ import { Archives } from './tabs/Archives.tsx';
 import { FxOverlay } from './FxOverlay.tsx';
 import { ScanlineOverlay } from './ScanlineOverlay.tsx';
 import { C, cssVars } from './tokens.ts';
+import type { SolaceSpotify } from './home/desk/spotify-api.ts';
 
 type Toast = { msg: string; tone: 'info' | 'ok' | 'err' } | null;
 declare global {
   interface Window {
     /** Present only inside the Mac app (desktop/src/preload.cjs). */
-    solaceDesktop?: { garminAuthExpired(): void };
+    solaceDesktop?: { garminAuthExpired(): void; spotify: SolaceSpotify };
   }
 }
 interface SyncResponse {

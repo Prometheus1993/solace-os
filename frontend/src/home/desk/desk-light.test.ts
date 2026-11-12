@@ -42,7 +42,7 @@ describe('light levels', () => {
 describe('receivers', () => {
   it('are the four lit props only', () => {
     expect(['books', 'notebook', 'keyboard', 'mouse'].every(id => isReceiver(id as never))).toBe(true);
-    expect(['plant', 'mug', 'radio', 'headphones', 'lamp', 'monitor', 'companion'].some(id => isReceiver(id as never))).toBe(false);
+    expect(['plant', 'mug', 'radio', 'lamp', 'monitor', 'companion'].some(id => isReceiver(id as never))).toBe(false);
   });
   it('put the source in the same place of the receiver wherever the receiver is, and move with the source', () => {
     const a = receiverVars('keyboard', none);

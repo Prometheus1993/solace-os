@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { loadScratchpad, saveScratchpad, SCRATCHPAD_KEY, MOODS, TRACKS, nextRadioTrack } from './desk-personal-state.ts';
+import { loadScratchpad, saveScratchpad, SCRATCHPAD_KEY, TRACKS, nextLocalTrack } from './desk-personal-state.ts';
 
 describe('personal desk data', () => {
   it('restores notes verbatim, including whitespace and unicode', () => {
@@ -19,17 +19,12 @@ describe('personal desk data', () => {
     expect(loadScratchpad({ getItem: () => { throw new Error('Denied'); } })).toEqual({ text: '', error: true });
     expect(saveScratchpad({ setItem: () => { throw new Error('Quota'); } }, 'Keep this draft')).toBe(false);
   });
-  it.each(MOODS)('cycles every %s track once and wraps without changing mood', mood => {
-    const indices = TRACKS.flatMap((track, index) => track.mood === mood ? [index] : []);
-    expect(indices.length).toBeGreaterThan(1);
-    let index = indices[0];
-    const seen = new Set<number>();
-    for (let i = 0; i < indices.length; i++) {
-      seen.add(index); expect(TRACKS[index].mood).toBe(mood); index = nextRadioTrack(index, mood);
-    }
-    expect([...seen]).toEqual(indices);
-    expect(index).toBe(indices[0]);
-    expect(nextRadioTrack(-1, mood)).toBe(indices[0]);
+  it('cycles all local tracks once and wraps', () => {
+    let index = 0;
+    const seen: number[] = [];
+    for (let i = 0; i < TRACKS.length; i++) { seen.push(index); index = nextLocalTrack(index); }
+    expect(seen).toEqual(TRACKS.map((_, i) => i));
+    expect(index).toBe(0);
   });
   it('ships every selectable track with matching provenance and intact audio bytes', () => {
     const root = new URL('../../../public/music/open-lofi/', import.meta.url);

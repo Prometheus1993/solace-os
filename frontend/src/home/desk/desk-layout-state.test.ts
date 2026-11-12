@@ -27,7 +27,7 @@ describe('desk layout adjustments', () => {
     for (const raw of ['{', 'null', '[]', '{}', '{"version":2,"props":{}}', '{"version":1,"props":[]}']) expect(() => decodeDeskLayout(raw)).toThrow();
   });
   it('ignores unknown props and invalid records, clamping known finite values', () => {
-    expect(decodeDeskLayout(JSON.stringify({ version: 1, props: { unknown: { x: 5, y: 0, scale: 1 }, radio: { x: '4', y: 0, scale: 1 }, monitor: { x: 500, y: 0, scale: 0 } } }))).toEqual({ monitor: { x: 100, y: 0, scale: .35 } });
+    expect(decodeDeskLayout(JSON.stringify({ version: 1, props: { unknown: { x: 5, y: 0, scale: 1 }, headphones: { x: 1, y: 2, scale: 1 }, radio: { x: '4', y: 0, scale: 1 }, monitor: { x: 500, y: 0, scale: 0 } } }))).toEqual({ monitor: { x: 100, y: 0, scale: .35 } });
     expect(new Set(DESK_OBJECTS.map(([id]) => id)).size).toBe(DESK_OBJECTS.length);
   });
   it('uses stage proportions so moves remain stable across screen sizes', () => {

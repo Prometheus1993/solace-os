@@ -58,9 +58,9 @@
 .desk-cat[data-flip=true] canvas { transform:scaleX(-1); }
 .desktop-sprite-hub[data-editing=true] .desk-cat { pointer-events:none; }
 .desk-prop-radio { z-index:8; left:32%; bottom:7.5%; width:6.5%; height:calc(var(--desk-w)*.0502); }
-.desk-prop-speaker { z-index:7; bottom:10%; width:3%; height:calc(var(--desk-w)*.0471); }
-.desk-prop-speaker-0 { left:50.5%; }.desk-prop-speaker-1 { left:78.6%; }
-.desk-prop-headphones { z-index:8; left:22.5%; bottom:7%; width:4.5%; height:calc(var(--desk-w)*.0375); }
+/* The speaker art is a 320 px cell around a 178x266 cabinet: the box is the cell, so the cabinet keeps its old size and place (cell scale 320/178 on the old 3% width). */
+.desk-prop-speaker { z-index:7; bottom:calc(10% - var(--desk-w)*.0034); width:5.393%; height:calc(var(--desk-w)*.05393); }
+.desk-prop-speaker-0 { left:49.303%; }.desk-prop-speaker-1 { left:77.403%; }
 .desk-prop-notebook { z-index:8; left:15.5%; bottom:6.5%; width:6%; height:calc(var(--desk-w)*.0386); }
 .desk-prop-plant { z-index:7; left:25.5%; bottom:10%; width:6%; height:calc(var(--desk-w)*.0692); }
 .desk-prop-mug { z-index:8; left:39%; bottom:7%; width:3.5%; height:calc(var(--desk-w)*.047); }
@@ -192,53 +192,23 @@
 .desktop-sprite-hub[data-origin=puck] .desk-scenery { transform-origin:47% 91%; }
 .desktop-sprite-hub[data-origin=puck] .desk-surface { transform-origin:47% 100%; }
 .desktop-sprite-hub[data-origin=monitor] .desk-scenery { transform-origin:66% 80%; }
-.desktop-sprite-hub[data-origin=radio] .desk-scenery { transform-origin:35% 90%; }
 .desktop-sprite-hub[data-origin=notebook] .desk-scenery { transform-origin:18% 91%; }
 .desktop-sprite-hub[data-origin=shelf] .desk-scenery { transform-origin:10% 46%; }
 .desktop-sprite-hub .desk-header { gap:10px; }.desktop-sprite-hub .desk-header nav { flex-wrap:wrap; gap:8px; }
 .desktop-sprite-hub .desk-header nav button { font-size:12px; }
-.desk-radio-panel,.desk-collection-panel { max-width:800px; margin:auto; padding:30px; line-height:1.6; }
+.desk-collection-panel { max-width:800px; margin:auto; padding:30px; line-height:1.6; }
 .desk-eyebrow { color:#9ac4c7; font-size:11px; letter-spacing:.12em; }
-.desk-radio-display {
-  padding:22px;
-  border:1px solid #b28b5966;
-  border-radius:6px;
-  color:#f4cb8e;
-  background:linear-gradient(135deg,#312b1e,#171e25);
-  box-shadow:inset 0 0 28px #020d13;
-}
-.desk-radio-display h2 { font-size:clamp(20px,3vw,32px); margin:12px 0; font-weight:400; }.desk-radio-display p { margin-bottom:0; font-size:12px; }
-.desk-equalizer { display:flex; align-items:end; gap:5px; height:48px; max-width:300px; }
-.desk-equalizer i {
-  flex:1;
-  background:linear-gradient(#f0bc76,#487e80);
-  animation:desk-equalizer 1.3s ease-in-out infinite alternate;
-  animation-play-state:paused;
-}
-.desk-equalizer[data-playing=true] i { animation-play-state:running; }
-@keyframes desk-equalizer { from { transform:scaleY(.25); transform-origin:bottom; } to { transform:scaleY(1); transform-origin:bottom; } }
-.desk-radio-controls,.desk-radio-moods { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:20px 0; }
-.desk-radio-controls button,
-.desk-radio-moods button,
-.desk-collection-panel nav button,
-.desk-track-list button {
+.desk-collection-panel nav button {
   min-height:44px;
   padding:10px 16px;
   border:1px solid #63888c;
   border-radius:3px;
   background:#162b35;
 }
-.desk-radio-controls label { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.desk-radio-controls input { accent-color:#edbe80; max-width:150px; }
-.desk-radio-controls output { min-width:4ch; }
-.desk-radio-moods button[aria-pressed=true],
-.desk-track-list button[aria-pressed=true],
 .desk-collection-panel nav button[aria-pressed=true] {
   border-color:#e4b87e;
   background:#443a2a;
 }
-.desk-track-list { padding:0; list-style:none; }.desk-track-list li { margin:8px 0; }.desk-track-list button { width:100%; text-align:left; }
-.desk-radio-credit { font-size:11px; color:#b0bfc3; }.desk-radio-credit a { color:#b5ece8; }
 .desk-scratchpad {
   display:flex;
   flex-direction:column;
@@ -297,7 +267,7 @@
   .desk-prop-label { font-size:10px; padding:6px 8px; }
   .desk-prop-label small { font-size:8px; }
   .desk-monitor-power { min-height:20px; }
-  .desk-radio-panel,.desk-collection-panel { padding:16px; }.desk-scratchpad { padding:16px; }.desk-radio-controls { gap:8px; }
+  .desk-collection-panel { padding:16px; }.desk-scratchpad { padding:16px; }
 }
 @media(max-height:550px) and (max-width:760px) {
   .desktop-sprite-hub .desk-signals { height:62px; grid-template-columns:repeat(6,minmax(0,1fr)); }
@@ -308,7 +278,7 @@
 }
 @media(prefers-reduced-motion:reduce) {
   .desk-prop-label,.desk-prop-figure { transition:none; }
-  .desktop-sprite-hub .desk-equalizer i,.desktop-sprite-hub .desk-collection-figure { animation:none; }
+  .desktop-sprite-hub .desk-collection-figure { animation:none; }
 }
 
 /* Layout controls stay separate from the scene's tool interactions. */

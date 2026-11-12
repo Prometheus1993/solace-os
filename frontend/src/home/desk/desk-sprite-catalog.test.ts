@@ -20,6 +20,12 @@ describe('desk sprite inventory', () => {
     expect(deskSpriteSpec('lamp', 1)).toEqual({ asset: 'desk-lamp-atlas', columns: 2, frame: 1 });
     expect(deskSpriteSpec('puck', 3)).toMatchObject({ columns: 2, rows: 2, frame: 3 });
   });
+  it('draws both speakers from the 4-frame play atlas, whole cells, frame 0 idle', () => {
+    for (const id of ['speaker-0', 'speaker-1'] as const) {
+      expect(deskSpriteSpec(id)).toEqual({ asset: 'desk-speaker-play-atlas', columns: 4, rows: 1, whole: true, frame: 0 });
+      expect(deskSpriteSpec(id, 3).frame).toBe(3);
+    }
+  });
   it('draws the empty cushion where the floor companion was', () => {
     expect(deskSpriteSpec('companion')).toEqual({ asset: 'desk-cat-cushion' });
   });
