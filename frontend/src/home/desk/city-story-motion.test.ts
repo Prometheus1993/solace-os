@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityRoofs, cityScale, CITY_LEDGES, projectCityPoint, trainAt, trainFlight } from './city-story-motion.ts';
+import { cityRoofs, cityScale, CITY_LEDGES, nextTrain, projectCityPoint, startTrain, trainAt, trainFlight, trainGap, TRAIN_FLIGHT_SECONDS } from './city-story-motion.ts';
 
 describe('background city choreography', () => {
   it('alternates level, banking and receding flights instead of following rails', () => {
@@ -16,8 +16,29 @@ describe('background city choreography', () => {
     expect(trainFlight(0,.5).view).toBe('side');
     expect(trainFlight(1,.5).view).toBe('side');
     expect(trainFlight(2,1).alpha).toBe(0);
-    expect(trainAt(30)).toBeNull();
-    expect(trainAt(45 + 5)).toEqual(trainFlight(1,4.5 / 18));
+  });
+  it('waits a random 3 to 6 minutes between train passes', () => {
+    expect(trainGap(() => 0)).toBe(180);
+    expect(trainGap(() => .5)).toBe(270);
+    expect(trainGap(() => .999999)).toBeLessThan(360);
+    for (let i = 0; i < 200; i++) {
+      const gap = trainGap(Math.random);
+      expect(gap).toBeGreaterThanOrEqual(180);
+      expect(gap).toBeLessThan(360);
+    }
+  });
+  it('books one pass at a time and moves to the next route after each', () => {
+    const first = startTrain(200, () => .25);
+    expect(first).toEqual({ route: 0, departs: 50 });
+    expect(trainAt(first, 49)).toBeNull();
+    expect(trainAt(first, 50 + 4.5)).toEqual(trainFlight(0, 4.5 / TRAIN_FLIGHT_SECONDS));
+    expect(nextTrain(first, 50 + TRAIN_FLIGHT_SECONDS, () => 300)).toBe(first);
+    const second = nextTrain(first, 68.5, () => trainGap(() => 0));
+    expect(second).toEqual({ route: 1, departs: 68.5 + 180 });
+    expect(trainAt(second, 68.5)).toBeNull();
+    expect(trainAt(second, 200)).toBeNull();
+    expect(trainAt(second, 248.5 + 9)).toEqual(trainFlight(1, .5));
+    expect(nextTrain(second, 100, () => 0)).toBe(second);
   });
   it('projects roofs onto the same rendered positions at both depths', () => {
     expect(cityScale('far')).toBeLessThan(cityScale('near'));

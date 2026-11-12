@@ -4,6 +4,7 @@ const files = import.meta.glob<string>([
   '../../assets/private/desk-cat-*-v1.png',
   '../../assets/private/desk-flying-train*-v1.png',
   '../../assets/private/desk-city-buildings-atlas-v1.png',
+  '../../assets/private/desk-city-life-atlas-v1.png',
   '../../assets/private/desk-japanese-billboards-atlas-v1.png',
 ], { eager: true, query: '?url', import: 'default' });
 

@@ -11,6 +11,7 @@ import { CityStories } from './CityStories.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
 import { lampFrame } from './desk-sky.ts';
+import { carLaneCount } from './city-life.ts';
 import type { DeskRadio } from './DeskPersonalTools.tsx';
 import { deskAsset as asset } from './desk-assets.ts';
 import { DeskLayoutHandles, type DeskLayoutControl } from './DeskLayoutEditor.tsx';
@@ -25,13 +26,14 @@ export const hasDeskSprites = [
   'desk-keyboard-mouse-atlas',
   'desk-lamp-atlas'
 ].every(name => !!asset(name));
+// `rank`: lanes below the current car density (carLaneCount) carry traffic, so a quiet hour keeps one car per depth.
 const LANES = [
-  { top: '15%', size: '3.4%', duration: '49s', delay: '-27s', direction: 'reverse', depth: 'far' },
-  { top: '29%', size: '2.4%', duration: '67s', delay: '-41s', direction: 'normal', depth: 'far' },
-  { top: '42%', size: '4.8%', duration: '38s', delay: '-8s', direction: 'normal', depth: 'far' },
-  { top: '61%', size: '7%', duration: '31s', delay: '-19s', direction: 'normal', depth: 'middle' },
-  { top: '74%', size: '9%', duration: '27s', delay: '-2s', direction: 'reverse', depth: 'middle' },
-  { top: '32%', size: '12%', duration: '43s', delay: '-31s', direction: 'normal', depth: 'near' },
+  { rank: 2, top: '15%', size: '3.4%', duration: '49s', delay: '-27s', direction: 'reverse', depth: 'far' },
+  { rank: 4, top: '29%', size: '2.4%', duration: '67s', delay: '-41s', direction: 'normal', depth: 'far' },
+  { rank: 0, top: '42%', size: '4.8%', duration: '38s', delay: '-8s', direction: 'normal', depth: 'far' },
+  { rank: 5, top: '61%', size: '7%', duration: '31s', delay: '-19s', direction: 'normal', depth: 'middle' },
+  { rank: 1, top: '74%', size: '9%', duration: '27s', delay: '-2s', direction: 'reverse', depth: 'middle' },
+  { rank: 3, top: '32%', size: '12%', duration: '43s', delay: '-31s', direction: 'normal', depth: 'near' },
 ] as const;
 
 /** Pointer-hover and keyboard-focus both drive one boolean (a hovered prop swaps to its lit frame). */
@@ -69,9 +71,9 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
     return () => window.clearInterval(timer);
   }, [moving, syncing]);
   const car = asset('cyberpunk-hovercar');
-  const flightLanes = (near: boolean) => car && LANES.filter(lane => (lane.depth === 'near') === near).map((lane, index) => (
+  const flightLanes = (near: boolean) => car && LANES.filter(lane => (lane.depth === 'near') === near && lane.rank < carLaneCount(skyPhase)).map(lane => (
     <div
-      key={index}
+      key={lane.rank}
       data-direction={lane.direction}
       className={`desk-flight-lane desk-flight-${lane.depth}`}
       style={{
@@ -101,7 +103,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {asset('desk-city-far') && <img className="desk-city-far desk-city-far-second" src={asset('desk-city-far')} alt="" draggable={false} onError={onError} />}
       <div className="desk-city-haze desk-haze-far" />
       <div className="desk-sky-tint" />
-      <CityStories moving={moving && !layout.values.window?.hidden} onError={onError} />
+      <CityStories moving={moving && !layout.values.window?.hidden} skyPhase={skyPhase} onError={onError} />
       {flightLanes(false)}
       <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
       <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
