@@ -1,0 +1,51 @@
+/* Weather (#17). The desk root carries data-sky-mood (clear, fog, rain, snow); clear sets nothing. Rain and snow are drawn by
+   WeatherFx on a canvas; fog is the haze layers below. Overcast softens the daylight contrast of the city; the filters are
+   appended to the phase filters of desk-sky.css and keep the same function list so they fade with them. */
+.desk-scenery {
+  --mood-light:1;
+  --mood-far:contrast(1);
+  --mood-mid:contrast(1);
+  --mood-near:contrast(1);
+  --mood-room:saturate(1) brightness(1);
+  --fog-color:#dfe7ec;
+}
+.desk-scenery[data-sky-phase=dawn] { --fog-color:#e4d3cc; }
+.desk-scenery[data-sky-phase=dusk] { --fog-color:#8d7f92; }
+.desk-scenery[data-sky-phase=night] { --fog-color:#202840; }
+.desk-scenery[data-sky-mood=fog] {
+  --mood-light:.9;
+  --mood-far:contrast(.62);
+  --mood-mid:contrast(.8);
+  --mood-near:contrast(.92);
+}
+.desk-scenery[data-sky-mood=rain] {
+  --mood-light:.95;
+  --mood-far:contrast(.86);
+  --mood-mid:contrast(.9);
+  --mood-near:contrast(.95);
+}
+.desk-scenery[data-sky-mood=snow] {
+  --mood-far:contrast(.9);
+  --mood-mid:contrast(.94);
+}
+/* Rain at night: wet glass and a wet tabletop pick up a little more of the city's colour. */
+.desk-scenery[data-sky-mood=rain][data-sky-phase=night] { --mood-room:saturate(1.25) brightness(1.08); }
+.desk-weather-fx { position:absolute; inset:0; display:block; width:100%; height:100%; pointer-events:none; }
+/* Haze between the city layers: dense on the far skyline, light on the near blocks. Drifts only while the desk moves. */
+.desk-fog {
+  position:absolute;
+  inset:-4% -8%;
+  pointer-events:none;
+  opacity:0;
+  background:linear-gradient(to top,var(--fog-color),color-mix(in srgb,var(--fog-color) 55%,transparent) 55%,color-mix(in srgb,var(--fog-color) 25%,transparent));
+  transition:opacity 4s ease;
+  animation:desk-fog-drift 60s ease-in-out infinite alternate;
+}
+.desk-fog-mid { animation-duration:48s; animation-delay:-20s; }
+.desk-fog-near { animation-duration:38s; animation-delay:-9s; }
+.desk-scenery[data-sky-mood=fog] .desk-fog-far { opacity:.7; }
+.desk-scenery[data-sky-mood=fog] .desk-fog-mid { opacity:.4; }
+.desk-scenery[data-sky-mood=fog] .desk-fog-near { opacity:.18; }
+@keyframes desk-fog-drift { from { transform:translateX(-3%); } to { transform:translateX(3%); } }
+.desktop-sprite-hub[data-motion=false] .desk-fog { animation-play-state:paused; transition:none; }
+@media(prefers-reduced-motion:reduce) { .desk-fog { animation:none; } }

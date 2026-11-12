@@ -16,9 +16,6 @@
 /* The window opening (logical 21,20 1559x834): everything that moves in the city is clipped to it. */
 .desk-glass { position:absolute; left:1.3125%; top:2%; width:97.4375%; height:83.4%; overflow:hidden; }
 .desk-sprite-scene .desk-haze-far { top:0; height:100%; }.desk-sprite-scene .desk-haze-near { top:35%; height:65%; }
-.desk-sprite-scene .desk-rain { inset:0; }
-.desk-sprite-scene .desk-rain i { animation-name:desk-sprite-rain; }
-@keyframes desk-sprite-rain { from { transform:translateY(-40px); opacity:0; } 15%,70% { opacity:.6; } to { transform:translateY(860px); opacity:0; } }
 .desk-sprite { display:block; position:relative; width:100%; height:100%; pointer-events:none; }
 .desk-sprite canvas { display:block; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
 .desk-sprite[data-ready=false] canvas { visibility:hidden; }

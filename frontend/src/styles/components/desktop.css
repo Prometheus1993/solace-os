@@ -85,18 +85,6 @@
 .desk-distant-traffic i:nth-child(2) { top:33%; animation-delay:-5s; animation-direction:reverse; }
 .desk-distant-traffic i:nth-child(3) { top:17%; animation-delay:-48s; }
 @keyframes desk-distant { from { left:100%; } to { left:-15%; } }
-.desk-rain { position:absolute; opacity:.45; }
-.desk-rain i {
-  position:absolute;
-  top:0;
-  height:7%;
-  width:1px;
-  background:linear-gradient(transparent,#b5def570,transparent);
-  animation-duration:var(--rain-duration);
-  animation-delay:var(--rain-delay);
-  animation-timing-function:linear;
-  animation-iteration-count:infinite;
-}
 .desk-monitor { position:absolute; display:flex; align-items:center; overflow:hidden; color:#9eeeee; opacity:var(--screen-dim,1); }
 /* Decoration only: clock, cursor, wake line and ambient lines never take pointer events and live outside the TERMINAL control. */
 .desk-monitor-clock,.desk-monitor-ambient,.desk-monitor-boot { position:absolute; right:3%; letter-spacing:.12em; pointer-events:none; font-size:clamp(6px,1.4cqw,10px); }
@@ -326,7 +314,7 @@
   .desk-scenery,.desktop-hub::after,.desk-signals i > i { transition:none; }
   .desktop-hub:not(.desk-view-desk) .desk-scenery { transform:none; }
   .desk-surface { animation:desk-fade 100ms both; }
-  .desk-flight,.desk-distant-traffic i,.desk-rain i { animation-play-state:paused!important; }
+  .desk-flight,.desk-distant-traffic i { animation-play-state:paused!important; }
   @keyframes desk-fade { from { opacity:0; } to { opacity:1; } }
 }
 @media(prefers-reduced-motion:reduce) { .desktop-hub .desk-city { --city-play:paused; } }

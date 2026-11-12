@@ -41,21 +41,20 @@
   --room-light:brightness(.62) saturate(.85);
   --screen-dim:.8;
 }
-.desk-pano-far { filter:var(--sky-far); }
-.desk-pano-mid,.desk-city-stories { filter:var(--sky-mid); }
-.desk-pano-near { filter:var(--sky-near); }
+.desk-pano-far { filter:var(--sky-far) var(--mood-far); }
+.desk-pano-mid,.desk-city-stories { filter:var(--sky-mid) var(--mood-mid); }
+.desk-pano-near { filter:var(--sky-near) var(--mood-near); }
 .desk-pano-billboard-frame { filter:var(--sky-billboard); }
 .desk-pano-layer,.desk-city-stories { transition:filter 4s ease; }
 /* The sky colour washes over the sky layer only: it sits under the far skyline. */
 .desk-sky-tint { position:absolute; inset:0; background-color:var(--sky-tint); transition:background-color 4s ease; }
 .desk-extra-windows { opacity:var(--sky-lights); transition:opacity 4s ease; }
 /* The room: the window frame, the desk and every prop dim with the daylight, except what is lit by itself (the lamp, an awake monitor). */
-.desk-pano-window,.desk-pano-desk,.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light); transition:filter 4s ease; }
+.desk-pano-window,.desk-pano-desk,.desk-prop > .desk-sprite,.desk-cat canvas { filter:var(--room-light) var(--mood-room); transition:filter 4s ease; }
 .desk-prop-lamp > .desk-sprite,.desk-prop-monitor[data-awake=true] > .desk-sprite { filter:none; }
 /* Zone lighting (#17). --lamp-level / --screen-level are set on the scene (0 for a hidden lamp or monitor, an asleep monitor);
-   --mood-light is the phase-4 weather hook: a weather look only has to set it on .desk-scenery[data-sky-mood=...]. */
-.desk-scenery { --mood-light:1; }
-.desk-prop-lamp > .desk-sprite { filter:var(--room-light); }
+   --mood-light scales the light the sources cast; desk-weather.css sets it per weather mood. */
+.desk-prop-lamp > .desk-sprite { filter:var(--room-light) var(--mood-room); }
 .desk-lamp-on { position:absolute; inset:0; opacity:var(--lamp-level); transition:opacity 1.6s cubic-bezier(.25,.6,.3,1); pointer-events:none; }
 .desk-lamp-on > .desk-sprite { filter:none; }
 /* Only the bulb's own bloom; the light on the desk and the props comes from the pools and receiver overlays below. */

@@ -10,10 +10,12 @@ import { ScannerPanel } from './ScannerPanel.tsx';
 import { SCAN_POINTS, recoveryReading, type ScanMetric } from './scanner-data.ts';
 import { avatarState } from './avatar-state.ts';
 import { forcedSkyPhase } from './desk-sky.ts';
+import { forcedSkyMood } from './desk-weather.ts';
 import '../../styles/components/desk-panels.css';
 import '../../styles/components/desktop.css';
 import '../../styles/components/desktop-sprites.css';
 import '../../styles/components/desk-sky.css';
+import '../../styles/components/desk-weather.css';
 import { DeskSpriteScene, hasDeskSprites } from './DeskSpriteScene.tsx';
 import { CollectiblePanel, RadioPanel, Scratchpad, useDeskRadio } from './DeskPersonalTools.tsx';
 import { DeskLayoutEditor, useDeskLayout } from './DeskLayoutEditor.tsx';
@@ -69,10 +71,10 @@ export default function DesktopHub(props: DesktopHubProps) {
   const current = SURFACE_LIST.find(item => item.id === view);
   const moving = ambience && visible && !reduced && view === 'desk' && !layout.editing;
   const avatar = avatarState(props.dto);
-  // The sky and room looks hook onto data-sky-phase (desk-sky.css); the weather looks come later (#17).
+  // The sky and room looks hook onto data-sky-phase (desk-sky.css); the weather look hooks onto data-sky-mood (desk-weather.css).
   const sky = props.dto.sky;
   const skyPhase = (import.meta.env.DEV ? forcedSkyPhase(window.location.search) : null) ?? dayPhase(now, sky?.sunrise, sky?.sunset);
-  const skyMood = sky ? weatherMood(sky.weatherCode) : undefined;
+  const skyMood = (import.meta.env.DEV ? forcedSkyMood(window.location.search) : null) ?? (sky ? weatherMood(sky.weatherCode) : 'clear');
   const open = (next: View) => {
     if (layout.editing) return;
     if (next === view) return;
@@ -137,6 +139,7 @@ export default function DesktopHub(props: DesktopHubProps) {
           reduced={reduced}
           syncing={props.syncing}
           skyPhase={skyPhase}
+          skyMood={skyMood}
           view={view}
           avatar={avatar}
           radio={radio}

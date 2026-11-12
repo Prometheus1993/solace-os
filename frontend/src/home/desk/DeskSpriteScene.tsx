@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import type { DayPhase } from '@solace/core';
+import type { DayPhase, WeatherMood } from '@solace/core';
 import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
 import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
 import type { AvatarMood } from './avatar-state.ts';
@@ -7,6 +7,7 @@ import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
 import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
+import { WeatherFx } from './WeatherFx.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
 import { catLight, lightLevels, poolVars, receiverVars, type ReceiverId } from './desk-light.ts';
@@ -45,8 +46,8 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
-  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
   onOpen: (view: 'terminal' | 'library' | 'signals' | 'radio' | 'scratchpad') => void; onLoad: () => void; onError: () => void;
@@ -123,6 +124,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {panoLayer('far')}
       <div className="desk-glass">
         <div className="desk-city-haze desk-haze-far" />
+        <div className="desk-fog desk-fog-far" />
         {flightLanes('far')}
         <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>
         <div className="desk-distant-traffic"><i /><i /><i /></div>
@@ -130,6 +132,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {panoLayer('mid')}
       {panoLayer('billboard-frame')}
       <div className="desk-glass">
+        <div className="desk-fog desk-fog-mid" />
         <CityStories moving={moving} onError={onError} />
         <div className="desk-train-glint" />
         {flightLanes('middle')}
@@ -145,14 +148,8 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       <div className="desk-glass">
         <div className="desk-city-haze desk-haze-near" />
         {flightLanes('near')}
-        <div className="desk-rain">
-          {Array.from(
-            { length: 18 },
-            (_, index) => <i
-              key={index}
-              style={{ left: `${4 + index * 5.3}%`, '--rain-delay': `${-index * 1.7}s`, '--rain-duration': `${8 + index % 5}s` } as CSSProperties} />
-          )}
-        </div>
+        <div className="desk-fog desk-fog-near" />
+        <WeatherFx mood={skyMood} moving={moving} still={reduced} />
         <div className="desk-glass-reflection" />
       </div>
       {panoLayer('window')}

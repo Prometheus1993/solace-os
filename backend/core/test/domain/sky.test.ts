@@ -49,4 +49,14 @@ describe('weatherMood', () => {
     for (const code of [71, 73, 75, 77, 85, 86]) expect(weatherMood(code)).toBe('snow');
     expect(weatherMood(1234)).toBe('clear');
   });
+  it('maps every WMO code group Open-Meteo reports', () => {
+    const groups = {
+      clear: { clear: [0], cloudy: [1, 2, 3] },
+      fog: { fog: [45], 'rime fog': [48] },
+      rain: { drizzle: [51, 53, 55], 'freezing drizzle': [56, 57], rain: [61, 63, 65], 'freezing rain': [66, 67], showers: [80, 81, 82], thunderstorm: [95, 96, 99] },
+      snow: { snowfall: [71, 73, 75], 'snow grains': [77], 'snow showers': [85, 86] },
+    } as const;
+    for (const [mood, byGroup] of Object.entries(groups))
+      for (const [group, codes] of Object.entries(byGroup)) for (const code of codes) expect(weatherMood(code), `${group} ${code}`).toBe(mood);
+  });
 });
