@@ -11,7 +11,7 @@ import { CityStories } from './CityStories.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
 import { puckFrame } from './sprite-atlas.ts';
 import { lampFrame } from './desk-sky.ts';
-import { carLaneCount } from './city-life.ts';
+import { carLaneCount } from './city-story-motion.ts';
 import type { DeskRadio } from './DeskPersonalTools.tsx';
 import { deskAsset as asset } from './desk-assets.ts';
 import { DeskLayoutHandles, type DeskLayoutControl } from './DeskLayoutEditor.tsx';
@@ -103,7 +103,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, view, avat
       {asset('desk-city-far') && <img className="desk-city-far desk-city-far-second" src={asset('desk-city-far')} alt="" draggable={false} onError={onError} />}
       <div className="desk-city-haze desk-haze-far" />
       <div className="desk-sky-tint" />
-      <CityStories moving={moving && !layout.values.window?.hidden} skyPhase={skyPhase} onError={onError} />
+      <CityStories moving={moving && !layout.values.window?.hidden} onError={onError} />
       {flightLanes(false)}
       <div className="desk-delivery-drone">{accessory(14, 'delivery drone')}</div>
       <div className="desk-delivery-drone desk-delivery-drone-far">{accessory(14, 'distant delivery drone')}</div>

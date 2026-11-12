@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cityRoofs, cityScale, CITY_LEDGES, nextTrain, projectCityPoint, startTrain, trainAt, trainFlight, trainGap, TRAIN_FLIGHT_SECONDS } from './city-story-motion.ts';
+import { carLaneCount, cityRoofs, cityScale, CITY_LEDGES, nextTrain, projectCityPoint, startTrain, trainAt, trainFlight, trainGap, TRAIN_FLIGHT_SECONDS } from './city-story-motion.ts';
 
 describe('background city choreography', () => {
   it('alternates level, banking and receding flights instead of following rails', () => {
@@ -51,5 +51,12 @@ describe('background city choreography', () => {
         expect(roofs[i].y).toBeCloseTo(left.y);
       });
     }
+  });
+  it('keeps traffic busy by day and dusk and sparse at night', () => {
+    expect(carLaneCount('day')).toBe(6);
+    expect(carLaneCount('dusk')).toBe(6);
+    expect(carLaneCount('night')).toBeLessThan(carLaneCount('dawn'));
+    expect(carLaneCount('dawn')).toBeLessThan(carLaneCount('day'));
+    expect(carLaneCount('night')).toBeGreaterThan(0);
   });
 });

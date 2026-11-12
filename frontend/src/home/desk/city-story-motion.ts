@@ -1,3 +1,4 @@
+import type { DayPhase } from '@solace/core';
 import { clamp01, fadeInOut, lerp, projectPoint, type Point } from './motion.ts';
 
 export type CityDepth = 'near' | 'far';
@@ -32,4 +33,8 @@ export function nextTrain(schedule: TrainSchedule, seconds: number, gap: () => n
 export function trainAt(schedule: TrainSchedule, seconds: number) {
   const progress = (seconds - schedule.departs) / TRAIN_FLIGHT_SECONDS;
   return progress < 0 || progress > 1 ? null : trainFlight(schedule.route, progress);
+}
+/** How many hovercar lanes carry traffic: busy by day and dusk, sparse at night. */
+export function carLaneCount(phase: DayPhase): number {
+  return { dawn: 4, day: 6, dusk: 6, night: 2 }[phase];
 }

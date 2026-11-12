@@ -2,7 +2,7 @@ import { gridRegions, sharedSpriteBounds, spriteBounds, type SpriteRect } from '
 import { deskAsset } from './desk-assets.ts';
 
 export type StorySprite = { image: HTMLImageElement; frames: SpriteRect[]; columns: number; anchors: number[] };
-export type StoryArt = { train: StorySprite | null; trainRear: StorySprite | null; buildings: StorySprite | null; billboards: StorySprite | null; life: StorySprite | null; missing: boolean };
+export type StoryArt = { train: StorySprite | null; trainRear: StorySprite | null; buildings: StorySprite | null; billboards: StorySprite | null; missing: boolean };
 function loadSprite(name: string, columns: number, rows: number, sharedRows = true): Promise<StorySprite> {
   return new Promise((resolve, reject) => {
     const src = deskAsset(name);
@@ -37,12 +37,11 @@ function loadSprite(name: string, columns: number, rows: number, sharedRows = tr
 }
 let pending: Promise<StoryArt> | undefined;
 export function loadStoryArt(): Promise<StoryArt> {
-  pending ??= Promise.allSettled([loadSprite('desk-flying-train', 1, 1), loadSprite('desk-flying-train-rear', 1, 1), loadSprite('desk-city-buildings-atlas', 4, 2, false), loadSprite('desk-japanese-billboards-atlas', 4, 2, false), loadSprite('desk-city-life-atlas', 6, 4)]).then(results => ({
+  pending ??= Promise.allSettled([loadSprite('desk-flying-train', 1, 1), loadSprite('desk-flying-train-rear', 1, 1), loadSprite('desk-city-buildings-atlas', 4, 2, false), loadSprite('desk-japanese-billboards-atlas', 4, 2, false)]).then(results => ({
     train: results[0].status === 'fulfilled' ? results[0].value : null,
     trainRear: results[1].status === 'fulfilled' ? results[1].value : null,
     buildings: results[2].status === 'fulfilled' ? results[2].value : null,
     billboards: results[3].status === 'fulfilled' ? results[3].value : null,
-    life: results[4].status === 'fulfilled' ? results[4].value : null,
     missing: results.some(result => result.status === 'rejected'),
   }));
   return pending;
