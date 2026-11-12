@@ -14,10 +14,12 @@ import { forcedSkyMood } from './desk-weather.ts';
 import '../../styles/components/desk-panels.css';
 import '../../styles/components/desktop.css';
 import '../../styles/components/desktop-sprites.css';
+import '../../styles/components/desk-radio.css';
 import '../../styles/components/desk-sky.css';
 import '../../styles/components/desk-weather.css';
 import { DeskSpriteScene, hasDeskSprites } from './DeskSpriteScene.tsx';
-import { CollectiblePanel, RadioPanel, Scratchpad, useDeskRadio } from './DeskPersonalTools.tsx';
+import { CollectiblePanel, Scratchpad, useDeskRadio } from './DeskPersonalTools.tsx';
+import { DeskRadioCloseup } from './DeskRadioCloseup.tsx';
 import { DeskLayoutEditor, useDeskLayout } from './DeskLayoutEditor.tsx';
 import { DeskCanvas } from './DeskCanvas.tsx';
 import { readStored, reducedMotionQuery, writeStored } from './desk-browser.ts';
@@ -31,7 +33,6 @@ const SURFACES = [
   { id: 'signals', label: 'Signals', path: 'PUCK / BIOMONITOR', origin: 'puck', nav: 'PUCK' },
   { id: 'sync', label: 'Sync', path: 'PUCK / GARMIN UPLINK', origin: 'puck' },
   { id: 'gym', label: 'Gym log', path: 'PUCK / MANUAL TRAINING LOG', origin: 'puck' },
-  { id: 'radio', label: 'After Hours Radio', path: 'DESK / OPEN LO-FI', origin: 'radio', nav: 'RADIO' },
   { id: 'scratchpad', label: 'Scratchpad', path: 'DESK / PERSONAL NOTES', origin: 'notebook', nav: 'NOTES' },
   { id: 'collection', label: 'Small Companions', path: 'SHELF / COLLECTION', origin: 'shelf', nav: 'FIGURES' },
 ] as const;
@@ -52,6 +53,7 @@ export default function DesktopHub(props: DesktopHubProps) {
   const layout = useDeskLayout();
   const radio = useDeskRadio();
   const [figure, setFigure] = useState(0);
+  const [radioOpen, setRadioOpen] = useState(false);
   const [view, setView] = useState<View>('desk');
   const [visited, visit] = useVisited<Surface>();
   const [metric, setMetric] = useState<ScanMetric>('sleep');
@@ -98,12 +100,18 @@ export default function DesktopHub(props: DesktopHubProps) {
     return () => window.clearInterval(timer);
   }, [visible]);
   useEffect(() => {
-    if (scene.current) scene.current.inert = view !== 'desk';
+    if (scene.current) scene.current.inert = view !== 'desk' || radioOpen;
+    if (radioOpen) return;
     if (layout.editing) { wasEditing.current = true; return; }
     if (wasEditing.current) { wasEditing.current = false; layoutButton.current?.focus({ preventScroll: true }); return; }
     if (view !== 'desk') surfaces.current?.querySelector<HTMLElement>(`[data-surface="${view}"]`)?.focus({ preventScroll: true });
     else if (returnTo.current) (returnTo.current.isConnected ? returnTo.current : deskButton.current)?.focus({ preventScroll: true });
-  }, [view, layout.editing]);
+  }, [view, layout.editing, radioOpen]);
+  const openRadio = () => {
+    if (layout.editing || radioOpen) return;
+    if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
+    setRadioOpen(true);
+  };
   const toggleAmbience = () => {
     setAmbience(previous => { const next = !previous; writeStored('solace.desk.ambience', next ? 'on' : 'off'); return next; });
   };
@@ -129,9 +137,7 @@ export default function DesktopHub(props: DesktopHubProps) {
       onPlaying={radio.onPlaying}
       onPause={radio.onPause}
       onEnded={radio.onEnded}
-      onError={radio.onError}
-      onTimeUpdate={radio.onTimeUpdate}
-      onLoadedMetadata={radio.onTimeUpdate} />
+      onError={radio.onError} />
     <DeskCanvas>
       <div ref={scene} className="desk-scenery" data-sky-phase={skyPhase} data-sky-mood={skyMood} aria-hidden={view !== 'desk' || undefined}>
         <DeskSpriteScene
@@ -146,6 +152,7 @@ export default function DesktopHub(props: DesktopHubProps) {
           layout={layout}
           onFigure={index => { setFigure(index); open('collection'); }}
           onOpen={open}
+          onRadio={openRadio}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)} />
       </div>
@@ -160,8 +167,8 @@ export default function DesktopHub(props: DesktopHubProps) {
           aria-pressed={current?.origin === item.origin}
           onClick={() => open(item.id)}>
           {item.nav}
-          {item.id === 'radio' && radio.playing ? ' ●' : ''}
         </button>)}
+        <button disabled={layout.editing} aria-pressed={radioOpen} onClick={openRadio}>RADIO{radio.playing ? ' ●' : ''}</button>
       </nav>
       <div className="desk-settings">
         <button
@@ -176,6 +183,11 @@ export default function DesktopHub(props: DesktopHubProps) {
         </button>
       </div>
     </header>
+    {radioOpen && <DeskRadioCloseup
+      radio={radio}
+      reduced={reduced}
+      origin={() => scene.current?.querySelector('.desk-prop-radio')?.getBoundingClientRect() ?? null}
+      onClose={() => setRadioOpen(false)} />}
     {layout.editing && <DeskLayoutEditor layout={layout} />}
     {!layout.editing && layout.message && <p className="desk-layout-status" role="status">{layout.message}</p>}
     {view === 'desk'
@@ -227,7 +239,6 @@ export default function DesktopHub(props: DesktopHubProps) {
               <p>Log what you trained. Your draft stays here when you return to the desk; save before leaving Home.</p>
               <StrengthLog dto={props.dto} onReload={saved} />
             </div>}
-          {surface.id === 'radio' && <RadioPanel radio={radio} />}
           {surface.id === 'scratchpad' && <Scratchpad />}
           {surface.id === 'collection'
             && <CollectiblePanel selected={figure} onSelect={setFigure} />}

@@ -1,0 +1,87 @@
+/* The close-up radio (DeskRadioCloseup.tsx). The stage is the 2400x1600 art; text sizes use cqw, 1cqw = 24 art pixels. */
+.radio-closeup {
+  position:absolute;
+  inset:0;
+  z-index:8;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:16px 0 12px;
+  background:radial-gradient(ellipse at center,#100a0ccc,#05060bee);
+  backdrop-filter:blur(2px);
+  outline:0;
+}
+.radio-stage {
+  position:relative;
+  width:min(94vw,calc((100vh - 96px)*1.5));
+  aspect-ratio:3/2;
+  container-type:inline-size;
+  filter:drop-shadow(0 18px 40px #000a);
+}
+.radio-stage img { position:absolute; display:block; image-rendering:pixelated; user-select:none; -webkit-user-drag:none; }
+.radio-body { inset:0; width:100%; height:100%; }
+.radio-needle { transition:left 240ms cubic-bezier(.3,.9,.3,1); pointer-events:none; }
+.radio-needle[data-dragging=true] { transition:none; }
+.radio-knob { position:absolute; border-radius:50%; cursor:grab; touch-action:none; }
+.radio-knob:active { cursor:grabbing; }
+.radio-knob img { inset:0; width:100%; height:100%; transition:transform 200ms cubic-bezier(.3,.9,.3,1); pointer-events:none; }
+.radio-knob:active img { transition:none; }
+.radio-knob:focus-visible,.radio-button:focus-visible { outline:2px solid #ffd9a0; outline-offset:3px; }
+.radio-button {
+  position:absolute;
+  padding:0;
+  border:0;
+  background-color:transparent;
+  background-size:200% 100%;
+  background-position:0 0;
+  image-rendering:pixelated;
+  color:#f0b567;
+}
+.radio-button:active { background-position:100% 0; }
+.radio-button svg { width:34%; height:70%; margin:auto; display:block; fill:currentColor; filter:drop-shadow(0 0 4px #e9a54e99); }
+.radio-button:active svg { translate:0 2%; }
+.radio-display {
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2cqw;
+  padding:0 2.4cqw;
+  overflow:hidden;
+  color:#f4cb8e;
+  text-shadow:0 0 6px #e9a54e88;
+  font-family:'Share Tech Mono',ui-monospace,monospace;
+}
+.radio-display-text { display:flex; flex-direction:column; justify-content:center; gap:.3cqw; min-width:0; }
+.radio-display small { font-size:1.15cqw; letter-spacing:.14em; color:#c9955a; }
+.radio-display strong { font-size:2.5cqw; font-weight:400; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.radio-display-text > span { display:flex; align-items:center; gap:1cqw; min-height:2.3cqw; font-size:1.5cqw; color:#e2b274; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.radio-display button {
+  padding:.3cqw 1cqw;
+  border:1px solid #b9884f;
+  border-radius:3px;
+  background:#2a1b10cc;
+  color:#ffd9a0;
+  font:inherit;
+  font-size:1.2cqw;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+.radio-display button:hover,.radio-display button:focus-visible { background:#4a3018; outline:0; }
+.radio-display-brand { display:flex; flex-direction:column; align-items:flex-end; gap:.5cqw; flex:none; }
+.radio-display-brand img { position:static; width:max(70px,7cqw); height:auto; }
+.radio-display-brand b { font-size:1.9cqw; letter-spacing:.02em; color:#9be3a8; text-shadow:none; }
+.radio-display-brand a { font-size:1.1cqw; letter-spacing:.14em; color:#c9955a; }
+.radio-display-brand a:hover,.radio-display-brand a:focus-visible { color:#ffd9a0; }
+.radio-setup { width:min(94vw,calc((100vh - 96px)*1.5)); color:#e6d3b6; font-size:12px; }
+.radio-setup summary { cursor:pointer; letter-spacing:.14em; color:#c9955a; }
+.radio-setup label { display:grid; grid-template-columns:7ch 1fr 16ch; align-items:center; gap:8px; margin-top:6px; }
+.radio-setup input { padding:6px 8px; color:inherit; background:#150d0acc; border:1px solid #6b4a2c; border-radius:3px; font:inherit; }
+.radio-setup input[aria-invalid=true] { border-color:#d96a5a; }
+.radio-setup button { margin-top:8px; padding:6px 12px; border:1px solid #b9884f; border-radius:3px; background:#2a1b10; color:#ffd9a0; font:inherit; }
+.radio-setup p { margin:6px 0 0; }
+@media(prefers-reduced-motion:reduce) {
+  .radio-needle,.radio-knob img { transition:none; }
+}

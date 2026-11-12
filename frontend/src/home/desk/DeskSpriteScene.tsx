@@ -46,21 +46,30 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onLoad, onError }: {
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onRadio, onLoad, onError }: {
   moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
-  onOpen: (view: 'terminal' | 'library' | 'signals' | 'radio' | 'scratchpad') => void; onLoad: () => void; onError: () => void;
+  onOpen: (view: 'terminal' | 'library' | 'signals' | 'scratchpad') => void; onRadio: () => void; onLoad: () => void; onError: () => void;
 }) {
   const root = layout.scene;
   const [awake, setAwake] = useState(true);
   const [booksHover, setBooksHover] = useState(false), [puckHover, setPuckHover] = useState(false);
   const [phase, setPhase] = useState(0);
   const [reaction, setReaction] = useState('');
+  const [speakerFrame, setSpeakerFrame] = useState(0);
   useEffect(
     () => { if (!reaction) return; const timer = window.setTimeout(() => setReaction(''), 2400); return () => window.clearTimeout(timer); },
     [reaction]
   );
+  // Both speakers loop their 4-frame atlas (160 ms each) while music plays; not synced to the audio. Still otherwise.
+  const speakersPlaying = moving && radio.playing;
+  useEffect(() => {
+    setSpeakerFrame(0);
+    if (!speakersPlaying) return;
+    const timer = window.setInterval(() => setSpeakerFrame(previous => (previous + 1) % 4), 160);
+    return () => window.clearInterval(timer);
+  }, [speakersPlaying]);
   const levels = lightLevels(skyPhase, layout.values, awake);
   const sceneLight = useMemo(() => catLight(layout.values, levels), [layout.values, levels.lamp, levels.screen]);
   const sceneStyle = {
@@ -215,12 +224,12 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
     <button
       {...layout.prop('radio')}
       className="desk-prop desk-prop-radio"
-      data-playing={radio.playing && !radio.muted && radio.volume > 0}
-      onClick={() => onOpen('radio')}
-      aria-label={`Open lo-fi radio. ${radio.playing ? 'Playing' : 'Paused'}: ${radio.track.title}`}>
+      data-playing={radio.playing && radio.volume > 0}
+      onClick={onRadio}
+      aria-label={`Open the radio. ${radio.playing ? 'Playing' : 'Paused'}: ${radio.display.headline}`}>
       {propSprite('radio')}
       <span className="desk-radio-led" aria-hidden="true" />
-      <span className="desk-prop-label">AFTER HOURS RADIO<small>{radio.playing ? radio.track.title : 'OPEN LO-FI / TUNE IN'}</small></span>
+      <span className="desk-prop-label">RADIO<small>{radio.playing ? radio.display.headline : 'TUNE IN'}</small></span>
     </button>
     {[
       0,
@@ -229,20 +238,11 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
       key={i}
       {...layout.prop(i === 0 ? 'speaker-0' : 'speaker-1')}
       className={`desk-prop desk-prop-speaker desk-prop-speaker-${i}`}
-      aria-label={`${radio.muted ? 'Unmute' : 'Mute'} radio from ${i === 0 ? 'left' : 'right'} speaker`}
-      aria-pressed={radio.muted}
-      onClick={radio.toggleMute}>
-      {propSprite(i === 0 ? 'speaker-0' : 'speaker-1')}
-      <span className="desk-prop-label">{radio.muted ? 'UNMUTE' : 'MUTE'} RADIO</span>
+      aria-label={`Open the radio (${i === 0 ? 'left' : 'right'} speaker)`}
+      onClick={onRadio}>
+      {propSprite(i === 0 ? 'speaker-0' : 'speaker-1', speakerFrame)}
+      <span className="desk-prop-label">OPEN RADIO</span>
     </button>)}
-    <button
-      {...layout.prop('headphones')}
-      className="desk-prop desk-prop-headphones"
-      onClick={radio.cycleMood}
-      aria-label={`Change lo-fi mood. Current mood: ${radio.mood}`}>
-      {propSprite('headphones')}
-      <span className="desk-prop-label">CHANGE FREQUENCY<small>{radio.mood.toUpperCase()} / CLICK TO CYCLE</small></span>
-    </button>
     <button
       {...lit('notebook')}
       className="desk-prop desk-prop-notebook"

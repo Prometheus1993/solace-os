@@ -1,117 +1,157 @@
 import { useEffect, useRef, useState } from 'react';
-import { loadScratchpad, saveScratchpad, MOODS, TRACKS, nextRadioTrack, type RadioMood } from './desk-personal-state.ts';
+import { loadScratchpad, saveScratchpad, TRACKS, nextLocalTrack } from './desk-personal-state.ts';
 import { readStored, writeStored } from './desk-browser.ts';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
+import {
+  decodePlaylists, decodeStation, decodeVolume, radioDisplay, radioStatus, stationUri,
+  type Playlists, type RadioAction, type Station, type SpotifyConnection,
+} from './radio-state.ts';
+import {
+  devicesRequest, nextRequest, pauseRequest, pickDevice, playRequest, playerRequest, readPlayer, volumeRequest,
+  type PlayerSnapshot, type SpotifyRequest, type SpotifyResponse,
+} from './spotify-api.ts';
 
+const VOLUME_KEY = 'solace.desk.radio.volume';
+const STATION_KEY = 'solace.desk.radio.station';
+const PLAYLISTS_KEY = 'solace.desk.radio.playlists';
+const POLL_MS = 4000;
+
+/**
+ * The desk radio. Two sources: the 6 local Open Lo-Fi tracks (the <audio> element in DesktopHub) and, inside the Mac
+ * app only, the user's own Spotify (remote control through `window.solaceDesktop.spotify`). It never switches source
+ * by itself: only the buttons on the radio's glass do.
+ */
 export function useDeskRadio() {
+  const spotify = window.solaceDesktop?.spotify;
   const audio = useRef<HTMLAudioElement>(null);
   const intent = useRef(false);
   const generation = useRef(0);
+  const volumeTimer = useRef(0);
   const [index, setIndex] = useState(0);
-  const [mood, setMood] = useState<RadioMood>('night');
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    const value = readStored('solace.desk.radio.volume');
-    return value === null ? .35 : Math.max(0, Math.min(1, Number(value) || 0));
-  });
-  const [error, setError] = useState('');
-  const [elapsed, setElapsed] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [localPlaying, setLocalPlaying] = useState(false);
+  const [volume, setVolumeState] = useState(() => decodeVolume(readStored(VOLUME_KEY)));
+  const [station, setStationState] = useState<Station>(() => decodeStation(readStored(STATION_KEY)));
+  const [playlists, setPlaylists] = useState<Playlists>(() => decodePlaylists(readStored(PLAYLISTS_KEY)));
+  const [localError, setLocalError] = useState('');
+  const [info, setInfo] = useState({ configured: false, connected: false });
+  const [useLocal, setUseLocal] = useState(false);
+  const [snapshot, setSnapshot] = useState<PlayerSnapshot | null>(null);
+  const [failed, setFailed] = useState(false);
   const track = TRACKS[index];
-  const play = async () => {
+  const connection: SpotifyConnection = !spotify || !info.configured ? 'unavailable' : info.connected ? 'connected' : 'disconnected';
+  const status = radioStatus({ connection, useLocal, snapshot, failed });
+  const uri = stationUri(playlists, station);
+
+  const playLocal = async () => {
     const element = audio.current;
     if (!element) return;
-    intent.current = true; setError('');
+    intent.current = true; setLocalError('');
     const token = ++generation.current;
     try { await element.play(); }
     catch {
-      if (token === generation.current) {
-        intent.current = false;
-        setPlaying(false);
-        setError('Playback could not start. Press play to retry, or choose another track.');
-      }
+      if (token === generation.current) { intent.current = false; setLocalPlaying(false); setLocalError('PLAYBACK DID NOT START'); }
     }
   };
-  const toggle = () => {
-    if (playing || intent.current) { intent.current = false; generation.current++; audio.current?.pause(); }
-    else void play();
+  const pauseLocal = () => { intent.current = false; generation.current++; audio.current?.pause(); };
+  const selectLocal = (next: number) => { generation.current++; setLocalError(''); setIndex(next); };
+
+  /** One call to Spotify; a refused login (401) turns the radio back to "connect". */
+  const call = async (req: SpotifyRequest): Promise<SpotifyResponse> => {
+    try {
+      const response = await spotify!.request(req);
+      if (response.status === 401) { setInfo(previous => ({ ...previous, connected: false })); setSnapshot(null); }
+      return response;
+    } catch { return { status: 0, body: null }; }
   };
-  const select = (next: number) => {
-    if (next === index) return;
-    generation.current++; setElapsed(0); setDuration(0); setError(''); setIndex(next);
+  const refresh = async () => {
+    const read = readPlayer(await call(playerRequest()));
+    if (read.kind === 'snapshot') { setSnapshot(read.snapshot); setFailed(false); }
+    else if (read.kind === 'error') setFailed(true);
   };
-  const next = () => select(nextRadioTrack(index, mood));
-  const chooseMood = (next: RadioMood) => { setMood(next); select(TRACKS.findIndex(item => item.mood === next)); };
-  const cycleMood = () => chooseMood(MOODS[(MOODS.indexOf(mood) + 1) % MOODS.length]);
+  const spotifyPlay = async (context: string | null, resume: boolean) => {
+    const start = resume || context === null ? undefined : context;
+    const response = await call(playRequest(start));
+    if (response.status === 404) {
+      // Spotify is open but not the active player: wake the first device. No device at all = "OPEN SPOTIFY TO PLAY".
+      const device = pickDevice((await call(devicesRequest())).body);
+      if (device) await call(playRequest(start, device));
+    }
+    await refresh();
+  };
+
   useEffect(() => {
-    if (audio.current) { audio.current.volume = volume; audio.current.muted = muted; }
-    writeStored('solace.desk.radio.volume', String(volume));
-  }, [volume, muted]);
-  useEffect(() => { if (intent.current) void play(); }, [index]);
-  useEffect(() => () => { generation.current++; intent.current = false; }, []);
+    if (!spotify) return;
+    let cancelled = false;
+    void spotify.status().then(value => { if (!cancelled) setInfo(value); });
+    return () => { cancelled = true; };
+  }, []);
+  // While Spotify is the source, follow the player (what plays, whether a device exists) while the page is visible.
+  const following = connection === 'connected' && !useLocal;
+  useEffect(() => {
+    if (!following) return;
+    const poll = () => { if (!document.hidden) void refresh(); };
+    poll();
+    const timer = window.setInterval(poll, POLL_MS);
+    document.addEventListener('visibilitychange', poll);
+    return () => { window.clearInterval(timer); document.removeEventListener('visibilitychange', poll); };
+  }, [following]);
+  useEffect(() => { if (audio.current) audio.current.volume = volume; }, [volume]);
+  useEffect(() => { if (intent.current) void playLocal(); }, [index]);
+  useEffect(() => () => { generation.current++; intent.current = false; window.clearTimeout(volumeTimer.current); }, []);
+
+  const playing = status === 'local' ? localPlaying : status === 'playing';
+  const display = radioDisplay({ status, station, hasPlaylist: uri !== null, snapshot, localTitle: track.title, localError, connection });
+  const connect = async () => {
+    const result = await spotify!.login();
+    setInfo(previous => ({ ...previous, connected: result.connected }));
+    if (result.connected) setUseLocal(false);
+  };
   return {
-    audio, track, index, mood, playing, muted, volume, error, elapsed, duration,
+    audio, status, playing, volume, station, playlists, display, connection, hasSpotify: !!spotify, configured: info.configured,
     src: `${import.meta.env.BASE_URL}music/open-lofi/${track.file}`,
-    toggle, next, chooseMood, cycleMood, select, setVolume,
-    toggleMute: () => setMuted(previous => !previous),
-    onPlaying: () => setPlaying(true), onPause: () => setPlaying(false),
-    onEnded: () => { intent.current = true; next(); },
-    onError: () => { generation.current++; intent.current = false; setPlaying(false); setError('This track is unavailable. Try the next track.'); },
-    onTimeUpdate: () => {
-      const element = audio.current;
-      if (element) { setElapsed(element.currentTime); setDuration(Number.isFinite(element.duration) ? element.duration : 0); }
+    toggle: () => {
+      if (status === 'local') { if (localPlaying || intent.current) pauseLocal(); else void playLocal(); }
+      else if (status === 'disconnected') void connect();
+      else if (status === 'playing') void call(pauseRequest()).then(refresh);
+      else void spotifyPlay(uri, snapshot?.contextUri === uri);
     },
+    next: () => {
+      if (status === 'local') selectLocal(nextLocalTrack(index));
+      else if (status === 'playing' || status === 'paused') void call(nextRequest()).then(refresh);
+    },
+    setVolume: (next: number) => {
+      setVolumeState(next);
+      writeStored(VOLUME_KEY, String(next));
+      if (following) {
+        window.clearTimeout(volumeTimer.current);
+        volumeTimer.current = window.setTimeout(() => void call(volumeRequest(next)), 150);
+      }
+    },
+    tune: (next: Station) => {
+      setStationState(next);
+      writeStored(STATION_KEY, next);
+      if (status === 'playing' && next !== station) void spotifyPlay(stationUri(playlists, next), false);
+    },
+    connect,
+    disconnect: async () => { await spotify!.logout(); setInfo(previous => ({ ...previous, connected: false })); setSnapshot(null); },
+    act: (action: RadioAction) => {
+      if (action === 'connect') void connect();
+      else if (action === 'open-spotify') void spotify!.openApp();
+      else if (action === 'play-local') { setUseLocal(true); void playLocal(); }
+      else if (action === 'use-spotify') { pauseLocal(); setUseLocal(false); }
+      else void refresh();
+    },
+    setPlaylist: (target: Station, link: string) => {
+      const next = { ...playlists, [target]: link };
+      setPlaylists(next);
+      writeStored(PLAYLISTS_KEY, JSON.stringify(next));
+    },
+    onPlaying: () => setLocalPlaying(true), onPause: () => setLocalPlaying(false),
+    onEnded: () => { intent.current = true; selectLocal(nextLocalTrack(index)); },
+    onError: () => { generation.current++; intent.current = false; setLocalPlaying(false); setLocalError('THIS TRACK IS UNAVAILABLE'); },
   };
 }
 export type DeskRadio = ReturnType<typeof useDeskRadio>;
-const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
-export function RadioPanel({ radio }: { radio: DeskRadio }) {
-  return <div className="desk-radio-panel">
-    <p className="desk-eyebrow">AFTER HOURS / OPEN LO-FI</p>
-    <div className="desk-radio-display">
-      <small>{radio.mood.toUpperCase()} FREQUENCY</small>
-      <h2>{radio.track.title}</h2>
-      <div
-        className="desk-equalizer"
-        data-playing={radio.playing && !radio.muted && radio.volume > 0}
-        aria-hidden="true">
-        {Array.from({ length: 18 }, (_, i) => <i key={i} style={{ animationDelay: `${-i * .17}s`, height: `${20 + (i * 23) % 80}%` }} />)}
-      </div>
-      <p>{radio.playing ? 'ON AIR' : 'PAUSED'} · {clock(radio.elapsed)} / {clock(radio.duration)}</p>
-    </div>
-    <div className="desk-radio-controls">
-      <button onClick={radio.toggle}>{radio.playing ? 'Pause' : 'Play'}</button>
-      <button onClick={radio.next}>Next track →</button>
-      <button onClick={radio.toggleMute} aria-pressed={radio.muted}>{radio.muted ? 'Unmute' : 'Mute'}</button>
-      <label>Volume <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={radio.volume}
-          onChange={event => radio.setVolume(Number(event.target.value))} /> <output>{Math.round(radio.volume * 100)}%</output>
-      </label>
-    </div>
-    {radio.error && <p role="alert">{radio.error}</p>}
-    <div
-      className="desk-radio-moods"
-      aria-label="Radio mood">
-      {MOODS.map(mood => <button key={mood} onClick={() => radio.chooseMood(mood)} aria-pressed={radio.mood === mood}>{mood.toUpperCase()}</button>)}
-    </div>
-    <ol className="desk-track-list">
-      {TRACKS.map((track, i) => track.mood === radio.mood
-        && <li key={track.file}>
-          <button aria-pressed={radio.index === i} onClick={() => radio.select(i)}>{radio.index === i ? '● ' : '○ '}{track.title}</button>
-        </li>)}
-    </ol>
-    <p className="desk-radio-credit">Music by Open Lo-Fi / btahir · AI-generated · CC0. <a
-        href="https://github.com/btahir/open-lofi"
-        target="_blank"
-        rel="noreferrer">Source & license ↗</a>
-    </p>
-  </div>;
-}
 
 export function Scratchpad() {
   const [note, setNote] = useState(() => {
