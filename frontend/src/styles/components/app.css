@@ -1,4 +1,4 @@
-/* frontend/src/App.tsx — page shell (drop overlay, busy bar, toast). */
+/* frontend/src/App.tsx — page shell (busy bar, toast, loading/offline state). */
 
 .app-root {
   min-height: 100vh;
@@ -8,11 +8,15 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.app-loading {
-  color: var(--color-text-2);
-  font-family: var(--font-body);
-  padding: 40px;
-}
+/* Loading / offline: centred in the page. Loading = a readout line with a blinking block cursor;
+   offline = a danger-edged inset panel with a retry button. */
+.app-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-6); min-height: 60vh; padding: var(--space-8); font-family: var(--font-mono); font-size: var(--fs-md); color: var(--color-text-2); text-align: center; }
+.app-state__cursor { display: inline-block; width: .55em; height: 1em; margin-left: var(--space-3); vertical-align: text-bottom; background: var(--color-cyan); animation: app-cursor 1.6s steps(1) infinite; }
+@keyframes app-cursor { 50% { opacity: 0; } }
+.app-state--error { align-items: center; }
+.app-state__panel { max-width: 52ch; padding: var(--space-6) var(--space-7); background: var(--color-surface-2); border: var(--bw-1) solid var(--color-danger); display: flex; flex-direction: column; align-items: center; gap: var(--space-5); }
+.app-state__heading { font-size: var(--fs-xs); letter-spacing: var(--ls-caps); color: var(--color-danger); }
+.app-state__message { margin: 0; font-family: var(--font-body); font-size: var(--fs-md); line-height: 1.6; color: var(--color-text-1); }
 
 /* .is-mobile: the BottomNav clearance; desktop's plain 24px is the "off" state. */
 .app-main {
@@ -27,25 +31,38 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: var(--bw-2);
   background: var(--color-cyan);
-  z-index: 90;
+  z-index: var(--z-toast);
 }
 
-/* --toast-tone: resolved in JS (C.ok / C.danger / C.gold) — drives both border and text colour. */
+/* Toast: an incoming transmission, one component for every area. The tone sets border, glow and label. */
 .app-toast {
+  --toast-tone: var(--color-red-hot);
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   max-width: 620px;
+  min-width: 260px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   white-space: pre-line;
   line-height: 1.5;
-  background: var(--color-surface-1);
-  border: 1px solid var(--toast-tone);
+  background: var(--color-void);
+  border: 0;
   border-radius: var(--radius-none);
-  padding: 12px 16px;
-  z-index: 90;
-  color: var(--toast-tone);
+  padding: 10px 18px 12px;
+  z-index: var(--z-toast);
+  color: var(--color-text-1);
+  box-shadow: inset 0 0 0 1px var(--toast-tone), inset 0 0 22px color-mix(in srgb, var(--toast-tone) 18%, transparent);
+  clip-path: polygon(0 0, calc(100% - var(--chamfer-md)) 0, 100% var(--chamfer-md), 100% 100%, var(--chamfer-md) 100%, 0 calc(100% - var(--chamfer-md)));
+  animation: toast-in var(--dur-enter) var(--ease-out) both;
 }
+.app-toast[data-tone="ok"] { --toast-tone: var(--color-ok); }
+.app-toast[data-tone="info"] { --toast-tone: var(--color-cyan); }
+.app-toast::before { display: block; margin-bottom: 4px; padding-bottom: 3px; border-bottom: 1px solid color-mix(in srgb, var(--toast-tone) 45%, transparent); color: var(--toast-tone); font-size: var(--fs-2xs); letter-spacing: .28em; content: 'UPLINK FAULT'; }
+.app-toast[data-tone="err"]::before { color: var(--color-danger); }
+.app-toast[data-tone="ok"]::before { content: 'DATA RECEIVED'; }
+.app-toast[data-tone="info"]::before { content: 'UPLINK ACTIVE'; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (prefers-reduced-motion: reduce) { .app-toast { animation: none; } }

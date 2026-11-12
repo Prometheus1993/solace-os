@@ -9,7 +9,7 @@ const VIEWS: { id: View; label: string }[] = [
   { id: 'books', label: 'BOOKS' },
   { id: 'manga', label: 'MANGA' },
 ];
-/** SHELF area — Books + Manga behind a YoRHa segmented sub-nav (hash `#shelf/<view>`; the old `#archives/…` ids still resolve). Both views
+/** SHELF area — Books + Manga behind a sub-tab rail (hash `#shelf/<view>`; the old `#archives/…` ids still resolve). Both views
  *  render the SAME unified `dto.series` (migration v13), filtered by type inside {@link Series}. The old
  *  TROPHIES sub-tab was dropped. */
 export function Archives({ dto, onReload }: { dto: DashboardDTO; onReload: () => void | Promise<void> }) {
@@ -23,7 +23,7 @@ export function Archives({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
       <SubNav views={VIEWS} view={view} setView={setView} />
       {view === 'books' && <Series key={`${view}/${detailId ?? "shelf"}`} detailId={detailId} dto={dto} onReload={onReload} kind="book" />}
       {view === 'manga' && <Series key={`${view}/${detailId ?? "shelf"}`} detailId={detailId} dto={dto} onReload={onReload} kind="manga" />}
-      <GoogleBooksKey />
+      <div className="parts-tab-shell"><GoogleBooksKey /></div>
     </div>
   );
 }

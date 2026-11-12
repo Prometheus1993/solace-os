@@ -50,6 +50,5 @@
 .mis-window-hint { font-family: var(--font-body); font-size: 11.5px; color: var(--color-text-2); }
 
 /* ── card header buttons + panels ── */
-.mis-btn-sm { padding: 5px 12px; font-size: 11px; }
 .mis-add-panel { margin-bottom: 12px; }
 .mis-history-panel { margin-top: 12px; }

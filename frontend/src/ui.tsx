@@ -1,38 +1,18 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { Confidence, StatTier } from '@solace/core';
 import { C, TIER_COLOR, ZONE_COLOR, confidenceColor, cssVars } from './tokens.ts';
-import { TIER_LABELS } from './yorha-labels.ts';
+import { TIER_LABELS } from './labels.ts';
 
-export type Corner = 'tl' | 'tr' | 'bl' | 'br';
-
-/** YoRHa corner crop-mark: a short L-tick, no radius. Colour defaults to the ink accent. */
-function Bracket({ corner, color = C.gold }: { corner: Corner; color?: string }) {
-  return <div className={`ui-bracket ui-bracket--${corner}`} style={cssVars({ '--bracket-color': color })} />;
-}
-
-/** A set of corner crop-marks (absolute — the parent must be position:relative). */
-export function CornerBrackets({ corners, color }: { corners: Corner[]; color?: string }) {
-  return (
-    <>
-      {corners.map((c) => (
-        <Bracket key={c} corner={c} color={color} />
-      ))}
-    </>
-  );
-}
-
-export function Panel({ children, brackets = [], style }: { children: ReactNode; brackets?: Corner[]; style?: CSSProperties }) {
+/** A framed panel: the pixel-art frame over an opaque Surface 1 fill. */
+export function Panel({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
     <div className="ui-panel" style={style}>
-      {brackets.map((c) => (
-        <Bracket key={c} corner={c} />
-      ))}
       {children}
     </div>
   );
 }
 
-/** "YoRHa OS" block header: ■ square + letterspaced mono label, full-bleed bottom rule. */
+/** Block header: ◆ diamond mark in the panel accent + letterspaced mono label, full-bleed bottom rule. */
 function BlockHeader({ children, right }: { children: ReactNode; right?: ReactNode }) {
   return (
     <div className="ui-block-header">
@@ -43,22 +23,22 @@ function BlockHeader({ children, right }: { children: ReactNode; right?: ReactNo
   );
 }
 
-/** Inverted summary strip (deep ink fill, onAccent text) — the OS block's "headline" row.
+/** Summary strip: the OS block's "headline" row, tinted with the block's `--directive-color`.
  *  Callers provide the spans; justify-between spreads them. */
-export function InvStrip({ children, style }: { children: ReactNode; style?: CSSProperties }) {
+export function Strip({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
-    <div className="ui-inv-strip" style={style}>
+    <div className="ui-strip" style={style}>
       {children}
     </div>
   );
 }
 
-/** A full "YoRHa OS" block: panel + BlockHeader + content. `pad:false` for full-bleed rows
- *  (list rows / InvStrips manage their own padding). Clickable when onClick is given. */
+/** A full block: panel + BlockHeader + content. `pad:false` for full-bleed rows
+ *  (list rows / Strips manage their own padding). Clickable when onClick is given. */
 export function OsBlock({ title, right, onClick, pad = true, style, children }: { title: ReactNode; right?: ReactNode; onClick?: () => void; pad?: boolean; style?: CSSProperties; children: ReactNode }) {
   return (
     <div
-      className={onClick ? 'ui-os-block yorha-card-row' : 'ui-os-block'}
+      className={onClick ? 'ui-os-block ui-card-row' : 'ui-os-block'}
       onClick={onClick}
       style={style}
     >
@@ -86,7 +66,7 @@ export function TierBadge({ tier }: { tier: StatTier }) {
   return <span className="ui-chip ui-chip--filled" style={cssVars({ '--chip-color': c })} title={tier.name}>{TIER_LABELS[tier.name] ?? tier.name}</span>;
 }
 
-/** Flat YoRHa progress bar — solid fill, thin border, no glow/gloss. */
+/** Progress bar: solid fill on a recessed track, thin border, square ends. */
 export function BarTrack({ pct, color, height = 13 }: { pct: number; color: string; height?: number }) {
   const w = Math.max(2, Math.min(100, pct));
   return (

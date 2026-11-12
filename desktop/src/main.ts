@@ -125,7 +125,7 @@ function createWindow(): void {
     width: 1440,
     height: 900,
     title: 'Solace',
-    backgroundColor: '#B6B19C',
+    backgroundColor: '#131019',
     alwaysOnTop: settings.alwaysOnTop,
     webPreferences: { preload: join(import.meta.dirname, 'preload.cjs') },
   });

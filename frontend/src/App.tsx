@@ -14,7 +14,6 @@ import { Training } from './tabs/Training.tsx';
 import { School } from './tabs/School.tsx';
 import { Archives } from './tabs/Archives.tsx';
 import { FxOverlay } from './FxOverlay.tsx';
-import { C, cssVars } from './tokens.ts';
 import type { SolaceSpotify } from './home/desk/spotify-api.ts';
 
 type Toast = { msg: string; tone: 'info' | 'ok' | 'err' } | null;
@@ -190,14 +189,20 @@ export function App() {
   if (!dto && area === 'desk') return <LinkState offline={source === 'offline'} />;
 
   if (!dto) {
-    return (
-      <div className="app-loading">
-        {source === 'offline' ? 'Server offline — start it with `npm run server`; this page retries every 30s.' : 'Loading…'}
+    return source === 'offline' ? (
+      <div className="app-state" role="alert">
+        <div className="app-state__panel">
+          <span className="app-state__heading">UPLINK FAULT</span>
+          <p className="app-state__message">Server offline. Start it with `npm run server`; this page retries every 30s.</p>
+          <button className="parts-button" onClick={() => void loadDashboard()}>Retry</button>
+        </div>
+      </div>
+    ) : (
+      <div className="app-state" role="status">
+        <span>LOADING<span className="app-state__cursor" aria-hidden="true" /></span>
       </div>
     );
   }
-
-  const toneColor = toast?.tone === 'ok' ? C.ok : toast?.tone === 'err' ? C.danger : C.gold;
 
   return (
     <div className={`app-root${fadeIn ? ' ss-fade-in' : ''}`}>
@@ -219,7 +224,7 @@ export function App() {
       )}
 
       {busy && <div className="app-busy-bar" />}
-      {toast && <div className={area === 'desk' ? 'app-toast nh-toast' : 'app-toast'} data-tone={toast.tone} style={{ ...cssVars({ '--toast-tone': toneColor }), bottom: overlayBottom(mobile) }}>{toast.msg}</div>}
+      {toast && <div className="app-toast" role={toast.tone === 'err' ? 'alert' : 'status'} data-tone={toast.tone} style={{ bottom: overlayBottom(mobile) }}>{toast.msg}</div>}
       <FxOverlay events={dto.levelEvents} />
     </div>
   );

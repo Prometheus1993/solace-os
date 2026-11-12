@@ -1,6 +1,5 @@
 /* Motion always plays: reduced-motion intentionally ignored.
-   Start screen ("jack in"). Scoped under .start-screen; no other area is affected. Uses its own colours so it
-   does not depend on the YoRHa theme variables. */
+   Start screen ("jack in"). Scoped under .start-screen; no other area is affected. Reads the shared tokens. */
 .start-screen {
   --ss-red: var(--color-red-hot);
   position: fixed; inset: 0; z-index: var(--z-start); display: flex; flex-direction: column;

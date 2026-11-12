@@ -8,7 +8,7 @@
 .str-log-set__secs { grid-column: span 2; }
 .str-log-set .str-log-x.is-on { color: var(--color-cyan); border-color: var(--color-cyan); }
 .str-log-set__n { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); text-align: right; }
-.str-log-x { padding: 0; height: 38px; }
+.str-log-x { padding: 0; width: 100%; }
 .str-log-block__foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .str-log-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .str-log-chip { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-2); border: 1px solid var(--color-border); border-radius: var(--radius-none); padding: 3px 8px; }

@@ -56,9 +56,9 @@
 .te-content .parts-card__title-text { color:#ff9cab; font-size:13px; letter-spacing:.1em; }
 .te-content .parts-card__title-dot { background:#ff526c; }
 .te-content .parts-card__divider { background:#49323e; }
-.te-content .yorha-card-row { border-radius:0; background:#201a24; border-color:#4e3543; }
+.te-content .ui-card-row { border-radius:0; background:#201a24; border-color:#4e3543; }
 .te-content .parts-button { border-radius:0; letter-spacing:.06em; }
-.te-content .parts-input { background:var(--color-surface-rig); color:#f4eceb; border-color:#765464; }
+.te-content .parts-input { background-color:var(--color-surface-rig); color:#f4eceb; border-color:#765464; }
 .te-content .parts-input::placeholder { color:#baa8b5; }
 .te-content .str-log-actions { background:var(--color-surface-rig); }
 .te-status { border-color:var(--color-border-rig); color:#b4f1e0; background:#17141e; flex-wrap:wrap; font-size:11px; }.te-status > span { color:#c4afb9; }

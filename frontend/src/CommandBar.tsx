@@ -13,8 +13,8 @@ function staleLabel(f: DataFreshness): string | null {
   return runs != null && runs >= 2 ? `WELLNESS ${rec}D STALE · RUNS ${runs}D` : `WELLNESS ${rec}D STALE`;
 }
 
-/** "YoRHa OS" command bar (desktop shell, mock C): deep ink fill, wordmark + inline uppercase area
- *  nav + totals + ⟲ SYNC. On mobile the nav hides (BottomNav serves) and only wordmark + SYNC stay. */
+/** Command bar (desktop shell): wordmark, the four areas (icon + label), totals and the ⟲ SYNC primary
+ *  action. On mobile the nav hides (BottomNav serves) and only wordmark + SYNC stay. */
 export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin, syncing }: {
   area: Area;
   setArea: (a: Area) => void;
@@ -27,7 +27,7 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
   const stale = staleLabel(dataFreshness);
   return (
     <header className="cb-bar">
-      <span className="cb-wordmark">SOLACE — OS</span>
+      <span className="cb-wordmark">SOLACE</span>
       {!mobile && (
         <nav className="cb-nav" aria-label="areas">
           {AREAS.map((a) => {
@@ -39,6 +39,7 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
                 aria-current={active ? 'page' : undefined}
                 className={`cb-nav-btn${active ? ' is-active' : ''}`}
               >
+                <span className={`area-icon area-icon--${a.id}`} aria-hidden="true" />
                 {a.label}
               </button>
             );

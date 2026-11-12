@@ -137,16 +137,16 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
       <Card title="◆ Add a weigh-in">
         <div className="parts-tile-grid vitals-form-grid">
           <Field label="Date">
-            <input className="yorha-input parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input className="parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </Field>
           <Field label="Weight (kg)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" value={kg} onChange={(e) => setKg(e.target.value)} placeholder="e.g. 75.0" />
+            <input className="parts-input" type="number" inputMode="decimal" value={kg} onChange={(e) => setKg(e.target.value)} placeholder="e.g. 75.0" />
           </Field>
           <Field label="Body fat % (optional)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" value={bf} onChange={(e) => setBf(e.target.value)} placeholder="e.g. 18.0" />
+            <input className="parts-input" type="number" inputMode="decimal" value={bf} onChange={(e) => setBf(e.target.value)} placeholder="e.g. 18.0" />
           </Field>
           <button
-            className="yorha-btn parts-button"
+            className="parts-button"
             disabled={busy || !kg}
             onClick={() => void post('/api/weight', { date, weightKg: Number(kg), bodyFatPct: bf ? Number(bf) : null }, 'Weight saved ✓')}
           >
@@ -158,19 +158,19 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
       <Card title="◆ Goals">
         <div className="parts-tile-grid vitals-form-grid">
           <Field label="Goal weight (kg)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.weightKg.value)} value={goalWeight} onChange={(e) => setGoalWeight(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.weightKg.value)} value={goalWeight} onChange={(e) => setGoalWeight(e.target.value)} />
           </Field>
           <Field label="Goal body fat (%)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.bodyFatPct.value)} value={goalBf} onChange={(e) => setGoalBf(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.bodyFatPct.value)} value={goalBf} onChange={(e) => setGoalBf(e.target.value)} />
           </Field>
           <Field label="Goal pace (decimal min/km: 5.5 = 5:30)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" step="0.1" placeholder={String(g.paceMinPerKm.value)} value={goalPace} onChange={(e) => setGoalPace(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" step="0.1" placeholder={String(g.paceMinPerKm.value)} value={goalPace} onChange={(e) => setGoalPace(e.target.value)} />
           </Field>
           <Field label="Goal weekly km">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.weeklyKm.value)} value={goalWeekly} onChange={(e) => setGoalWeekly(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.weeklyKm.value)} value={goalWeekly} onChange={(e) => setGoalWeekly(e.target.value)} />
           </Field>
           <button
-            className="yorha-btn parts-button"
+            className="parts-button"
             disabled={busy}
             onClick={() =>
               void send('PATCH', '/api/goals', { weightKg: goalNum(goalWeight), bodyFatPct: goalNum(goalBf), paceMinPerKm: goalNum(goalPace), weeklyKm: goalNum(goalWeekly) }, 'Goals saved ✓')

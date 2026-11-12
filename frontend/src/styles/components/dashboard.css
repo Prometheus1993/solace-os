@@ -27,7 +27,7 @@
 
 .dash-directive-label { display: flex; align-items: center; gap: 8px; opacity: .85; }
 .dash-directive-dot { width: 8px; height: 8px; background: var(--directive-color); flex-shrink: 0; }
-.dash-directive-verb { font-size: 20px; font-weight: 700; }
+.dash-directive-verb { font-family: var(--font-title); font-size: var(--fs-xl); font-weight: 700; color: var(--directive-color); }
 .dash-directive-lines { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
 .dash-directive-line { display: flex; align-items: flex-start; gap: 10px; }
 .dash-directive-line-dot { width: 6px; height: 6px; transform: rotate(45deg); background: var(--directive-color); flex-shrink: 0; margin-top: 5px; }
@@ -36,8 +36,8 @@
 
 .dash-weekly__range { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-2); }
 .dash-weekly { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--color-text-1); }
-.dash-weekly th { padding: 8px 14px; font-size: 10.5px; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-2); text-align: right; border-bottom: 1px solid var(--color-border); }
-.dash-weekly td { padding: 7px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--color-border); }
+.dash-weekly th { padding: 8px 14px; font-size: var(--fs-xs); font-weight: 400; letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-3); text-align: right; border-bottom: 1px solid var(--color-hairline); }
+.dash-weekly td { padding: 7px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--color-hairline); }
 .dash-weekly tr:last-child td { border-bottom: none; }
 .dash-weekly .dash-weekly__label { text-align: left; color: var(--color-text-2); white-space: normal; }
 .dash-weekly .dash-weekly__arrow { width: 1%; color: var(--color-text-2); }
@@ -84,7 +84,7 @@
 .dash-equip__eyebrow { font-family: var(--font-mono); font-weight: 500; font-size: 10px; font-variant-numeric: tabular-nums; letter-spacing: .12em; text-transform: uppercase; color: var(--color-text-2); }
 .dash-equip__empty { font-family: var(--font-mono); font-weight: 400; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--color-text-3); margin-top: 8px; }
 .dash-equip__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.dash-equip__model { font-family: var(--font-mono); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; letter-spacing: .02em; text-transform: uppercase; color: var(--color-text-1); }
+.dash-equip__model { font-family: var(--font-title); font-weight: 600; font-size: var(--fs-lg); letter-spacing: .02em; text-transform: uppercase; color: var(--color-text-1); }
 .dash-equip__bar-row { display: flex; align-items: center; gap: 12px; }
 .dash-equip__bar-track { flex: 1; }
 .dash-equip__km { font-family: var(--font-mono); font-weight: 500; font-size: clamp(13.1px, 1.905vw, 16px); font-variant-numeric: tabular-nums; color: var(--color-cyan); white-space: nowrap; }

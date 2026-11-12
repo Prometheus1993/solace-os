@@ -49,6 +49,7 @@
 .series-read-chip { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; color: var(--series-chip-color); border: 1px solid var(--color-border); padding: 0 5px; flex-shrink: 0; }
 .series-read-chip.is-read { border-color: var(--color-ok); }
 .series-read-chip--button { background: transparent; cursor: pointer; height: 18px; line-height: 16px; }
+.series-read-chip--button:hover:not(:disabled) { border-color: var(--color-cyan); }
 .series-read-chip--button:disabled { cursor: default; opacity: .5; }
 .series-read-chip--static { opacity: .7; }
 .series-vol-row__owned { font-family: var(--font-mono); font-size: 9.5px; color: var(--color-text-2); flex-shrink: 0; }

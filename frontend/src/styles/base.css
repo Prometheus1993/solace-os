@@ -1,5 +1,5 @@
-/* Non-variable global rules — reset/body, yorha-btn/-input/-card-row, keyframes, media queries.
-   Variables live in styles/tokens.css; tokens.ts reads every colour as C.x = 'var(--x)'. */
+/* Global rules: reset/body, focus ring, keyframes, the clickable-row hover. Variables live in
+   styles/tokens.css; tokens.ts reads every colour as C.x = 'var(--x)'. */
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
@@ -8,41 +8,27 @@ body {
   background: var(--color-base);
   color: var(--color-text-1);
   font-family: var(--font-body);
-  font-weight: 300;
-  letter-spacing: .02em;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── YoRHa button: boxy; a dark fill sweeps in from the left on hover/active; text flips to onAccent ── */
-.yorha-btn { position: relative; overflow: hidden; cursor: pointer; isolation: isolate; }
-.yorha-btn::after {
-  content: ''; position: absolute; inset: 0; width: 0;
-  /* z-index:-1 + isolate keeps the fill BEHIND the label text — even bare (un-wrapped)
-     text nodes like "Log" — so the label never disappears under the hover sweep. */
-  background: var(--color-cyan); transition: width .14s ease; z-index: -1;
-}
-.yorha-btn:hover::after, .yorha-btn:active::after, .yorha-btn[aria-selected="true"]::after { width: 100%; }
-.yorha-btn > * { position: relative; z-index: 1; }
-.yorha-btn:hover, .yorha-btn:active, .yorha-btn[aria-selected="true"] { color: var(--color-text-on-accent); }
-
-/* ── inputs: square; focus → ink border ── */
-.yorha-input:focus { border-color: var(--color-cyan); outline: none; }
+/* Focus-visible is global; the desk and the form controls set their own offset. */
+:focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
 
 /* ── Garmin sync: the ⟲ glyph spins while a sync is in flight (CommandBar SYNC button) ── */
 @keyframes solace-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* ── richer selectable card-row (module lists): flat, hover → ink border + a subtle lift ── */
-.yorha-card-row { cursor: pointer; transition: border-color .12s, transform .12s, box-shadow .12s; }
-.yorha-card-row:hover { border-color: var(--color-cyan) !important; transform: translateY(-2px); box-shadow: 0 6px 14px #0002; }
+/* ── selectable card-row (module lists): hover glows and lifts 2px ── */
+.ui-card-row { cursor: pointer; transition: transform var(--dur-fast), box-shadow var(--dur-fast); }
+.ui-card-row:hover { transform: translateY(-2px); box-shadow: var(--glow-cyan); }
+.ui-card-row:active { transform: none; }
 
-/* ── YoRHa enrich: soft fade, hover-lift, gradient divider ──────────────────── */
 /* Soft fade for tab content on mount (no transform → never causes horizontal scroll). */
-@keyframes yorha-fade { from { opacity: 0; } to { opacity: 1; } }
-.yorha-fade { animation: yorha-fade .26s ease-out both; }
+@keyframes ui-fade { from { opacity: 0; } to { opacity: 1; } }
+.ui-fade { animation: ui-fade .26s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .yorha-btn::after { transition: none; }
-  .yorha-card-row { transition: none; }
-  .yorha-card-row:hover { transform: none; box-shadow: none; }
-  .yorha-fade { animation: none; }
+  .ui-card-row { transition: none; }
+  .ui-card-row:hover { transform: none; box-shadow: none; }
+  .ui-fade { animation: none; }
 }

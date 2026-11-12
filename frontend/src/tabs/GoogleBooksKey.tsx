@@ -86,7 +86,7 @@ export function GoogleBooksKey() {
         )}
         {status?.source === 'env' && <div className="gbk__note">A key in .env takes precedence over one saved here, so saving is disabled. Remove it from .env to manage the key in the app.</div>}
         <input
-          className="yorha-input parts-input"
+          className="parts-input"
           type="password"
           autoComplete="off"
           placeholder="AIza…"
@@ -95,9 +95,9 @@ export function GoogleBooksKey() {
           onChange={(e) => setInput(e.target.value)}
         />
         <div className="gbk__buttons">
-          <button className="yorha-btn parts-button" disabled={busy || status?.source === 'env' || input.trim() === ''} onClick={save}>Save</button>
-          <button className="yorha-btn parts-button" disabled={busy || status?.source !== 'app'} onClick={remove}>Remove</button>
-          <button className="yorha-btn parts-button" disabled={busy || !status?.configured} onClick={test}>Test</button>
+          <button className="parts-button" disabled={busy || status?.source === 'env' || input.trim() === ''} onClick={save}>Save</button>
+          <button className="parts-button" disabled={busy || status?.source !== 'app'} onClick={remove}>Remove</button>
+          <button className="parts-button" disabled={busy || !status?.configured} onClick={test}>Test</button>
         </div>
         {msg && <div className="gbk__msg">{msg}</div>}
       </div>
