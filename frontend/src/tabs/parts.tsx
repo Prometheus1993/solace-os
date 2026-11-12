@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { C, cssVars } from '../tokens.ts';
-import { CornerBrackets, type Corner } from '../ui.tsx';
 import { viewFromHash } from './hash-view.ts';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, n));
 
 export function TabShell({ children }: { children: ReactNode }) {
-  return <div className="yorha-fade parts-tab-shell">{children}</div>;
+  return <div className="ui-fade parts-tab-shell">{children}</div>;
 }
 
-/** Hash-synced sub-view state shared by the COMBAT / MISSIONS / ARCHIVES areas (hash `#<area>/<view>`). */
+/** Hash-synced sub-view state shared by the BODY / STUDY / SHELF areas (hash `#<area>/<view>`). */
 export function useHashView<T extends string>(area: string, views: readonly { id: T }[], def: T): [T, (v: T) => void] {
   const fromHash = (): T => viewFromHash(window.location.hash, views, def);
   const [view, setViewState] = useState<T>(fromHash);
@@ -26,16 +25,24 @@ export function useHashView<T extends string>(area: string, views: readonly { id
   return [view, setView];
 }
 
-/** The YoRHa segmented sub-nav those areas render above their views. */
+/** The sub-tab rail those areas render above their views (a tablist: arrow keys move between the tabs). */
 export function SubNav<T extends string>({ views, view, setView }: { views: readonly { id: T; label: string }[]; view: T; setView: (v: T) => void }) {
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const to = (views.findIndex((v) => v.id === view) + (e.key === 'ArrowRight' ? 1 : views.length - 1)) % views.length;
+    setView(views[to]!.id);
+    e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[to]?.focus();
+  };
   return (
-    <div className="parts-subnav">
+    <div className="parts-subnav" role="tablist" onKeyDown={onKeyDown}>
       {views.map((v) => {
         const active = v.id === view;
         return (
           <button
             key={v.id}
+            role="tab"
             aria-selected={active}
+            tabIndex={active ? 0 : -1}
             onClick={() => setView(v.id)}
             className={`parts-subnav__btn${active ? ' is-active' : ''}`}
           >
@@ -52,21 +59,18 @@ export function Card({
   children,
   style,
   accent = C.gold,
-  brackets = ['tl', 'br'],
   headerRight,
 }: {
   title?: string;
   children: ReactNode;
   style?: CSSProperties;
-  /** Accent colour for the top-rule, brackets, and title divider (one accent per card). */
+  /** Accent colour for the title mark (one accent per card). */
   accent?: string;
-  brackets?: Corner[];
   /** Optional right-aligned slot in the title row (e.g. a "＋ Add" add button). */
   headerRight?: ReactNode;
 }) {
   return (
-    <div className="parts-card" style={{ ...cssVars({ '--card-accent': accent }), ...style }}>
-      <CornerBrackets corners={brackets} color={accent} />
+    <div className="parts-card" style={{ ...cssVars({ '--panel-accent': accent }), ...style }}>
       {title && (
         <>
           <div className="parts-card__title-row">
@@ -84,7 +88,7 @@ export function Card({
   );
 }
 
-/** Inline editor container for {@link AccordionList} — a nested sub-panel tied to its row by a gold
+/** Inline editor container for {@link AccordionList} — a nested sub-panel tied to its row by a cyan
  *  left-accent. `scroll` brings the whole form into view ONCE when it opens (a mount-only effect, so
  *  it never re-fires on keystrokes even though the parent re-renders the list on every change). */
 export function InsetPanel({ children, scroll = false }: { children: ReactNode; scroll?: boolean }) {
@@ -147,7 +151,7 @@ export function StatTile({ label, value, sub, color }: { label: string; value: s
   );
 }
 
-/** SVG line chart, flat YoRHa: 1px miter stroke, square dots, mono labels. Colours set via `style`
+/** SVG line chart: 1px miter stroke, square dots, mono labels. Colours set via `style`
  * (not SVG attributes) so the CSS-var tokens resolve. */
 export function LineChart({
   data,
@@ -276,8 +280,8 @@ export function Countdown({ daysUntil, status }: { daysUntil: number | null; sta
 
 /** One-line reference to a stat/section that's rendered in FULL somewhere else: a muted uppercase
  *  label, a mono value, and a `▸` link that jumps to the owning tab/sub-view (same `window.location.hash
- *  = '<area>/<view>'` mechanism as {@link useHashView}). Visually echoes InvStrip's label/value rhythm
- *  but is deliberately NOT a filled "headline" strip or a card — just a link row, so a canonical stat
+ *  = '<area>/<view>'` mechanism as {@link useHashView}). Visually echoes the Strip's label/value rhythm
+ *  but is deliberately NOT a "headline" strip or a card — just a link row, so a canonical stat
  *  never grows a second full rendering elsewhere (3.2). `stopPropagation` keeps a click from also
  *  firing a clickable parent row/block's own `onClick` (StatRef is often nested inside one, e.g. Home's
  *  OsBlocks). */
@@ -299,7 +303,7 @@ export function StatRef({ label, value, hash }: { label: string; value: ReactNod
   );
 }
 
-/** Flat inverted segmented filter strip. */
+/** Segmented filter strip (outlined chips). */
 export function FilterTabs<T extends string>({ tabs, active, onChange }: { tabs: { id: T; label: string; count?: number }[]; active: T; onChange: (id: T) => void }) {
   return (
     <div className="parts-filtertabs">
@@ -308,7 +312,7 @@ export function FilterTabs<T extends string>({ tabs, active, onChange }: { tabs:
         return (
           <button
             key={t.id}
-            aria-selected={on}
+            aria-pressed={on}
             onClick={() => onChange(t.id)}
             className={`parts-filtertabs__btn${on ? ' is-active' : ''}`}
           >

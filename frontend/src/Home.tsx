@@ -13,7 +13,7 @@ class DeskBoundary extends Component<{ children: ReactNode }, { failed: boolean 
   static getDerivedStateFromError() { return { failed: true }; }
   render() {
     return this.state.failed
-      ? <DeskFallback><p>The desk failed to load.</p><button className="yorha-btn parts-button" onClick={() => location.reload()}>Reload</button></DeskFallback>
+      ? <DeskFallback><p>The desk failed to load.</p><button className="parts-button" onClick={() => location.reload()}>Reload</button></DeskFallback>
       : this.props.children;
   }
 }

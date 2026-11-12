@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import type { DataFreshness } from '@solace/core';
 import { round1 } from './tokens.ts';
-import { AREAS, type Area } from './BottomNav.tsx';
+import { AREAS, type Area } from './areas.ts';
 import { useMobile } from './responsive.ts';
-import { currentTheme, setTheme } from './theme.ts';
-import { nextTheme, THEMES, type ThemeId } from './styles/themes/index.ts';
 
 /** A silent ingestion gap (DB behind the export file) needs to be visibly wrong, not buried in a
  *  confidence word — so once wellness is ≥2 days stale, render one compact marker; below that,
@@ -16,8 +13,8 @@ function staleLabel(f: DataFreshness): string | null {
   return runs != null && runs >= 2 ? `WELLNESS ${rec}D STALE · RUNS ${runs}D` : `WELLNESS ${rec}D STALE`;
 }
 
-/** "YoRHa OS" command bar (desktop shell, mock C): deep ink fill, wordmark + inline uppercase area
- *  nav + totals + ⟲ SYNC. On mobile the nav hides (BottomNav serves) and only wordmark + SYNC stay. */
+/** Command bar (desktop shell): wordmark, the four areas (icon + label), totals and the ⟲ SYNC primary
+ *  action. On mobile the nav hides (BottomNav serves) and only wordmark + SYNC stay. */
 export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin, syncing }: {
   area: Area;
   setArea: (a: Area) => void;
@@ -27,12 +24,10 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
   syncing: boolean;
 }) {
   const mobile = useMobile();
-  const [theme, setThemeState] = useState<ThemeId>(currentTheme);
-  const next = nextTheme(theme);
   const stale = staleLabel(dataFreshness);
   return (
     <header className="cb-bar">
-      <span className="cb-wordmark">SOLACE — OS</span>
+      <span className="cb-wordmark">SOLACE</span>
       {!mobile && (
         <nav className="cb-nav" aria-label="areas">
           {AREAS.map((a) => {
@@ -44,6 +39,7 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
                 aria-current={active ? 'page' : undefined}
                 className={`cb-nav-btn${active ? ' is-active' : ''}`}
               >
+                <span className={`area-icon area-icon--${a.id}`} aria-hidden="true" />
                 {a.label}
               </button>
             );
@@ -64,17 +60,6 @@ export function CommandBar({ area, setArea, totals, dataFreshness, onSyncGarmin,
             {stale}
           </span>
         )}
-        <button
-          onClick={() => {
-            setTheme(next);
-            setThemeState(next);
-          }}
-          title={`Theme: ${THEMES[theme].label} — switch to ${THEMES[next].label}`}
-          aria-label={`Switch theme to ${THEMES[next].label}`}
-          className="cb-theme-btn"
-        >
-          {theme === 'yorha-dark' ? '☾' : '☀'}
-        </button>
         <button
           onClick={onSyncGarmin}
           disabled={syncing}

@@ -1,8 +1,8 @@
-/** YoRHa display dictionary — UI-only reflavour keyed on STABLE DTO enums/ids. The engine is never
+/** Display dictionary — UI-only reflavour keyed on STABLE DTO enums/ids. The engine is never
  * edited for styling; consumers read `LABELS[id] ?? dtoFreeText`, so an additive engine change never
  * yields a blank label. Tune copy freely here. */
 
-/** Tier name → YoRHa clearance rank (E…S). */
+/** Tier name → clearance rank (E…S). */
 export const TIER_LABELS: Record<string, string> = {
   Novice: 'E',
   Apprentice: 'D',

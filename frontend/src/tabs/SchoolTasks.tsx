@@ -18,7 +18,7 @@ function TaskRow({ t, selected, busy, onClick, onToggle }: { t: Task; selected: 
   const sub = [t.course, t.done && t.doneDate ? `done ${fmtDate(t.doneDate)}` : fmtDate(t.deadline)].filter(Boolean).join(' · ');
   return (
     <div
-      className={`yorha-card-row mis-row${t.overdue ? ' is-danger' : ''}${selected ? ' is-selected' : ''}`}
+      className={`ui-card-row mis-row${t.overdue ? ' is-danger' : ''}${selected ? ' is-selected' : ''}`}
       onClick={onClick}
       style={cssVars({ '--row-edge': edge })}
     >
@@ -33,7 +33,7 @@ function TaskRow({ t, selected, busy, onClick, onToggle }: { t: Task; selected: 
         <KindChip kind={t.kind} />
         {!t.done && <Countdown daysUntil={t.daysUntil} />}
         <button
-          className="yorha-btn parts-button mis-btn-sm"
+          className="parts-button mis-btn-sm"
           disabled={busy}
           onClick={(e: MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
@@ -138,27 +138,27 @@ export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { 
     <>
       <div className="mis-form-grid">
         <div className="mis-form-course">
-          <Field label="Title"><input className="yorha-input parts-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Networking report" /></Field>
+          <Field label="Title"><input className="parts-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Networking report" /></Field>
         </div>
         <Field label="Type">
-          <select className="yorha-input parts-input" value={kind} onChange={(e) => setKind(e.target.value as Kind)}>
+          <select className="parts-input" value={kind} onChange={(e) => setKind(e.target.value as Kind)}>
             {KINDS.map((k) => (
               <option key={k} value={k}>{KIND_LABELS[k]}</option>
             ))}
           </select>
         </Field>
-        <Field label="Deadline"><input className="yorha-input parts-input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} /></Field>
-        <Field label="Course"><input className="yorha-input parts-input" value={course} onChange={(e) => setCourse(e.target.value)} placeholder="optional" /></Field>
+        <Field label="Deadline"><input className="parts-input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} /></Field>
+        <Field label="Course"><input className="parts-input" value={course} onChange={(e) => setCourse(e.target.value)} placeholder="optional" /></Field>
         <div className="mis-form-course">
-          <Field label="Notes"><input className="yorha-input parts-input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="optional" /></Field>
+          <Field label="Notes"><input className="parts-input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="optional" /></Field>
         </div>
       </div>
       <div className="mis-form-actions">
-        <button className="yorha-btn parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>
+        <button className="parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>
           {editId != null ? 'Update task' : 'Add task'}
         </button>
         {editId != null && (
-          <button className="yorha-btn parts-button mis-btn-danger" onClick={() => void del()}>
+          <button className="parts-button mis-btn-danger" onClick={() => void del()}>
             Delete
           </button>
         )}
@@ -182,7 +182,7 @@ export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { 
       <Card
         title="▮ OPEN"
         headerRight={
-          <button className="yorha-btn parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : compact ? '+ NEW TASK' : '＋ Add'}</button>
+          <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : compact ? '+ NEW TASK' : '＋ Add'}</button>
         }
       >
         {adding && (
@@ -201,7 +201,7 @@ export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { 
 
       <Card title="▮ DONE">
         <button
-          className="yorha-btn parts-button mis-btn-sm"
+          className="parts-button mis-btn-sm"
           onClick={() => setShowHistory((v) => !v)}
           aria-expanded={showHistory}
         >

@@ -87,10 +87,10 @@ function SessionForm({
     <div ref={root} className="str-log-form">
       <div className="str-log-head">
         <Field label="Date">
-          <input className="yorha-input parts-input" type="date" max={todayIso()} value={form.date} onChange={(e) => edit({ ...form, date: e.target.value })} />
+          <input className="parts-input" type="date" max={todayIso()} value={form.date} onChange={(e) => edit({ ...form, date: e.target.value })} />
         </Field>
         <Field label="Notes">
-          <input className="yorha-input parts-input" value={form.notes} onChange={(e) => edit({ ...form, notes: e.target.value })} placeholder="optional" />
+          <input className="parts-input" value={form.notes} onChange={(e) => edit({ ...form, notes: e.target.value })} placeholder="optional" />
         </Field>
       </div>
       <div className="str-log-hint">kg = TOTAL (bar + plates / both dumbbells), machines as shown, 0 = bodyweight</div>
@@ -103,26 +103,26 @@ function SessionForm({
         return (
           <div key={ei} className="str-log-block">
             <div className="str-log-block__top">
-              <input className="yorha-input parts-input" list={listId} data-f={`${ei}-name`} value={ex.name} placeholder="Exercise" onChange={(e) => edit(setExerciseName(form, ei, e.target.value))} onKeyDown={(e) => onNameKey(e, ei)} />
-              <button type="button" className="yorha-btn parts-button str-log-x" title="Remove exercise" onClick={() => edit(removeExercise(form, ei))}>×</button>
+              <input className="parts-input" list={listId} data-f={`${ei}-name`} value={ex.name} placeholder="Exercise" onChange={(e) => edit(setExerciseName(form, ei, e.target.value))} onKeyDown={(e) => onNameKey(e, ei)} />
+              <button type="button" className="parts-button str-log-x" title="Remove exercise" onClick={() => edit(removeExercise(form, ei))}>×</button>
             </div>
             {ex.sets.map((s, si) => (
               <div key={si} className="str-log-set">
                 <span className="str-log-set__n">{si + 1}</span>
                 {s.secs !== undefined ? (
-                  <input className="yorha-input parts-input str-log-set__secs" data-f={`${ei}-${si}-secs`} inputMode="numeric" placeholder="seconds" value={s.secs} onChange={(e) => edit(setSetField(form, ei, si, 'secs', e.target.value))} onKeyDown={(e) => onKgKey(e, ei, si)} />
+                  <input className="parts-input str-log-set__secs" data-f={`${ei}-${si}-secs`} inputMode="numeric" placeholder="seconds" value={s.secs} onChange={(e) => edit(setSetField(form, ei, si, 'secs', e.target.value))} onKeyDown={(e) => onKgKey(e, ei, si)} />
                 ) : (
                   <>
-                    <input className="yorha-input parts-input" data-f={`${ei}-${si}-reps`} inputMode="numeric" placeholder="reps" value={s.reps} onChange={(e) => edit(setSetField(form, ei, si, 'reps', e.target.value))} />
-                    <input className="yorha-input parts-input" data-f={`${ei}-${si}-kg`} inputMode="decimal" placeholder="kg" value={s.kg} onChange={(e) => edit(setSetField(form, ei, si, 'kg', e.target.value))} onKeyDown={(e) => onKgKey(e, ei, si)} />
+                    <input className="parts-input" data-f={`${ei}-${si}-reps`} inputMode="numeric" placeholder="reps" value={s.reps} onChange={(e) => edit(setSetField(form, ei, si, 'reps', e.target.value))} />
+                    <input className="parts-input" data-f={`${ei}-${si}-kg`} inputMode="decimal" placeholder="kg" value={s.kg} onChange={(e) => edit(setSetField(form, ei, si, 'kg', e.target.value))} onKeyDown={(e) => onKgKey(e, ei, si)} />
                   </>
                 )}
-                <button type="button" className={`yorha-btn parts-button str-log-x${s.secs !== undefined ? ' is-on' : ''}`} title="Hold: seconds instead of reps and kg (plank, hang)" onClick={() => edit(toggleHold(form, ei, si))}>s</button>
-                <button type="button" className="yorha-btn parts-button str-log-x" title="Remove set" onClick={() => edit(removeSet(form, ei, si))}>×</button>
+                <button type="button" className={`parts-button str-log-x${s.secs !== undefined ? ' is-on' : ''}`} title="Hold: seconds instead of reps and kg (plank, hang)" onClick={() => edit(toggleHold(form, ei, si))}>s</button>
+                <button type="button" className="parts-button str-log-x" title="Remove set" onClick={() => edit(removeSet(form, ei, si))}>×</button>
               </div>
             ))}
             <div className="str-log-block__foot">
-              <button type="button" className="yorha-btn parts-button" onClick={() => edit(addSet(form, ei))}>+ set</button>
+              <button type="button" className="parts-button" onClick={() => edit(addSet(form, ei))}>+ set</button>
               {pv && (
                 <span className="str-log-chips">
                   <span className="str-log-chip">{pv.equipment}</span>
@@ -137,15 +137,15 @@ function SessionForm({
       })}
 
       <div className="str-log-actions">
-        <button type="button" className="yorha-btn parts-button" onClick={() => edit(addExercise(form))}>+ exercise</button>
-        <button type="button" className="yorha-btn parts-button" disabled={busy || !canSubmit(form)} onClick={() => void save(false)}>{busy ? 'Saving…' : submitLabel}</button>
-        {onCancel && <button type="button" className="yorha-btn parts-button" onClick={onCancel}>Cancel</button>}
+        <button type="button" className="parts-button" onClick={() => edit(addExercise(form))}>+ exercise</button>
+        <button type="button" className="parts-button" disabled={busy || !canSubmit(form)} onClick={() => void save(false)}>{busy ? 'Saving…' : submitLabel}</button>
+        {onCancel && <button type="button" className="parts-button" onClick={onCancel}>Cancel</button>}
       </div>
       {sameDay && (
         <div className="str-log-confirm">
           A session is already logged on {fmtDate(form.date)}.
-          <button type="button" className="yorha-btn parts-button" disabled={busy} onClick={() => void save(true)}>Log as 2nd session that day</button>
-          <button type="button" className="yorha-btn parts-button" onClick={() => setSameDay(false)}>Cancel</button>
+          <button type="button" className="parts-button" disabled={busy} onClick={() => void save(true)}>Log as 2nd session that day</button>
+          <button type="button" className="parts-button" onClick={() => setSameDay(false)}>Cancel</button>
         </div>
       )}
       {msg && <div className={`str-log-msg${msg.startsWith('⚠') ? ' is-error' : ''}`}>{msg}</div>}
@@ -217,14 +217,14 @@ export function StrengthLog({ dto, onReload }: { dto: DashboardDTO; onReload: ()
                       {s.notes && <span className="str-log-row__notes">{s.notes}</span>}
                       <span className="str-log-row__meta">{t.exercises} exercises · {t.sets} sets · {fmtNum(t.tonnageKg)} kg</span>
                       <span className="str-log-row__btns">
-                        <button type="button" className="yorha-btn parts-button" onClick={() => {
+                        <button type="button" className="parts-button" onClick={() => {
                           setSeed(formFromSession(s, 'repeat', todayIso()));
                           setFormKey((k) => k + 1);
                           setFlash('');
                           top.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
                         }}>Repeat</button>
-                        <button type="button" className="yorha-btn parts-button" onClick={() => { setDeleteId(null); setRowMsg(''); setEditingId(editingId === s.id ? null : s.id); }}>Edit</button>
-                        <button type="button" className="yorha-btn parts-button" onClick={() => { setEditingId(null); setRowMsg(''); setDeleteId(s.id); }}>Delete</button>
+                        <button type="button" className="parts-button" onClick={() => { setDeleteId(null); setRowMsg(''); setEditingId(editingId === s.id ? null : s.id); }}>Edit</button>
+                        <button type="button" className="parts-button" onClick={() => { setEditingId(null); setRowMsg(''); setDeleteId(s.id); }}>Delete</button>
                       </span>
                     </div>
                     <div className="str-log-row__sets">
@@ -233,14 +233,14 @@ export function StrengthLog({ dto, onReload }: { dto: DashboardDTO; onReload: ()
                     {deleteId === s.id && (
                       <div className="str-log-confirm">
                         Delete the {fmtDate(s.date)} session? This cannot be undone.
-                        <button type="button" className="yorha-btn parts-button" onClick={async () => {
+                        <button type="button" className="parts-button" onClick={async () => {
                           const err = await postJson(`${API}?id=${s.id}`, 'DELETE');
                           if (err) return setRowMsg(err);
                           setDeleteId(null);
                           setFlash(`Deleted the ${fmtDate(s.date)} session.`);
                           await afterWrite();
                         }}>Yes, delete</button>
-                        <button type="button" className="yorha-btn parts-button" onClick={() => setDeleteId(null)}>Cancel</button>
+                        <button type="button" className="parts-button" onClick={() => setDeleteId(null)}>Cancel</button>
                       </div>
                     )}
                     {rowMsg && (deleteId === s.id) && <div className="str-log-msg is-error">{rowMsg}</div>}

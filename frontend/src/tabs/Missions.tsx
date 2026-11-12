@@ -40,7 +40,7 @@ function MissionRow({ m, selected, onClick }: { m: Mission; selected: boolean; o
   const sub = m.needsResit && m.resitDate != null ? `${fmtDate(m.examDate)} → resit ${fmtDate(m.resitDate)}` : fmtDate(m.examDate);
   return (
     <div
-      className={`yorha-card-row mis-row${danger ? ' is-danger' : ''}${selected ? ' is-selected' : ''}`}
+      className={`ui-card-row mis-row${danger ? ' is-danger' : ''}${selected ? ' is-selected' : ''}`}
       onClick={onClick}
       style={cssVars({ '--row-edge': edge })}
     >
@@ -179,17 +179,17 @@ export function Missions({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
       {/* Course = the headline (full width); the rest in a tidy grid; actions on their own bar. */}
       <div className="mis-form-grid">
         <div className="mis-form-course">
-          <Field label="Course"><input className="yorha-input parts-input" value={course} onChange={(e) => setCourse(e.target.value)} placeholder="e.g. Analysis I" /></Field>
+          <Field label="Course"><input className="parts-input" value={course} onChange={(e) => setCourse(e.target.value)} placeholder="e.g. Analysis I" /></Field>
         </div>
-        <Field label="Date"><input className="yorha-input parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+        <Field label="Date"><input className="parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
         <Field label="Grade /20">
-          <input className="yorha-input parts-input" type="number" inputMode="decimal" min={0} max={20} step={0.5} value={grade} onChange={(e) => setGrade(e.target.value)} placeholder="e.g. 15" />
+          <input className="parts-input" type="number" inputMode="decimal" min={0} max={20} step={0.5} value={grade} onChange={(e) => setGrade(e.target.value)} placeholder="e.g. 15" />
         </Field>
         <Field label="Credits">
-          <input className="yorha-input parts-input" type="number" inputMode="numeric" min={0} step={1} value={credits} onChange={(e) => setCredits(e.target.value)} placeholder="e.g. 6" />
+          <input className="parts-input" type="number" inputMode="numeric" min={0} step={1} value={credits} onChange={(e) => setCredits(e.target.value)} placeholder="e.g. 6" />
         </Field>
         <Field label="Status">
-          <select className="yorha-input parts-input" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+          <select className="parts-input" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
             <option value="scheduled">Scheduled</option>
             <option value="pending">Pending (sat, awaiting)</option>
             <option value="graded">Graded</option>
@@ -204,20 +204,20 @@ export function Missions({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
         {failedFirst && (
           <>
             <Field label="Resit date">
-              <input className="yorha-input parts-input" type="date" value={resitDate} onChange={(e) => setResitDate(e.target.value)} />
+              <input className="parts-input" type="date" value={resitDate} onChange={(e) => setResitDate(e.target.value)} />
             </Field>
             <Field label="Resit grade /20">
-              <input className="yorha-input parts-input" type="number" inputMode="decimal" min={0} max={20} step={0.5} value={resitGrade} onChange={(e) => setResitGrade(e.target.value)} placeholder="e.g. 12" />
+              <input className="parts-input" type="number" inputMode="decimal" min={0} max={20} step={0.5} value={resitGrade} onChange={(e) => setResitGrade(e.target.value)} placeholder="e.g. 12" />
             </Field>
           </>
         )}
       </div>
       <div className="mis-form-actions">
-        <button className="yorha-btn parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>
+        <button className="parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>
           {editId != null ? 'Update exam' : 'Log exam'}
         </button>
         {editId != null && (
-          <button className="yorha-btn parts-button mis-btn-danger" onClick={() => void del()}>
+          <button className="parts-button mis-btn-danger" onClick={() => void del()}>
             Delete
           </button>
         )}
@@ -282,7 +282,7 @@ export function Missions({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
       <Card
         title="▮ PENDING"
         headerRight={
-          <button className="yorha-btn parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
+          <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
         }
       >
         {adding && (
@@ -301,7 +301,7 @@ export function Missions({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
 
       <Card title="▮ PASSED">
         <button
-          className="yorha-btn parts-button mis-btn-sm"
+          className="parts-button mis-btn-sm"
           onClick={() => setShowHistory((v) => !v)}
           aria-expanded={showHistory}
         >

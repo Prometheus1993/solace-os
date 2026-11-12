@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
 import { CommandBar } from './CommandBar.tsx';
-import { BottomNav, type Area } from './BottomNav.tsx';
+import { BottomNav } from './BottomNav.tsx';
+import { canonicalHash, resolveArea, type Area } from './areas.ts';
 import { useMobile } from './responsive.ts';
 
 type Source = 'loading' | 'live' | 'offline';
@@ -13,8 +14,6 @@ import { Training } from './tabs/Training.tsx';
 import { School } from './tabs/School.tsx';
 import { Archives } from './tabs/Archives.tsx';
 import { FxOverlay } from './FxOverlay.tsx';
-import { ScanlineOverlay } from './ScanlineOverlay.tsx';
-import { C, cssVars } from './tokens.ts';
 import type { SolaceSpotify } from './home/desk/spotify-api.ts';
 
 type Toast = { msg: string; tone: 'info' | 'ok' | 'err' } | null;
@@ -31,10 +30,12 @@ interface SyncResponse {
   summary?: { runsImported: number; recoveryDaysWritten: number; wellnessDays: string[] };
 }
 
-const AREA_IDS: Area[] = ['home', 'training', 'school', 'archives'];
-const areaFromHash = (): Area => {
-  const a = window.location.hash.replace('#', '').split('/')[0];
-  return (AREA_IDS.includes(a as Area) ? a : 'home') as Area;
+const areaFromHash = (): Area => resolveArea(window.location.hash.replace('#', '').split('/')[0] ?? '') ?? 'desk';
+/** An old bookmark (`#training/running`) is rewritten to its new name in place (no history entry, no reload). */
+const canonicalizeHash = (): void => {
+  const h = window.location.hash.replace('#', '');
+  const c = canonicalHash(h);
+  if (h && c !== h) window.history.replaceState(null, '', `#${c}`);
 };
 
 const entryState = createEntryState(() => window.sessionStorage);
@@ -71,9 +72,10 @@ export function App() {
     }, ms);
   };
 
-  // Keep `area` in sync with the hash (back/forward + the Training sub-nav writing `training/<view>`).
+  // Keep `area` in sync with the hash (back/forward + the BODY sub-nav writing `body/<view>`).
   useEffect(() => {
-    const onHash = () => setAreaState(areaFromHash());
+    canonicalizeHash();
+    const onHash = () => { canonicalizeHash(); setAreaState(areaFromHash()); };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -173,7 +175,7 @@ export function App() {
 
   const enter = useCallback(() => {
     entryState.markEntered();
-    const dest = entryHash(window.location.hash, AREA_IDS); // keep a valid deep link; never overwrite it with #home
+    const dest = entryHash(window.location.hash); // keep a valid deep link; never overwrite it with #desk
     if (window.location.hash !== `#${dest}`) window.location.hash = dest;
     focusPending.current = true;
     setEntered(true);
@@ -184,32 +186,37 @@ export function App() {
 
   if (!entered) return <StartScreen onEnter={enter} />;
 
-  if (!dto && area === 'home') return <LinkState offline={source === 'offline'} />;
+  if (!dto && area === 'desk') return <LinkState offline={source === 'offline'} />;
 
   if (!dto) {
-    return (
-      <div className="app-loading">
-        {source === 'offline' ? 'Server offline — start it with `npm run server`; this page retries every 30s.' : 'Loading…'}
+    return source === 'offline' ? (
+      <div className="app-state" role="alert">
+        <div className="app-state__panel">
+          <span className="app-state__heading">UPLINK FAULT</span>
+          <p className="app-state__message">Server offline. Start it with `npm run server`; this page retries every 30s.</p>
+          <button className="parts-button" onClick={() => void loadDashboard()}>Retry</button>
+        </div>
+      </div>
+    ) : (
+      <div className="app-state" role="status">
+        <span>LOADING<span className="app-state__cursor" aria-hidden="true" /></span>
       </div>
     );
   }
 
-  const toneColor = toast?.tone === 'ok' ? C.ok : toast?.tone === 'err' ? C.danger : C.gold;
-
   return (
     <div className={`app-root${fadeIn ? ' ss-fade-in' : ''}`}>
-      {/* HOME is the desk and brings its own chrome, so the old shell (texture, CommandBar, BottomNav) is for the other areas only. */}
-      {area === 'home' ? (
+      {/* DESK is the desk and brings its own chrome, so the old shell (CommandBar, BottomNav) is for the other areas only. */}
+      {area === 'desk' ? (
         <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} onSyncGarmin={() => void syncGarmin()} />
       ) : (
         <>
-          <ScanlineOverlay />
           <CommandBar area={area} setArea={setArea} totals={dto.totals} dataFreshness={dto.dataFreshness} onSyncGarmin={() => void syncGarmin()} syncing={syncing} />
 
           <main className={mobile ? 'app-main is-mobile' : 'app-main'}>
-            {area === 'training' && <Training dto={dto} onReload={loadDashboard} />}
-            {area === 'school' && <School dto={dto} onReload={loadDashboard} />}
-            {area === 'archives' && <Archives dto={dto} onReload={loadDashboard} />}
+            {area === 'body' && <Training dto={dto} onReload={loadDashboard} />}
+            {area === 'study' && <School dto={dto} onReload={loadDashboard} />}
+            {area === 'shelf' && <Archives dto={dto} onReload={loadDashboard} />}
           </main>
 
           {mobile && <BottomNav area={area} setArea={setArea} />}
@@ -217,7 +224,7 @@ export function App() {
       )}
 
       {busy && <div className="app-busy-bar" />}
-      {toast && <div className={area === 'home' ? 'app-toast nh-toast' : 'app-toast'} data-tone={toast.tone} style={{ ...cssVars({ '--toast-tone': toneColor }), bottom: overlayBottom(mobile) }}>{toast.msg}</div>}
+      {toast && <div className="app-toast" role={toast.tone === 'err' ? 'alert' : 'status'} data-tone={toast.tone} style={{ bottom: overlayBottom(mobile) }}>{toast.msg}</div>}
       <FxOverlay events={dto.levelEvents} />
     </div>
   );

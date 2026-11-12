@@ -1,4 +1,4 @@
-.terminal-explorer { height:100%; display:flex; flex-direction:column; font:14px 'Share Tech Mono',monospace; --border:#345368; }
+.terminal-explorer { height:100%; display:flex; flex-direction:column; font:14px var(--font-mono); }
 .te-layout { display:grid; min-height:0; flex:1; }
 .te-folders { overflow:auto; }
 .te-folders > p { padding:0 8px; margin:0 0 14px; }.te-folders > .te-library { margin:18px 0 4px; }
@@ -9,10 +9,10 @@
 .te-path { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
 .te-path > span { margin-right:8px; }
 .te-content { min-height:0; overflow:auto; flex:1; scrollbar-width:thin; }
-.te-content h1 { font:600 23px Oxanium,sans-serif; margin:0 0 16px; }
+.te-content h1 { font:600 23px var(--font-title); margin:0 0 16px; }
 .te-status {
   padding:10px 18px;
-  border-top:1px solid #345368;
+  border-top:1px solid var(--color-border);
   display:flex;
   justify-content:space-between;
   gap:12px;
@@ -41,7 +41,7 @@
   .te-content .str-log-set { grid-template-columns:18px minmax(0,1fr) minmax(0,1fr) 32px 32px; }
 }
 /* Terminal polish (#17): a short folder entrance, a steady active dot and a one-off save flash. Nothing moves while typing. */
-.te-content > section:not([hidden]) { animation:te-enter 180ms ease-out; }
+.te-content > section:not([hidden]) { animation:te-enter var(--dur-base) ease-out; }
 .te-active { display:inline-block; width:6px; height:6px; margin-left:10px; border-radius:50%; background:#7fe9e9; opacity:.7; vertical-align:middle; }
 .te-receipt { font-weight:inherit; }
 .te-receipt[data-confirmed=true] { animation:te-saved 1.2s ease-out; }

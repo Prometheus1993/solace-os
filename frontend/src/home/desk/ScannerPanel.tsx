@@ -67,7 +67,7 @@ export function ScannerPanel({ dto, selected, onLogWorkout }: { onLogWorkout: ()
               : stat.lastSessionDaysAgo === 0 ? 'Last gym session: today.' : `Last gym session: ${stat.lastSessionDaysAgo} days ago.`}
           </p>
           <button type="button" className="wp-sync" onClick={onLogWorkout}>＋ LOG WORKOUT</button>
-          <a href="#training/strength">PROGRESSION & HISTORY ↗</a>
+          <a href="#body/strength">PROGRESSION & HISTORY ↗</a>
         </div>}
         <p className="wp-scan-footnote">Current progression snapshot. Attribute level history is not available here.</p>
       </>}

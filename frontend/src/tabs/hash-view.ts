@@ -2,6 +2,8 @@
 const HASH_VIEW_ALIASES: Record<string, string> = {
   schoolperiode: 'school-term',
   examenperiode: 'exam-term',
+  body: 'vitals', // BODY -> VITALS was `#training/body` before the rename
+  status: 'overview', // the STATUS sub-tab is also reachable as #body/status
 };
 
 /** The sub-view of `#<area>/<view>`: the second hash segment (old ids mapped), else `def` when absent/unknown. */

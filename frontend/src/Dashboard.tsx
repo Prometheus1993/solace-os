@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { DashboardDTO, QuestProgress, RunRead, StatName, StatResult, WeeklyReport } from '@solace/core';
 import { C, cssVars, dayOf, fmtNum, fmtPace, monthOf, READINESS, round1, STAT_COLOR } from './tokens.ts';
-import { BarTrack, ConfidenceChip, InvStrip, OsBlock, Panel, SubTile, TierBadge, ZonePill } from './ui.tsx';
+import { BarTrack, ConfidenceChip, OsBlock, Panel, Strip, SubTile, TierBadge, ZonePill } from './ui.tsx';
 import { StatRef } from './tabs/parts.tsx';
 import { useMobile, useNarrow } from './responsive.ts';
 
@@ -61,7 +61,7 @@ function CharacterStatus({ data }: { data: DashboardDTO }) {
   const { stats, levelEvents } = data;
   const eventFor = (s: StatName) => levelEvents.find((e) => e.stat === s);
   return (
-    <Panel brackets={['tl', 'tr', 'bl', 'br']}>
+    <Panel>
       <div className="dash-char-header">
         <div>
           <div className="dash-char-level-row">
@@ -90,13 +90,13 @@ function Directive({ data }: { data: DashboardDTO }) {
       pad={false}
       style={cssVars({ '--directive-color': color })}
     >
-      <InvStrip>
+      <Strip>
         <span className="dash-directive-label">
           <span className="dash-directive-dot" />
           Directive
         </span>
         <span className="dash-directive-verb">{verb}</span>
-      </InvStrip>
+      </Strip>
       {r.rationale.length > 0 && (
         <div className="dash-directive-lines">
           {r.rationale.map((line, i) => (
@@ -110,7 +110,7 @@ function Directive({ data }: { data: DashboardDTO }) {
       {/* The 4 vitals tiles live only at VITALS/Body.tsx (canonical per 3.2 #2) — STATUS keeps
           just the composite verdict above plus this drill-in reference. */}
       <div className="dash-directive-footer">
-        <StatRef label="Vitals" value={rec.bodyBattery.value != null ? `${Math.round(rec.bodyBattery.value)}% battery` : '—'} hash="training/body" />
+        <StatRef label="Vitals" value={rec.bodyBattery.value != null ? `${Math.round(rec.bodyBattery.value)}% battery` : '—'} hash="body/vitals" />
       </div>
     </OsBlock>
   );
@@ -237,7 +237,7 @@ function BattleLog({ data }: { data: DashboardDTO }) {
           <RunRow key={run.date + run.distanceKm} run={run} />
         ))}
         <div className="dash-battlelog-divider">
-          <StatRef label="All runs" value={String(data.totals.runCount)} hash="training/running" />
+          <StatRef label="All runs" value={String(data.totals.runCount)} hash="body/running" />
         </div>
       </div>
     </OsBlock>

@@ -84,7 +84,7 @@ export function ShardPanel({ series }: { series: DashboardDTO['series'] }) {
         type="button"
         className="wp-stream-card"
         key={s.id}
-        onClick={() => navigate(`archives/${s.type === 'manga' ? 'manga' : 'books'}/${s.id}`)}>
+        onClick={() => navigate(`shelf/${s.type === 'manga' ? 'manga' : 'books'}/${s.id}`)}>
         <small>{s.type.toUpperCase()} / {s.finished ? 'COMPLETE' : s.reading ? 'READING' : 'ARCHIVE'}</small>
         <ShardCover key={s.coverUrl} url={s.coverUrl} />
         <strong>{s.title}</strong><span>{s.progressPct == null ? 'Progress unknown' : `${s.progressPct}% read`} <b aria-hidden="true">↗</b></span>
@@ -98,6 +98,6 @@ export function ShardPanel({ series }: { series: DashboardDTO['series'] }) {
         <button type="button" aria-label="Scroll collection right" onClick={() => shift(1)}>→</button>
       </div>
     </footer>
-    {!series.length && <button className="wp-sync" onClick={() => navigate('archives/books')}>OPEN ARCHIVE ↗</button>}
+    {!series.length && <button className="wp-sync" onClick={() => navigate('shelf/books')}>OPEN ARCHIVE ↗</button>}
   </section>;
 }

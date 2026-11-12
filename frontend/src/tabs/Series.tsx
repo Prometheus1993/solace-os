@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
 import { C, cssVars, formatEur } from '../tokens.ts';
 import { BarTrack } from '../ui.tsx';
-import { READ_STATUS_LABELS, SERIES_STATE_LABELS } from '../yorha-labels.ts';
+import { READ_STATUS_LABELS, SERIES_STATE_LABELS } from '../labels.ts';
 import { AccordionList, Card, Field, FilterTabs, getJson, InsetPanel, postJson, StatTile, TabShell, TileGrid } from './parts.tsx';
 import { archiveSpend } from './spend.ts';
 import { filterTabsFor, matcherFor, matchesQuery, type Kind, type SeriesFilter, type SeriesItem } from './series-filters.ts';
@@ -132,7 +132,7 @@ function SeriesRow({ s, kind, selected, expanded, onEdit, onToggleVolumes }: { s
   const rating = seriesRating(s);
   const showBar = kind === 'manga' && s.progressPct != null;
   return (
-    <div className={`yorha-card-row series-row${selected ? ' is-selected' : ''}`} style={cssVars({ '--series-row-accent': st.color })}>
+    <div className={`ui-card-row series-row${selected ? ' is-selected' : ''}`} style={cssVars({ '--series-row-accent': st.color })}>
       <div onClick={onEdit} role="button" tabIndex={0} aria-label={`Open ${s.title}`} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEdit(); } }} className="series-row__main">
         <Cover url={s.coverUrl} w={38} h={54} />
         <div className="series-row__info">
@@ -172,7 +172,7 @@ function SeriesRow({ s, kind, selected, expanded, onEdit, onToggleVolumes }: { s
       {/* Separate disclosure — its OWN state (expandedSeriesId), independent of the edit accordion. */}
       {s.volumes.length > 0 && (
         <button
-          className={`yorha-btn parts-button series-vol-toggle${expanded ? ' is-expanded' : ''}`}
+          className={`parts-button series-vol-toggle${expanded ? ' is-expanded' : ''}`}
           onClick={(e) => { e.stopPropagation(); onToggleVolumes(); }}
         >
           {expanded ? '▾' : '▸'} {s.volumes.length} vol
@@ -207,7 +207,7 @@ function VolumePanel({ s, onSetRead, savingCopyId }: { s: SeriesItem; onSetRead:
               </span>
               {v.copyId != null ? (
                 <button
-                  className={`yorha-btn series-read-chip series-read-chip--button${isRead ? ' is-read' : ''}`}
+                  className={`series-read-chip series-read-chip--button${isRead ? ' is-read' : ''}`}
                   onClick={() => onSetRead(v.copyId!, nextReadStatus(v.readStatus))}
                   disabled={saving}
                   title="Click to change reading status"
@@ -251,7 +251,7 @@ function CandidatePicker({ candidates, kind, onPick, onPickRelated }: { candidat
             <button
               key={`${c.title}-${i}`}
               onClick={() => onPick(c)}
-              className="yorha-card-row series-candidate"
+              className="ui-card-row series-candidate"
             >
               <Cover url={c.coverUrl} w={108} h={154} />
               <div className="series-candidate__title">{c.title}</div>
@@ -298,7 +298,7 @@ function CandidatePicker({ candidates, kind, onPick, onPickRelated }: { candidat
               <button
                 key={`${r.title}-${i}`}
                 onClick={() => onPickRelated(r.title)}
-                className="yorha-card-row series-related-card"
+                className="ui-card-row series-related-card"
                 title={r.title}
               >
                 <Cover url={r.coverUrl} w={82} h={116} />
@@ -379,7 +379,7 @@ function BuyConfirm({ s, onBought, onCancel }: { s: SeriesItem; onBought: (flash
         <div className="series-buyconfirm__price-field">
           <Field label="Price (€)">
             <input
-              className="yorha-input parts-input series-buyconfirm__price-input"
+              className="parts-input series-buyconfirm__price-input"
               inputMode="decimal"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -388,10 +388,10 @@ function BuyConfirm({ s, onBought, onCancel }: { s: SeriesItem; onBought: (flash
             />
           </Field>
         </div>
-        <button className="yorha-btn parts-button series-buyconfirm__confirm-btn" disabled={busy || loading || invalid} onClick={() => void confirm()}>
+        <button className="parts-button series-buyconfirm__confirm-btn" disabled={busy || loading || invalid} onClick={() => void confirm()}>
           {busy ? '…' : '✓ Yes, bought'}
         </button>
-        <button className="yorha-btn parts-button series-buyconfirm__cancel-btn" onClick={onCancel}>Cancel</button>
+        <button className="parts-button series-buyconfirm__cancel-btn" onClick={onCancel}>Cancel</button>
       </div>
       <div className={`series-buyconfirm__hint${invalid || msg ? ' is-danger' : ''}`}>{msg || (loading ? 'fetching price…' : hint)}</div>
     </InsetPanel>
@@ -417,7 +417,7 @@ function NextToBuyCard({ list, onReload }: { list: SeriesItem[]; onReload: () =>
         {ordered.map((s) => (
           <div key={s.id} className="series-nexttobuy__item">
             <button
-              className={`yorha-card-row series-nexttobuy__row${confirmId === s.id ? ' is-selected' : ''}`}
+              className={`ui-card-row series-nexttobuy__row${confirmId === s.id ? ' is-selected' : ''}`}
               onClick={() => { setFlash(''); setConfirmId((cur) => (cur === s.id ? null : s.id)); }}
               title={`Bought vol ${s.nextVolumeToBuy}? Tap to confirm`}
             >
@@ -663,8 +663,8 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
         <div className="series-form__title-field">
           <Field label="Title">
             <div className="series-form__title-input-row">
-              <input className="yorha-input parts-input series-form__title-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={kind === 'manga' ? 'e.g. Slam Dunk — or search an author' : 'e.g. Dune — or search an author'} />
-              <button className="yorha-btn parts-button series-form__search-btn" onClick={() => void lookup()} disabled={lookuping || lookupQuery.length < 2} title="Search by title or author — covers + English editions (Google Books + AniList)">{lookuping ? '…' : '🔍 Search'}</button>
+              <input className="parts-input series-form__title-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={kind === 'manga' ? 'e.g. Slam Dunk — or search an author' : 'e.g. Dune — or search an author'} />
+              <button className="parts-button series-form__search-btn" onClick={() => void lookup()} disabled={lookuping || lookupQuery.length < 2} title="Search by title or author — covers + English editions (Google Books + AniList)">{lookuping ? '…' : '🔍 Search'}</button>
             </div>
           </Field>
         </div>
@@ -674,13 +674,13 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
 
       {/* Author — free text (mangaka / novelist), prefilled by the lookup; shown under the title + searchable. */}
       <div className="series-form__spaced">
-        <Field label="Author"><input className="yorha-input parts-input" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder={kind === 'manga' ? 'e.g. Takehiko Inoue' : 'e.g. Frank Herbert'} /></Field>
+        <Field label="Author"><input className="parts-input" value={author} onChange={(e) => setAuthor(e.target.value)} placeholder={kind === 'manga' ? 'e.g. Takehiko Inoue' : 'e.g. Frank Herbert'} /></Field>
       </div>
 
       {/* 2 — Details. */}
       <div className="series-form__grid">
         <Field label="Type">
-          <select className="yorha-input parts-input" value={type} onChange={(e) => setType(e.target.value as 'manga' | 'book' | 'LN')}>
+          <select className="parts-input" value={type} onChange={(e) => setType(e.target.value as 'manga' | 'book' | 'LN')}>
             <option value="manga">Manga</option>
             <option value="book">Book</option>
             <option value="LN">Light novel</option>
@@ -704,25 +704,25 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
           </div>
         ) : (
           <div className="series-form__grid series-form__grid--tight">
-            <Field label="Owned"><input className="yorha-input parts-input" type="number" inputMode="numeric" value={owned} onChange={(e) => setOwned(e.target.value)} placeholder="24" /></Field>
-            <Field label="Read up to"><input className="yorha-input parts-input" type="number" inputMode="numeric" value={read} onChange={(e) => setRead(e.target.value)} placeholder="23" /></Field>
-            <Field label="Released (total)"><input className="yorha-input parts-input" type="number" inputMode="numeric" value={total} onChange={(e) => setTotal(e.target.value)} placeholder="31" /></Field>
+            <Field label="Owned"><input className="parts-input" type="number" inputMode="numeric" value={owned} onChange={(e) => setOwned(e.target.value)} placeholder="24" /></Field>
+            <Field label="Read up to"><input className="parts-input" type="number" inputMode="numeric" value={read} onChange={(e) => setRead(e.target.value)} placeholder="23" /></Field>
+            <Field label="Released (total)"><input className="parts-input" type="number" inputMode="numeric" value={total} onChange={(e) => setTotal(e.target.value)} placeholder="31" /></Field>
           </div>
         )
       ) : !isBook ? (
         <div className="series-form__grid series-form__grid--tight">
-          <Field label="Released (total)"><input className="yorha-input parts-input" type="number" inputMode="numeric" value={total} onChange={(e) => setTotal(e.target.value)} placeholder="31" /></Field>
+          <Field label="Released (total)"><input className="parts-input" type="number" inputMode="numeric" value={total} onChange={(e) => setTotal(e.target.value)} placeholder="31" /></Field>
         </div>
       ) : null}
 
       {/* Genres — comma-separated, prefilled from the AniList lookup. Drives the shelf filter/search. */}
       <div className="series-form__spaced">
-        <Field label="Genres (comma-separated)"><input className="yorha-input parts-input" value={genresInput} onChange={(e) => setGenresInput(e.target.value)} placeholder="Action, Sports, Drama" /></Field>
+        <Field label="Genres (comma-separated)"><input className="parts-input" value={genresInput} onChange={(e) => setGenresInput(e.target.value)} placeholder="Action, Sports, Drama" /></Field>
       </div>
 
       <div className="series-form__actions">
-        <button className="yorha-btn parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>{editId != null ? 'Update' : 'Add'}</button>
-        {editId != null && <button className="yorha-btn parts-button series-form__delete-btn" onClick={() => void del()}>Delete</button>}
+        <button className="parts-button" disabled={busy || !canSubmit} onClick={() => void submit()}>{editId != null ? 'Update' : 'Add'}</button>
+        {editId != null && <button className="parts-button series-form__delete-btn" onClick={() => void del()}>Delete</button>}
         <button className="parts-button series-form__cancel-btn" onClick={reset}>Cancel</button>
         {msg && <span className={`series-form__msg${msg.startsWith('⚠') ? ' is-danger' : ''}`}>{msg}</span>}
       </div>
@@ -748,12 +748,12 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
   if (detailId != null) {
     const detail = list.find(s => s.id === detailId);
     return <TabShell>
-      {onBack ? <button className="yorha-btn parts-button" onClick={onBack}>← Back to folder</button> : <a className="yorha-btn parts-button" href={`#archives/${kind === 'manga' ? 'manga' : 'books'}`}>← Back to shelf</a>}
+      {onBack ? <button className="parts-button" onClick={onBack}>← Back to folder</button> : <a className="parts-button" href={`#shelf/${kind === 'manga' ? 'manga' : 'books'}`}>← Back to shelf</a>}
       {!detail ? <Card title="Shard unavailable"><p>This book or series is no longer in this archive.</p></Card> : <Card title={detail.title}>
         <div style={{ display:'flex', gap:24, alignItems:'flex-start', marginBottom:24 }}>
           <Cover url={detail.coverUrl} w={100} h={150} />
           <div><h2>{detail.title}</h2><p>{detail.author ?? 'Author unknown'}</p><p>{detail.readCount} / {detail.totalVolumesKnown ?? '?'} volumes read</p>
-            <button className="yorha-btn parts-button" onClick={() => toggleEdit(detail)}>{editId === detail.id ? 'Close editor' : 'Edit details'}</button>
+            <button className="parts-button" onClick={() => toggleEdit(detail)}>{editId === detail.id ? 'Close editor' : 'Edit details'}</button>
           </div>
         </div>
         {editId === detail.id && <InsetPanel>{renderForm()}</InsetPanel>}
@@ -788,12 +788,12 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
       <Card
         title={kind === 'manga' ? '▮ Manga shelf' : '▮ Book shelf'}
         headerRight={
-          <button className="yorha-btn parts-button series-shelf__add-btn" onClick={startAdd}>{adding ? '✕ Close' : terminal ? kind === 'manga' ? '+ ADD MANGA' : '+ ADD BOOK' : '＋ Add'}</button>
+          <button className="parts-button series-shelf__add-btn" onClick={startAdd}>{adding ? '✕ Close' : terminal ? kind === 'manga' ? '+ ADD MANGA' : '+ ADD BOOK' : '＋ Add'}</button>
         }
       >
         <div className="series-shelf__toolbar">
-          <input className="yorha-input parts-input series-shelf__query-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search title / author / genre" />
-          <select className="yorha-input parts-input series-shelf__select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)} title="Sort">
+          <input className="parts-input series-shelf__query-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search title / author / genre" />
+          <select className="parts-input series-shelf__select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)} title="Sort">
             <option value="recent">↧ Recent</option>
             <option value="title">Title A–Z</option>
             <option value="rating">Rating ↓</option>
@@ -801,7 +801,7 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
             <option value="tobuy">To buy ↓</option>
           </select>
           {allGenres.length > 0 && (
-            <select className="yorha-input parts-input series-shelf__select" value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)} title="Filter by genre">
+            <select className="parts-input series-shelf__select" value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)} title="Filter by genre">
               <option value="all">All genres</option>
               {allGenres.map((g) => (
                 <option key={g} value={g}>{g}</option>
@@ -813,7 +813,7 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
           {searching ? (
             <div className="series-shelf__searching">
               <span>Searching the whole shelf · {shown.length} {shown.length === 1 ? 'match' : 'matches'}</span>
-              <button className="yorha-btn parts-button series-shelf__clear-btn" onClick={() => setQuery('')}>✕ Clear search</button>
+              <button className="parts-button series-shelf__clear-btn" onClick={() => setQuery('')}>✕ Clear search</button>
             </div>
           ) : (
             <FilterTabs<string> active={filter} onChange={(f) => setFilter(f as SeriesFilter)} tabs={tabs} />

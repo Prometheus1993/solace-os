@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createEntryState, entryHash, type StorageLike } from './start-state.ts';
 
-const AREAS = ['home', 'training', 'school', 'archives'];
 const mem = (): StorageLike => { const m = new Map<string, string>(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v) }; };
 const throwing = (): StorageLike => ({ getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } });
 
@@ -22,11 +21,15 @@ describe('start-screen entry state', () => {
 
 describe('entryHash (deep-link preservation)', () => {
   it('keeps a valid deep link as is', () => {
-    expect(entryHash('#training/running', AREAS)).toBe('training/running');
-    expect(entryHash('#archives/manga', AREAS)).toBe('archives/manga');
+    expect(entryHash('#body/running')).toBe('body/running');
+    expect(entryHash('#shelf/manga')).toBe('shelf/manga');
   });
-  it('falls back to home for empty or unknown hashes', () => {
-    expect(entryHash('', AREAS)).toBe('home');
-    expect(entryHash('#nope/x', AREAS)).toBe('home');
+  it('renames an old area id in a deep link', () => {
+    expect(entryHash('#training/running')).toBe('body/running');
+    expect(entryHash('#archives/manga/12')).toBe('shelf/manga/12');
+  });
+  it('falls back to the desk for empty or unknown hashes', () => {
+    expect(entryHash('')).toBe('desk');
+    expect(entryHash('#nope/x')).toBe('desk');
   });
 });

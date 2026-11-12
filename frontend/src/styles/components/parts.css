@@ -1,87 +1,133 @@
 /* frontend/src/tabs/parts.tsx — shared tab-content primitives (TabShell/SubNav/Card/InsetPanel/
-   AccordionList/TileGrid/StatTile/LineChart/BarChart/Field/Countdown/StatRef/FilterTabs). */
+   AccordionList/TileGrid/StatTile/LineChart/BarChart/Field/Countdown/StatRef/FilterTabs) and the
+   form-control base classes (.parts-input / .parts-button). The panel frame itself is in ui.css. */
 
-.parts-tooltip { position: absolute; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--panelBorder); border-radius: var(--radius); padding: 4px 8px; font-size: 10.5px; font-family: var(--font-mono); color: var(--text); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 5; }
+.parts-tooltip { position: absolute; transform: translateX(-50%); background: var(--color-surface-2); border: var(--bw-1) solid var(--color-border); border-radius: var(--radius-none); padding: 4px 8px; font-size: var(--fs-xs); font-family: var(--font-mono); color: var(--color-text-1); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 5; }
 
 .parts-tab-shell { max-width: 1500px; margin: 0 auto; padding: 18px clamp(14px, 4vw, 30px) 20px; display: flex; flex-direction: column; gap: 18px; }
 
-.parts-subnav { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px clamp(14px, 4vw, 30px) 0; max-width: 1500px; margin: 0 auto; }
-.parts-subnav__btn { min-height: 36px; padding: 6px 14px; border: 1px solid var(--panelBorder); border-radius: var(--radius); cursor: pointer; font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); background: transparent; }
-.parts-subnav__btn.is-active { color: var(--onAccent); background: var(--gold); border-color: var(--gold); }
+/* Sub-tabs: switch rail on the console. Never filled; active = cyan text, 2px cyan underline, glow. */
+.parts-subnav { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); padding: 14px clamp(14px, 4vw, 30px) 0; max-width: 1500px; margin: 0 auto; }
+.parts-subnav__btn { min-height: 36px; padding: 0 14px; border: 0; border-bottom: var(--bw-2) solid transparent; border-radius: var(--radius-none); cursor: pointer; font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-2); background: transparent; transition: color var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.parts-subnav__btn:hover { color: var(--color-text-1); border-bottom-color: var(--color-cyan-dim); }
+.parts-subnav__btn.is-active { color: var(--color-cyan); border-bottom-color: var(--color-cyan); box-shadow: var(--glow-cyan); }
 
-.parts-card { position: relative; background: var(--panel); border: 1px solid var(--panelBorder); border-top: 2px solid var(--card-accent); border-radius: var(--radius); padding: clamp(13px, 3.2vw, 20px); }
+/* Card: a framed panel with a header (mark in --panel-accent, hairline below). */
+.parts-card { padding: var(--space-6); }
 .parts-card__title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
 .parts-card__title-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.parts-card__title-dot { width: 9px; height: 9px; background: var(--card-accent); flex: 0 0 auto; }
-.parts-card__title-text { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.parts-card__divider { height: 1px; margin-bottom: 14px; background: var(--subBorder); }
+.parts-card__title-dot { width: 7px; height: 7px; margin: 1px; transform: rotate(45deg); color: var(--panel-accent, var(--color-cyan)); background: currentColor; box-shadow: var(--glow-signal); flex: 0 0 auto; }
+.parts-card__title-text { font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-xs); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--color-text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parts-card__divider { height: 1px; margin-bottom: 14px; background: var(--color-hairline); }
 
-.parts-inset-panel { background: var(--subTile); border: 1px solid var(--subBorder); border-left: 2px solid var(--gold); padding: clamp(13px, 3.2vw, 20px); margin-top: 2px; }
+/* Panel-inset: flat Surface 2, 1px border, no art. */
+.parts-inset-panel { background: var(--color-surface-2); border: var(--bw-1) solid var(--color-border); border-left: var(--bw-2) solid var(--color-cyan); padding: var(--space-6); margin-top: 2px; }
 
 .parts-accordion-list { display: flex; flex-direction: column; }
-.parts-accordion-list__empty { font-size: 13px; color: var(--faint); }
+.parts-accordion-list__empty { font-family: var(--font-body); font-size: var(--fs-md); color: var(--color-text-3); }
 
 .parts-tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 12px; }
 
-.parts-stat-tile { position: relative; background: var(--subTile); border: 1px solid var(--subBorder); border-top: 2px solid var(--tile-accent); border-radius: var(--radius); padding: 14px 16px; }
-.parts-stat-tile__label { font-family: var(--font-mono); font-weight: 500; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); }
-.parts-stat-tile__value { font-family: var(--font-mono); font-weight: 500; font-size: clamp(20.2px, 3.333vw, 28px); color: var(--tile-value-color); margin-top: 4px; font-variant-numeric: tabular-nums; }
-.parts-stat-tile__sub { font-size: 11px; color: var(--faint); margin-top: 3px; line-height: 1.4; }
+.parts-stat-tile { position: relative; background: var(--color-surface-2); border: var(--bw-1) solid var(--color-border); border-top: var(--bw-2) solid var(--tile-accent); border-radius: var(--radius-none); padding: 14px 16px; }
+.parts-stat-tile__label { font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-2xs); letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-3); }
+.parts-stat-tile__value { font-family: var(--font-mono); font-weight: 400; font-size: clamp(20.2px, 3.333vw, 28px); color: var(--tile-value-color); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.parts-stat-tile__sub { font-family: var(--font-body); font-size: var(--fs-sm); color: var(--color-text-3); margin-top: 3px; line-height: 1.4; }
 
 .parts-linechart__area { position: relative; cursor: crosshair; }
 .parts-linechart__svg { width: 100%; height: 100%; display: block; }
 .parts-linechart__hoverline { position: absolute; top: 0; bottom: 0; width: 1px; pointer-events: none; }
 .parts-linechart__dot { position: absolute; transform: translate(-50%,-50%); pointer-events: none; }
-.parts-linechart__extreme { position: absolute; right: 2px; font-family: var(--font-mono); font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.parts-linechart__extreme { position: absolute; right: 2px; font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--color-text-3); font-variant-numeric: tabular-nums; }
 .parts-linechart__extreme.is-max { top: 0; }
 .parts-linechart__extreme.is-min { bottom: 0; }
-.parts-linechart__footer { display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-mono); font-size: 10px; color: var(--faint); }
+.parts-linechart__footer { display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--color-text-3); }
 
 .parts-barchart__bars { position: relative; display: flex; align-items: flex-end; gap: 4px; }
 .parts-barchart__bar-wrap { flex: 1; min-width: 4px; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; cursor: pointer; }
-.parts-barchart__bar { border-radius: var(--radius); }
+.parts-barchart__bar { border-radius: var(--radius-none); }
 .parts-barchart__labels { display: flex; gap: 4px; margin-top: 6px; }
-.parts-barchart__label { flex: 1; min-width: 4px; text-align: center; font-family: var(--font-mono); font-size: 9px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.parts-barchart__label.is-active { color: var(--muted); }
+.parts-barchart__label { flex: 1; min-width: 4px; text-align: center; font-family: var(--font-mono); font-size: 9px; color: var(--color-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parts-barchart__label.is-active { color: var(--color-text-2); }
 
-.parts-chart-muted { color: var(--muted); }
-.parts-chart-text { color: var(--text); }
-.parts-chart-empty { color: var(--faint); font-size: 12px; }
+.parts-chart-muted { color: var(--color-text-2); }
+.parts-chart-text { color: var(--color-text-1); }
+.parts-chart-empty { color: var(--color-text-3); font-family: var(--font-body); font-size: var(--fs-sm); }
 
 .parts-field { display: flex; flex-direction: column; gap: 5px; }
-.parts-field__label { font-family: var(--font-body); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted2); }
+.parts-field__label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-2); }
 
-.parts-countdown-pending { font-family: var(--font-mono); font-size: 12px; color: var(--gold); }
-.parts-countdown-dash { color: var(--faint); }
-.parts-countdown { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--text); font-variant-numeric: tabular-nums; }
-.parts-countdown.is-overdue { color: var(--danger); }
+.parts-countdown-pending { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--color-cyan); }
+.parts-countdown-dash { color: var(--color-text-4); }
+.parts-countdown { font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: .06em; color: var(--color-text-1); font-variant-numeric: tabular-nums; }
+.parts-countdown.is-overdue { color: var(--color-danger); }
 
-.parts-statref { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; background: transparent; border: none; border-radius: var(--radius); padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
-.parts-statref__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted2); }
+/* Text button (StatRef): no frame; label and value in the readout face, cyan arrow that nudges on hover. */
+.parts-statref { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; background: transparent; border: none; border-radius: var(--radius-none); padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.parts-statref__label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-2); transition: color var(--dur-fast); }
 .parts-statref__value-wrap { display: inline-flex; align-items: baseline; gap: 7px; }
-.parts-statref__value { font-family: var(--font-mono); font-size: 13px; color: var(--text); font-variant-numeric: tabular-nums; }
-.parts-statref__arrow { font-family: var(--font-mono); font-size: 11px; color: var(--gold); }
+.parts-statref__value { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-1); font-variant-numeric: tabular-nums; }
+.parts-statref__arrow { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--color-cyan); transition: transform var(--dur-fast); }
+.parts-statref:hover .parts-statref__label { color: var(--color-text-1); }
+.parts-statref:hover .parts-statref__arrow { transform: translateX(2px); }
 
+/* Filter tabs: outlined chips; active = cyan text and border. */
 .parts-filtertabs { display: flex; flex-wrap: wrap; gap: 6px; }
-.parts-filtertabs__btn { min-height: 34px; padding: 5px 12px; border: 1px solid var(--panelBorder); background: transparent; color: var(--muted); border-radius: var(--radius); cursor: pointer; font-family: var(--font-body); font-weight: 300; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
-.parts-filtertabs__btn.is-active { border-color: var(--gold); background: var(--gold); color: var(--onAccent); }
+.parts-filtertabs__btn { min-height: 34px; padding: 0 12px; border: var(--bw-1) solid var(--color-border-strong); background: transparent; color: var(--color-text-2); border-radius: var(--radius-none); cursor: pointer; font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; transition: color var(--dur-fast), border-color var(--dur-fast); }
+.parts-filtertabs__btn:hover { color: var(--color-text-1); }
+.parts-filtertabs__btn.is-active { border-color: var(--color-cyan); color: var(--color-cyan); }
 
-/* Form-control base classes — pair with `className="yorha-input"` / `"yorha-btn"` for the
-   focus/hover treatment in base.css. */
+/* Inputs: a recessed readout slot. 40px high (32px in the dense strength log). */
 .parts-input {
   font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--text);
-  background: var(--trackBg);
-  border: 1px solid var(--trackBorder);
-  border-radius: var(--radius);
-  padding: 8px 10px;
-  /* Explicit height so a native <select> matches the <input>s exactly (it renders a different
-     intrinsic height otherwise). Textareas add an extra class overriding this to override this. */
-  height: 38px;
-  outline: none;
+  font-size: var(--fs-lg);
+  color: var(--color-text-1);
+  background-color: var(--color-surface-input);
+  border: var(--bw-1) solid var(--color-border-strong);
+  border-radius: var(--radius-none);
+  padding: 0 10px;
+  /* Explicit height so a native <select> matches the <input>s exactly (it renders a different intrinsic height otherwise). */
+  height: 40px;
   width: 100%;
   box-sizing: border-box;
 }
-.parts-button { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); background: transparent; border: 1px solid var(--gold); border-radius: var(--radius); padding: 9px 16px; cursor: pointer; }
-.parts-button:disabled { opacity: .5; }
+.parts-input[type='number'], .parts-input[inputmode] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.parts-input::placeholder { color: var(--color-text-3); }
+.parts-input:hover { border-color: var(--color-cyan-soft); }
+.parts-input:focus-visible { border-color: var(--color-cyan); outline: var(--focus-ring); outline-offset: 2px; caret-color: var(--color-magenta); }
+.parts-input[aria-invalid='true'] { border-color: var(--color-danger); }
+.parts-input:disabled { color: var(--color-text-4); border-color: var(--color-border); opacity: .6; }
+select.parts-input {
+  appearance: none;
+  padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-2) 50%), linear-gradient(135deg, var(--color-text-2) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.str-log-set .parts-input, .str-log-block__top .parts-input { height: 32px; font-size: var(--fs-md); }
+
+/* Buttons: tactile hardware keys. The art (96x80 @2x, 24px slices drawn at 12px) is the border; the
+   face colour sits under it. 40px high: 12px frame + 16px label line + 12px frame. */
+.parts-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 0 4px; line-height: 16px;
+  font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-md); letter-spacing: var(--ls-caps); text-transform: uppercase; text-decoration: none;
+  color: var(--color-text-1);
+  background-color: var(--color-surface-3);
+  border: 12px solid transparent;
+  border-image: url('../../assets/ui/button-normal.png') 24 / 12px stretch;
+  border-radius: var(--radius-none);
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+.parts-button:hover:not(:disabled) { border-image-source: url('../../assets/ui/button-hover.png'); color: var(--color-cyan); }
+.parts-button:active:not(:disabled) { border-image-source: url('../../assets/ui/button-active.png'); background-color: var(--color-surface-1); color: var(--color-text-1); }
+.parts-button:disabled { opacity: .45; cursor: not-allowed; }
+/* Compact (dense rows, 32px): a flat 1px frame instead of the art. */
+.parts-button.mis-btn-sm, .parts-button.str-log-x {
+  min-height: 32px; padding: 0 12px; font-size: var(--fs-xs);
+  border: var(--bw-1) solid var(--color-border-strong); border-image: none;
+}
+.parts-button.str-log-x { padding: 0; }
+.parts-button.mis-btn-sm:hover:not(:disabled), .parts-button.str-log-x:hover:not(:disabled) { border-color: var(--color-cyan); }
+.parts-button.mis-btn-sm:active:not(:disabled), .parts-button.str-log-x:active:not(:disabled) { background-color: var(--color-surface-1); }

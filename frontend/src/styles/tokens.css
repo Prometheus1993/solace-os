@@ -1,0 +1,154 @@
+/* The one token layer (DESIGN.md "Tokens"). Dark only: there is no theme switch. Every colour, font,
+   size, space, border, radius, glow, z-layer and duration used by the app and the desk is read from here. */
+
+/* Fonts: self-hosted (SIL OFL 1.1, woff2 in src/assets/fonts/). See frontend/THIRD_PARTY.md. */
+@font-face { font-family: 'Share Tech Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/share-tech-mono-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: Oxanium; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/oxanium-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: Oxanium; font-style: normal; font-weight: 600; font-display: swap; src: url('../assets/fonts/oxanium-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: Oxanium; font-style: normal; font-weight: 700; font-display: swap; src: url('../assets/fonts/oxanium-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: Inter; font-style: normal; font-weight: 300; font-display: swap; src: url('../assets/fonts/inter-latin-300-normal.woff2') format('woff2'); }
+@font-face { font-family: Inter; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/inter-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: Inter; font-style: normal; font-weight: 500; font-display: swap; src: url('../assets/fonts/inter-latin-500-normal.woff2') format('woff2'); }
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --color-void: #050506;
+  --color-base: #131019;
+  --color-base-warm: #31212a;
+  --color-surface-1: #111b24;
+  --color-surface-2: #152730;
+  --color-surface-3: #152e3c;
+  --color-surface-input: #08121b;
+  --color-surface-rig: #100f16;
+  --color-surface-overlay: #0a1728;
+  --color-scrim: #080b17a6;
+
+  /* Text */
+  --color-text-1: #eaf0ef;
+  --color-text-2: #bdcdd1;
+  --color-text-3: #acbec5;
+  --color-text-4: #8aa0a8;
+  --color-text-on-accent: #0a171e;
+
+  /* Cyan (default light), magenta (the one loud accent), amber (warmth), violet */
+  --color-cyan: #8ceaf0;
+  --color-cyan-soft: #94e5e4;
+  --color-cyan-dim: #4a7379;
+  --color-magenta: #ff7283;
+  --color-magenta-strong: #e94159;
+  --color-magenta-fill: #a82136;
+  --color-magenta-edge: #ff435b;
+  --color-red-hot: #ff3545;
+  --color-amber: #efb265;
+  --color-amber-light: #ffd9a0;
+  --color-amber-mid: #f2c78d;
+  --color-amber-deep: #c9955a;
+  --color-violet: #a8a4ff;
+
+  /* Status */
+  --color-ok: #7fe9c4;
+  --color-warn: var(--color-amber);
+  --color-danger: var(--color-magenta);
+  --color-info: var(--color-cyan);
+
+  /* Borders */
+  --color-border: #41636a;
+  --color-border-strong: #6ca8bb;
+  --color-border-rig: #805064;
+  --color-hairline: #48748244;
+  --color-focus-ring: #b9fbf3;
+
+  /* Stats, rank tiers, heart-rate zones */
+  --stat-stamina: var(--color-cyan);
+  --stat-strength: var(--color-amber);
+  --stat-leanness: var(--color-violet);
+  --tier-novice: #7d939b;
+  --tier-apprentice: #acbec5;
+  --tier-adept: #8ceaf0;
+  --tier-veteran: #a8a4ff;
+  --tier-elite: #f2c78d;
+  --tier-mythic: #ff7283;
+  --zone-1: #7fe9c4;
+  --zone-2: #8ceaf0;
+  --zone-3: #f2c78d;
+  --zone-4: #ff8a3a;
+  --zone-5: #ff3545;
+
+  /* Fonts: Oxanium titles, Share Tech Mono labels/numbers/HUD (never bold), Inter body */
+  --font-title: Oxanium, sans-serif;
+  --font-mono: 'Share Tech Mono', ui-monospace, Menlo, monospace;
+  --font-body: Inter, system-ui, sans-serif;
+
+  /* Type scale */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 24px;
+  --fs-3xl: 32px;
+  --fs-num: 54px;
+  --ls-tight: -0.03em;
+  --ls-label: 0.08em;
+  --ls-caps: 0.14em;
+  --ls-wide: 0.22em;
+
+  /* Spacing (4px base) */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 48px;
+
+  /* Borders, radii, chamfers */
+  --bw-1: 1px;
+  --bw-2: 2px;
+  --bw-3: 3px;
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-round: 50%;
+  --chamfer-sm: 10px;
+  --chamfer-md: 14px;
+
+  /* Shadows and glows */
+  --shadow-s: 0 5px 18px #0002;
+  --shadow-m: 0 16px 35px #0007;
+  --shadow-l: 0 22px 50px #0009;
+  --shadow-xl: 0 20px 80px #02050bc9;
+  --glow-cyan: 0 0 22px color-mix(in srgb, var(--accent, var(--color-cyan)) 20%, transparent);
+  --glow-signal: 0 0 13px currentColor;
+
+  /* Z layers */
+  --z-base: 0;
+  --z-raised: 2;
+  --z-panel: 3;
+  --z-header: 7;
+  --z-overlay: 8;
+  --z-editor: 20;
+  --z-commandbar: 40;
+  --z-nav: 70;
+  --z-toast: 90;
+  --z-start: 100;
+
+  /* Motion */
+  --dur-press: 70ms;
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-enter: 280ms;
+  --dur-scene: 680ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-scene: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --ease-standard: ease-out;
+
+  /* Focus */
+  --focus-ring: 2px solid var(--color-focus-ring);
+  --focus-offset: 3px;
+}

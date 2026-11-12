@@ -3,8 +3,8 @@ import type { DashboardDTO } from '@solace/core';
 import { C, cssVars, ddmm, todayIso } from '../tokens.ts';
 import { Card, Field, LineChart, StatTile, TabShell } from './parts.tsx';
 
-const STAMINA_C = 'var(--stamina)';
-const LEANNESS_C = 'var(--leanness)';
+const STAMINA_C = 'var(--stat-stamina)';
+const LEANNESS_C = 'var(--stat-leanness)';
 type Win = DashboardDTO['recovery']['hrv'];
 type Series = DashboardDTO['vitals']['weight'];
 type Point = Series[number];
@@ -25,7 +25,7 @@ function bmiCategory(bmi: number | null): string {
  *  title, so the app never loses its "how thin is this data" honesty. */
 function VitalTile({ label, point, win, unit, fmt }: { label: string; point: Point | undefined; win: Win; unit: string; fmt?: (v: number) => string }) {
   const v = point?.value ?? null;
-  const dot = win.confidence === 'high' ? C.ok : win.confidence === 'medium' ? 'var(--z3)' : C.muted3;
+  const dot = win.confidence === 'high' ? C.ok : win.confidence === 'medium' ? 'var(--zone-3)' : C.muted3;
   return (
     <div className="vitals-tile">
       <div className="vitals-tile__header">
@@ -73,7 +73,7 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
     { title: '◆ Weight trend (kg)', series: v.weight, color: LEANNESS_C, unit: ' kg', precision: 1, hint: 'Trend over weeks.' },
     { title: '◆ Resting HR trend (bpm)', series: v.restingHr, color: C.danger, unit: '', precision: 0, hint: 'Lower = fitter.' },
     { title: '◆ Overnight HRV trend (ms)', series: v.hrv, color: STAMINA_C, unit: '', precision: 0, hint: 'Higher = better recovered.' },
-    { title: '◆ Sleep trend (/100)', series: v.sleep, color: 'var(--z3)', unit: '', precision: 0, hint: 'Garmin sleep score.' },
+    { title: '◆ Sleep trend (/100)', series: v.sleep, color: 'var(--zone-3)', unit: '', precision: 0, hint: 'Garmin sleep score.' },
   ].filter((t) => t.series.length >= 2);
 
   async function send(method: 'POST' | 'PATCH', path: string, body: unknown, ok: string) {
@@ -137,16 +137,16 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
       <Card title="◆ Add a weigh-in">
         <div className="parts-tile-grid vitals-form-grid">
           <Field label="Date">
-            <input className="yorha-input parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input className="parts-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </Field>
           <Field label="Weight (kg)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" value={kg} onChange={(e) => setKg(e.target.value)} placeholder="e.g. 75.0" />
+            <input className="parts-input" type="number" inputMode="decimal" value={kg} onChange={(e) => setKg(e.target.value)} placeholder="e.g. 75.0" />
           </Field>
           <Field label="Body fat % (optional)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" value={bf} onChange={(e) => setBf(e.target.value)} placeholder="e.g. 18.0" />
+            <input className="parts-input" type="number" inputMode="decimal" value={bf} onChange={(e) => setBf(e.target.value)} placeholder="e.g. 18.0" />
           </Field>
           <button
-            className="yorha-btn parts-button"
+            className="parts-button"
             disabled={busy || !kg}
             onClick={() => void post('/api/weight', { date, weightKg: Number(kg), bodyFatPct: bf ? Number(bf) : null }, 'Weight saved ✓')}
           >
@@ -158,19 +158,19 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
       <Card title="◆ Goals">
         <div className="parts-tile-grid vitals-form-grid">
           <Field label="Goal weight (kg)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.weightKg.value)} value={goalWeight} onChange={(e) => setGoalWeight(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.weightKg.value)} value={goalWeight} onChange={(e) => setGoalWeight(e.target.value)} />
           </Field>
           <Field label="Goal body fat (%)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.bodyFatPct.value)} value={goalBf} onChange={(e) => setGoalBf(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.bodyFatPct.value)} value={goalBf} onChange={(e) => setGoalBf(e.target.value)} />
           </Field>
           <Field label="Goal pace (decimal min/km: 5.5 = 5:30)">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" step="0.1" placeholder={String(g.paceMinPerKm.value)} value={goalPace} onChange={(e) => setGoalPace(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" step="0.1" placeholder={String(g.paceMinPerKm.value)} value={goalPace} onChange={(e) => setGoalPace(e.target.value)} />
           </Field>
           <Field label="Goal weekly km">
-            <input className="yorha-input parts-input" type="number" inputMode="decimal" placeholder={String(g.weeklyKm.value)} value={goalWeekly} onChange={(e) => setGoalWeekly(e.target.value)} />
+            <input className="parts-input" type="number" inputMode="decimal" placeholder={String(g.weeklyKm.value)} value={goalWeekly} onChange={(e) => setGoalWeekly(e.target.value)} />
           </Field>
           <button
-            className="yorha-btn parts-button"
+            className="parts-button"
             disabled={busy}
             onClick={() =>
               void send('PATCH', '/api/goals', { weightKg: goalNum(goalWeight), bodyFatPct: goalNum(goalBf), paceMinPerKm: goalNum(goalPace), weeklyKm: goalNum(goalWeekly) }, 'Goals saved ✓')

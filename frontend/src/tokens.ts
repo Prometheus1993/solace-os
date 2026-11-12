@@ -1,7 +1,6 @@
 /** Design tokens: colour + a few small formatters — layout sizing/spacing/fonts live in
- * styles/components/*.css as clamp() literals now, not here. Colours are CSS variables (defined in
- * styles/themes/: `[data-theme="yorha-light"]` / `[data-theme="yorha-dark"]`) so one root
- * `data-theme` attribute flip re-themes everything; read as `C.x` everywhere — values are
+ * styles/components/*.css as clamp() literals now, not here. Colours are CSS variables (defined once
+ * in styles/tokens.css); read as `C.x` everywhere — values are
  * `'var(--x)'` strings, usable in inline styles or CSS alike. `cssVars()` below is the one place a
  * component sets a CSS custom property inline for a data-driven value a stylesheet then reads. */
 import type { CSSProperties } from 'react';
@@ -16,48 +15,48 @@ export function cssVars(vars: Record<`--${string}`, string | number>): CSSProper
 }
 
 export const C = {
-  pageBg: 'var(--pageBg)',
-  panel: 'var(--panel)',
-  panelBorder: 'var(--panelBorder)',
-  subTile: 'var(--subTile)',
-  subBorder: 'var(--subBorder)',
-  trackBg: 'var(--trackBg)',
-  trackBorder: 'var(--trackBorder)',
-  hairline: 'var(--hairline)',
-  gold: 'var(--gold)', // YoRHa "ink" — the primary mark colour (was gold)
-  text: 'var(--text)',
-  headingWarm: 'var(--headingWarm)',
-  muted: 'var(--muted)',
-  muted2: 'var(--muted2)',
-  muted3: 'var(--muted3)',
-  faint: 'var(--faint)',
-  faint2: 'var(--faint2)',
-  nullText: 'var(--nullText)',
-  onAccent: 'var(--onAccent)', // text/marks that sit on a filled ink/accent surface
-  ok: 'var(--ok)', // muted sage = success (rare, per YoRHa canon)
-  danger: 'var(--danger)', // drab red-orange — overdue/failed/delete only
+  pageBg: 'var(--color-base)',
+  panel: 'var(--color-surface-1)',
+  panelBorder: 'var(--color-border)',
+  subTile: 'var(--color-surface-2)',
+  subBorder: 'var(--color-border)',
+  trackBg: 'var(--color-surface-input)',
+  trackBorder: 'var(--color-border)',
+  hairline: 'var(--color-hairline)',
+  gold: 'var(--color-cyan)', // the default light: interaction and data
+  text: 'var(--color-text-1)',
+  headingWarm: 'var(--color-text-1)',
+  muted: 'var(--color-text-2)',
+  muted2: 'var(--color-text-2)',
+  muted3: 'var(--color-text-3)',
+  faint: 'var(--color-text-3)',
+  faint2: 'var(--color-text-3)',
+  nullText: 'var(--color-text-4)',
+  onAccent: 'var(--color-text-on-accent)', // text/marks that sit on a filled accent surface
+  ok: 'var(--color-ok)', // success / done
+  danger: 'var(--color-danger)', // overdue/failed/delete only
 } as const;
 
-export const STAT_COLOR = { stamina: 'var(--stamina)', strength: 'var(--strength)', leanness: 'var(--leanness)' } as const;
+export const STAT_COLOR = { stamina: 'var(--stat-stamina)', strength: 'var(--stat-strength)', leanness: 'var(--stat-leanness)' } as const;
 
-/** RPG rank colours per tier — warm-desaturated, darkening by rank; only Mythic earns the accent. */
+/** RPG rank colours per tier: the ramp climbs grey, cyan, violet, amber; only Mythic gets the hot colour. */
 export const TIER_COLOR: Record<string, string> = {
-  Novice: 'var(--tNovice)',
-  Apprentice: 'var(--tApprentice)',
-  Adept: 'var(--tAdept)',
-  Veteran: 'var(--tVeteran)',
-  Elite: 'var(--tElite)',
-  Mythic: 'var(--tMythic)',
+  Novice: 'var(--tier-novice)',
+  Apprentice: 'var(--tier-apprentice)',
+  Adept: 'var(--tier-adept)',
+  Veteran: 'var(--tier-veteran)',
+  Elite: 'var(--tier-elite)',
+  Mythic: 'var(--tier-mythic)',
 };
-export const ZONE_COLOR: Record<number, string> = { 1: 'var(--z1)', 2: 'var(--z2)', 3: 'var(--z3)', 4: 'var(--z4)', 5: 'var(--z5)' };
+export const ZONE_COLOR: Record<number, string> = { 1: 'var(--zone-1)', 2: 'var(--zone-2)', 3: 'var(--zone-3)', 4: 'var(--zone-4)', 5: 'var(--zone-5)' };
 
-export const confidenceColor = (c: Confidence): string => (c === 'high' ? 'var(--ok)' : c === 'medium' ? 'var(--z3)' : 'var(--muted)');
+export const confidenceColor = (c: Confidence): string => (c === 'high' ? 'var(--color-ok)' : c === 'medium' ? 'var(--zone-3)' : 'var(--color-text-2)');
 
-/** YoRHa-reflavoured directive verbs (UI-only). */
+/** Directive verbs (UI-only). */
 export const READINESS: Record<string, { verb: string; color: string }> = {
-  go_hard: { verb: 'ENGAGE', color: 'var(--ok)' },
-  go_easy: { verb: 'HOLD', color: 'var(--z3)' },
-  rest: { verb: 'STAND DOWN', color: 'var(--danger)' },
+  go_hard: { verb: 'ENGAGE', color: 'var(--color-ok)' },
+  go_easy: { verb: 'HOLD', color: 'var(--color-amber)' },
+  rest: { verb: 'STAND DOWN', color: 'var(--color-danger)' },
 };
 
 export const round1 = (n: number): number => Math.round(n * 10) / 10;

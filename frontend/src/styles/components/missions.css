@@ -4,52 +4,51 @@
    classes. */
 
 .mis-grade-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; white-space: nowrap; color: var(--chip-color); border: 1px solid var(--chip-color); }
-.mis-credit-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--muted); border: 1px solid var(--subBorder); white-space: nowrap; }
-.mis-resit-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; padding: 2px 7px; color: var(--onAccent); background: var(--danger); white-space: nowrap; }
+.mis-credit-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--color-text-2); border: 1px solid var(--color-border); white-space: nowrap; }
+.mis-resit-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; padding: 2px 7px; color: var(--color-text-on-accent); background: var(--color-danger); white-space: nowrap; }
 /* a tolerated (deliberated) pass — so a sub-10 GradeChip next to it doesn't read as a mistake */
-.mis-delib-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--gold); border: 1px solid var(--gold); white-space: nowrap; }
+.mis-delib-chip { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em; padding: 2px 7px; color: var(--color-cyan); border: 1px solid var(--color-cyan); white-space: nowrap; }
 
-.mis-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--subTile); border: 1px solid var(--subBorder); box-shadow: inset 3px 0 0 0 var(--row-edge); }
-.mis-row.is-danger { border-color: var(--danger); }
-.mis-row.is-selected { border-color: var(--gold); }
+.mis-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--color-surface-2); border: 1px solid var(--color-border); box-shadow: inset 3px 0 0 0 var(--row-edge); }
+.mis-row.is-danger { border-color: var(--color-danger); }
+.mis-row.is-selected { border-color: var(--color-cyan); }
 
 .mis-row__dot { width: 10px; height: 10px; flex-shrink: 0; background: transparent; border: 1px solid var(--row-edge); }
-.mis-row__dot.is-danger { background: var(--danger); }
-.mis-row__dot.is-passed { background: var(--ok); }
+.mis-row__dot.is-danger { background: var(--color-danger); }
+.mis-row__dot.is-passed { background: var(--color-ok); }
 
 .mis-row__main { flex: 1; min-width: 0; }
-.mis-row__course-line { font-family: var(--font-mono); font-size: 13px; color: var(--text); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.mis-row__sub { font-family: var(--font-body); font-size: 11px; color: var(--muted2); }
+.mis-row__course-line { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-1); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.mis-row__sub { font-family: var(--font-body); font-size: 11px; color: var(--color-text-2); }
 .mis-row__chips { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 /* ── log/edit form ── */
 .mis-form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 12px; }
 .mis-form-course { grid-column: 1 / -1; }
 .mis-delib-toggle { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; padding: 0; height: 38px; }
-.mis-delib-check { width: 16px; height: 16px; border: 1px solid var(--gold); background: transparent; display: flex; align-items: center; justify-content: center; color: var(--onAccent); font-size: 10px; }
-.mis-delib-check.is-checked { background: var(--gold); }
-.mis-delib-toggle-label { font-family: var(--font-body); font-size: 13px; color: var(--text); }
-.mis-form-actions { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hairline); min-height: 18px; flex-wrap: wrap; }
-.mis-btn-danger { color: var(--danger); border-color: var(--danger); }
-.mis-btn-muted { color: var(--muted); border-color: var(--panelBorder); }
-.mis-form-msg { margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: var(--ok); }
-.mis-form-msg.is-error { color: var(--danger); }
+.mis-delib-check { width: 16px; height: 16px; border: 1px solid var(--color-cyan); background: transparent; display: flex; align-items: center; justify-content: center; color: var(--color-text-on-accent); font-size: 10px; }
+.mis-delib-check.is-checked { background: var(--color-cyan); }
+.mis-delib-toggle-label { font-family: var(--font-body); font-size: 13px; color: var(--color-text-1); }
+.mis-form-actions { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--color-hairline); min-height: 18px; flex-wrap: wrap; }
+.mis-btn-danger { color: var(--color-danger); border-color: var(--color-danger); }
+.mis-btn-muted { color: var(--color-text-2); border-color: var(--color-border); }
+.mis-form-msg { margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: var(--color-ok); }
+.mis-form-msg.is-error { color: var(--color-danger); }
 
 /* ── GRADE OF MERIT card ── */
 .mis-grade-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.mis-grade-value { font-family: var(--font-mono); font-size: clamp(21.6px, 3.571vw, 30px); color: var(--text); font-variant-numeric: tabular-nums; }
-.mis-grade-unit { font-size: 16px; color: var(--muted); }
-.mis-grade-band { font-family: var(--font-mono); font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.mis-grade-band.is-distinction { color: var(--gold); }
-.mis-grade-note { margin-top: 6px; font-family: var(--font-body); font-size: 12px; color: var(--muted2); }
+.mis-grade-value { font-family: var(--font-mono); font-size: clamp(21.6px, 3.571vw, 30px); color: var(--color-text-1); font-variant-numeric: tabular-nums; }
+.mis-grade-unit { font-size: 16px; color: var(--color-text-2); }
+.mis-grade-band { font-family: var(--font-mono); font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--color-text-2); }
+.mis-grade-band.is-distinction { color: var(--color-cyan); }
+.mis-grade-note { margin-top: 6px; font-family: var(--font-body); font-size: 12px; color: var(--color-text-2); }
 
 /* ── RESITS NEEDED card ── */
-.mis-resit-window { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
-.mis-window-dates { font-family: var(--font-mono); font-size: 12px; color: var(--headingWarm); }
-.mis-window-dates.is-soon { color: var(--danger); }
-.mis-window-hint { font-family: var(--font-body); font-size: 11.5px; color: var(--muted); }
+.mis-resit-window { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--color-hairline); }
+.mis-window-dates { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-1); }
+.mis-window-dates.is-soon { color: var(--color-danger); }
+.mis-window-hint { font-family: var(--font-body); font-size: 11.5px; color: var(--color-text-2); }
 
 /* ── card header buttons + panels ── */
-.mis-btn-sm { padding: 5px 12px; font-size: 11px; }
 .mis-add-panel { margin-bottom: 12px; }
 .mis-history-panel { margin-top: 12px; }
