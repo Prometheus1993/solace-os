@@ -73,3 +73,12 @@ export function parseStoredTokens(text: string | null): StoredTokens | null {
   }
   return null;
 }
+
+/** The only requests the page may relay to Spotify: player endpoints, exact shape (no dots or slashes that fetch could normalise away). */
+export function isPlayerRequest(method: unknown, path: unknown): boolean {
+  return (
+    (method === 'GET' || method === 'PUT' || method === 'POST') &&
+    typeof path === 'string' &&
+    /^\/v1\/me\/player(\/[a-z-]+)*(\?[A-Za-z0-9_=&%.,:-]*)?$/.test(path)
+  );
+}

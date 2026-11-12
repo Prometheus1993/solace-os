@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, join } from 'node:path';
 import { BrowserWindow, ipcMain, shell } from 'electron';
 import {
-  acceptTokens, authorizeUrl, codeExchangeBody, codeFromRedirect, isRedirect, needsRefresh, newPkce, parseStoredTokens, redirectUri, refreshBody,
+  acceptTokens, authorizeUrl, codeExchangeBody, codeFromRedirect, isPlayerRequest, isRedirect, needsRefresh, newPkce, parseStoredTokens, redirectUri, refreshBody,
   type StoredTokens,
 } from './spotify-auth.ts';
 
@@ -89,7 +89,7 @@ export function registerSpotify(options: { clientId: string | undefined; webPort
   ipcMain.handle('spotify-open-app', () => shell.openExternal('spotify:'));
   ipcMain.handle('spotify-request', async (_event, req: { method: string; path: string; body?: unknown }) => {
     // The page may only reach the player endpoints.
-    if (!/^\/v1\/me\/player(\/|\?|$)/.test(req.path) || !['GET', 'PUT', 'POST'].includes(req.method)) return { status: 400, body: null };
+    if (!isPlayerRequest(req.method, req.path)) return { status: 400, body: null };
     const token = await accessToken();
     if (token === null) return { status: 401, body: null };
     const res = await fetch(`${API}${req.path}`, {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import {
-  acceptTokens, authorizeUrl, codeExchangeBody, codeFromRedirect, needsRefresh, newPkce, parseStoredTokens, redirectUri, refreshBody,
+  acceptTokens, authorizeUrl, codeExchangeBody, codeFromRedirect, isPlayerRequest, needsRefresh, newPkce, parseStoredTokens, redirectUri, refreshBody,
 } from '../src/spotify-auth.ts';
 
 const redirect = redirectUri(5175);
@@ -57,5 +57,25 @@ describe('tokens', () => {
     expect(parseStoredTokens(null)).toBeNull();
     expect(parseStoredTokens('not json')).toBeNull();
     expect(parseStoredTokens('{"accessToken":1}')).toBeNull();
+  });
+});
+
+describe('isPlayerRequest', () => {
+  it('allows the player paths the desk builds', () => {
+    for (const [m, p] of [
+      ['GET', '/v1/me/player'], ['GET', '/v1/me/player/devices'], ['GET', '/v1/me/player/currently-playing'],
+      ['PUT', '/v1/me/player/play'], ['PUT', '/v1/me/player/play?device_id=abc123DEF'], ['PUT', '/v1/me/player/play?device_id=a%20b'],
+      ['PUT', '/v1/me/player/pause'], ['POST', '/v1/me/player/next'], ['PUT', '/v1/me/player/volume?volume_percent=40'],
+    ]) expect(isPlayerRequest(m, p), `${m} ${p}`).toBe(true);
+  });
+  it('rejects traversal, other hosts, other methods and non-strings', () => {
+    for (const p of [
+      '/v1/me', '/v1/me/player/../../me', '/v1/me/player/%2e%2e/%2e%2e/me', '/v1/me/player\\..\\me',
+      'https://evil.example/v1/me/player', '//evil.example/v1/me/player', '/v1/me/playerx', '/v1/me/player/Play',
+    ]) expect(isPlayerRequest('GET', p), p).toBe(false);
+    expect(isPlayerRequest('DELETE', '/v1/me/player')).toBe(false);
+    expect(isPlayerRequest('GET', 42)).toBe(false);
+    expect(isPlayerRequest('GET', undefined)).toBe(false);
+    expect(isPlayerRequest(undefined, '/v1/me/player')).toBe(false);
   });
 });
