@@ -100,6 +100,23 @@ Copying only the first file gives a stale backup.
 
 Solace can run as a Mac app (Electron) instead of `npm start`. You build it yourself on your own Mac (unsigned, no download). It starts the same API server and web UI from this repo folder and uses the same database and `.env`. Details, shortcuts and build steps: [`docs/mac-app.md`](docs/mac-app.md).
 
+## Desk radio
+
+Click the radio on the desk for a close-up with LOFI, JAZZ and BOSSA stations, play/pause, next and a volume knob. Without
+Spotify it plays the 6 local Open Lo-Fi tracks. Inside the Mac app it can play your own Spotify playlists instead
+(Spotify Premium; Solace controls your Spotify app, the sound plays there). One-time setup:
+
+1. Create an app at <https://developer.spotify.com/dashboard> (Web API). Add these redirect URIs (Spotify forbids `localhost`):
+   `http://127.0.0.1:5174/spotify-callback` (the Mac app's default web port; use your `SOLACE_WEB_PORT` if you changed it).
+2. Put the app's Client ID in `.env` at the repo root: `SOLACE_SPOTIFY_CLIENT_ID=<your client id>` (no secret is needed).
+3. Start the Mac app (`npm run desktop`, or your built Solace.app), open the radio and press CONNECT. Log in at Spotify once; the app keeps and refreshes the login.
+4. Open the radio's "Spotify setup" and paste a playlist link for each station (Spotify: playlist, Share, Copy link).
+5. Keep the Spotify app open on the Mac. If it is not, the radio says "OPEN SPOTIFY TO PLAY" and offers a button to open it, or to play the local lofi instead.
+
+Playlist links and the Client ID stay on your Mac (browser storage and `.env`), never in the repo. The Spotify logo is not
+shipped in this repo (Spotify's brand rules); the glass shows the text mark "Spotify" and an OPEN SPOTIFY link until you put
+Spotify's official logo (from their design guidelines page) at `frontend/src/assets/private/spotify-logo-v1.png`.
+
 ## Garmin sync
 
 The sync pulls new runs (`.fit` files) and wellness data (HRV, sleep, resting heart rate, Body Battery) from Garmin
