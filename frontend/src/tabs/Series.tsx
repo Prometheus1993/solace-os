@@ -7,7 +7,6 @@ import { AccordionList, Card, Field, FilterTabs, getJson, InsetPanel, postJson, 
 import { archiveSpend } from './spend.ts';
 import { filterTabsFor, matcherFor, matchesQuery, type Kind, type SeriesFilter, type SeriesItem } from './series-filters.ts';
 import { centsToEurInput, nextToBuyList, parseEurToCents, spendSubtitle, toBuyTile } from './series-summary.ts';
-import { useMobile } from '../responsive.ts';
 
 type VolItem = SeriesItem['volumes'][number];
 type SortKey = 'recent' | 'title' | 'rating' | 'progress' | 'tobuy';
@@ -399,21 +398,17 @@ function BuyConfirm({ s, onBought, onCancel }: { s: SeriesItem; onBought: (flash
 }
 
 /** The "Next to buy" card: the ordered `nextToBuyList` as uniform, cover-led rows in ONE scroll area
- *  (~6 rows desktop / ~4 mobile tall). Every row is rendered — nothing is ever silently capped (the old
+ *  (it takes the height of its slot). Every row is rendered — nothing is ever silently capped (the old
  *  `.slice(0, 12)` hid 15 of 27 series). Tapping a row opens {@link BuyConfirm} under it (one at a time);
  *  confirming marks that volume owned + records its price, then the dashboard reloads. Rows carry exactly
  *  one gold element (the BuyChip CTA); the cover and title stay neutral. */
 function NextToBuyCard({ list, onReload }: { list: SeriesItem[]; onReload: () => void | Promise<void> }) {
   const ordered = nextToBuyList(list);
-  const mobile = useMobile();
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const [flash, setFlash] = useState('');
-  // Row = 40px cover + 12px padding + 2px border; gap 6px.
-  const visibleRows = mobile ? 4 : 6;
-  const maxHeight = visibleRows * 54 + (visibleRows - 1) * 6 + 4;
   return (
-    <Card title="▮ Next to buy" headerRight={<span className="series-nexttobuy__header-count">{ordered.length} series · tap = bought</span>}>
-      <div className="series-nexttobuy__list" style={{ maxHeight }}>
+    <Card title="▮ Next to buy" className="series-nexttobuy" headerRight={<span className="series-nexttobuy__header-count">{ordered.length} series · tap = bought</span>}>
+      <div className="series-nexttobuy__list">
         {ordered.map((s) => (
           <div key={s.id} className="series-nexttobuy__item">
             <button
@@ -451,7 +446,7 @@ function NextToBuyCard({ list, onReload }: { list: SeriesItem[]; onReload: () =>
  *  or 'book' (book + LN). One row PER SERIES; its volumes nest inside a separate disclosure — a 70-volume
  *  A long series is one row, not 70. The 🔍 cover-picker POSTs a single /api/series (ownedVolumes/readVolumes
  *  create the placeholder Volume+Copy rows server-side); series-level fields edit in place. */
-export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen, onBack }: { dto: DashboardDTO; onReload: () => void | Promise<void>; kind: Kind; detailId?: number; terminal?: boolean; onOpen?: (id: number) => void; onBack?: () => void }) {
+export function Series({ dto, onReload, kind, detailId, onOpen, onBack }: { dto: DashboardDTO; onReload: () => void | Promise<void>; kind: Kind; detailId?: number; onOpen?: (id: number) => void; onBack?: () => void }) {
   const list = dto.series.filter((s) => (kind === 'manga' ? s.type === 'manga' : s.type !== 'manga'));
   const ls = dto.lifeSimSummary;
 
@@ -747,9 +742,9 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
 
   if (detailId != null) {
     const detail = list.find(s => s.id === detailId);
-    return <TabShell>
+    return <TabShell className="series-fit">
       {onBack ? <button className="parts-button" onClick={onBack}>← Back to folder</button> : <a className="parts-button" href={`#shelf/${kind === 'manga' ? 'manga' : 'books'}`}>← Back to shelf</a>}
-      {!detail ? <Card title="Shard unavailable"><p>This book or series is no longer in this archive.</p></Card> : <Card title={detail.title}>
+      {!detail ? <Card title="Shard unavailable"><p>This book or series is no longer in this archive.</p></Card> : <Card title={detail.title} className="parts-card--scroll">
         <div style={{ display:'flex', gap:24, alignItems:'flex-start', marginBottom:24 }}>
           <Cover url={detail.coverUrl} w={100} h={150} />
           <div><h2>{detail.title}</h2><p>{detail.author ?? 'Author unknown'}</p><p>{detail.readCount} / {detail.totalVolumesKnown ?? '?'} volumes read</p>
@@ -763,8 +758,8 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
   }
 
   return (
-    <TabShell>
-      {!terminal && <TileGrid>
+    <TabShell className="series-fit">
+      <TileGrid>
         {kind === 'manga' ? (
           <>
             {/* The alarm is on the SERIES count (how many need a volume); the volume total is context
@@ -781,14 +776,15 @@ export function Series({ dto, onReload, kind, detailId, terminal = false, onOpen
           </>
         )}
         <StatTile label="Σ spent" value={formatEur(totalSpent)} sub={spendSubtitle(totalSpent, estSpent)} />
-      </TileGrid>}
+      </TileGrid>
 
-      {!terminal && kind === 'manga' && buyTile.seriesCount > 0 && <NextToBuyCard list={list} onReload={onReload} />}
+      {kind === 'manga' && buyTile.seriesCount > 0 && <NextToBuyCard list={list} onReload={onReload} />}
 
       <Card
         title={kind === 'manga' ? '▮ Manga shelf' : '▮ Book shelf'}
+        className="series-shelf-card"
         headerRight={
-          <button className="parts-button series-shelf__add-btn" onClick={startAdd}>{adding ? '✕ Close' : terminal ? kind === 'manga' ? '+ ADD MANGA' : '+ ADD BOOK' : '＋ Add'}</button>
+          <button className="parts-button series-shelf__add-btn" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
         }
       >
         <div className="series-shelf__toolbar">

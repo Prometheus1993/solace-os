@@ -1,4 +1,4 @@
-/* frontend/src/App.tsx — page shell (busy bar, toast, loading/offline state). */
+/* frontend/src/App.tsx — page shell (busy bar, toast). */
 
 .app-root {
   min-height: 100vh;
@@ -6,24 +6,6 @@
   color: var(--color-text-1);
   background: var(--color-base);
   -webkit-font-smoothing: antialiased;
-}
-
-/* Loading / offline: centred in the page. Loading = a readout line with a blinking block cursor;
-   offline = a danger-edged inset panel with a retry button. */
-.app-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-6); min-height: 60vh; padding: var(--space-8); font-family: var(--font-mono); font-size: var(--fs-md); color: var(--color-text-2); text-align: center; }
-.app-state__cursor { display: inline-block; width: .55em; height: 1em; margin-left: var(--space-3); vertical-align: text-bottom; background: var(--color-cyan); animation: app-cursor 1.6s steps(1) infinite; }
-@keyframes app-cursor { 50% { opacity: 0; } }
-.app-state--error { align-items: center; }
-.app-state__panel { max-width: 52ch; padding: var(--space-6) var(--space-7); background: var(--color-surface-2); border: var(--bw-1) solid var(--color-danger); display: flex; flex-direction: column; align-items: center; gap: var(--space-5); }
-.app-state__heading { font-size: var(--fs-xs); letter-spacing: var(--ls-caps); color: var(--color-danger); }
-.app-state__message { margin: 0; font-family: var(--font-body); font-size: var(--fs-md); line-height: 1.6; color: var(--color-text-1); }
-
-/* .is-mobile: the BottomNav clearance; desktop's plain 24px is the "off" state. */
-.app-main {
-  padding-bottom: 24px;
-}
-.app-main.is-mobile {
-  padding-bottom: calc(58px + env(safe-area-inset-bottom));
 }
 
 .app-busy-bar {

@@ -22,6 +22,7 @@ describe('start-screen entry state', () => {
 describe('entryHash (deep-link preservation)', () => {
   it('keeps a valid deep link as is', () => {
     expect(entryHash('#body/running')).toBe('body/running');
+    expect(entryHash('#body/body')).toBe('body/vitals');
     expect(entryHash('#shelf/manga')).toBe('shelf/manga');
   });
   it('renames an old area id in a deep link', () => {

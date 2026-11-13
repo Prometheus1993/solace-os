@@ -1,57 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from 'react';
+import type { CSSProperties, MouseEvent, ReactNode } from 'react';
 import { C, cssVars } from '../tokens.ts';
-import { viewFromHash } from './hash-view.ts';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, n));
 
-export function TabShell({ children }: { children: ReactNode }) {
-  return <div className="ui-fade parts-tab-shell">{children}</div>;
-}
-
-/** Hash-synced sub-view state shared by the BODY / STUDY / SHELF areas (hash `#<area>/<view>`). */
-export function useHashView<T extends string>(area: string, views: readonly { id: T }[], def: T): [T, (v: T) => void] {
-  const fromHash = (): T => viewFromHash(window.location.hash, views, def);
-  const [view, setViewState] = useState<T>(fromHash);
-  useEffect(() => {
-    const onHash = (): void => setViewState(fromHash());
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-  const setView = (v: T): void => {
-    window.location.hash = `${area}/${v}`;
-    setViewState(v);
-  };
-  return [view, setView];
-}
-
-/** The sub-tab rail those areas render above their views (a tablist: arrow keys move between the tabs). */
-export function SubNav<T extends string>({ views, view, setView }: { views: readonly { id: T; label: string }[]; view: T; setView: (v: T) => void }) {
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-    const to = (views.findIndex((v) => v.id === view) + (e.key === 'ArrowRight' ? 1 : views.length - 1)) % views.length;
-    setView(views[to]!.id);
-    e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[to]?.focus();
-  };
-  return (
-    <div className="parts-subnav" role="tablist" onKeyDown={onKeyDown}>
-      {views.map((v) => {
-        const active = v.id === view;
-        return (
-          <button
-            key={v.id}
-            role="tab"
-            aria-selected={active}
-            tabIndex={active ? 0 : -1}
-            onClick={() => setView(v.id)}
-            className={`parts-subnav__btn${active ? ' is-active' : ''}`}
-          >
-            {v.label}
-          </button>
-        );
-      })}
-    </div>
-  );
+export function TabShell({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={className ? `ui-fade parts-tab-shell ${className}` : 'ui-fade parts-tab-shell'}>{children}</div>;
 }
 
 export function Card({
@@ -60,6 +14,7 @@ export function Card({
   style,
   accent = C.gold,
   headerRight,
+  className,
 }: {
   title?: string;
   children: ReactNode;
@@ -68,9 +23,11 @@ export function Card({
   accent?: string;
   /** Optional right-aligned slot in the title row (e.g. a "＋ Add" add button). */
   headerRight?: ReactNode;
+  /** Extra class on the card (e.g. `parts-card--scroll`: the card shrinks to its slot and scrolls inside). */
+  className?: string;
 }) {
   return (
-    <div className="parts-card" style={{ ...cssVars({ '--panel-accent': accent }), ...style }}>
+    <div className={className ? `parts-card ${className}` : 'parts-card'} style={{ ...cssVars({ '--panel-accent': accent }), ...style }}>
       {title && (
         <>
           <div className="parts-card__title-row">

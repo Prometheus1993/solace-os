@@ -4,8 +4,6 @@
 @import './base.css';
 @import './components/ui.css';
 @import './components/app.css';
-@import './components/commandbar.css';
-@import './components/bottomnav.css';
 @import './components/fx.css';
 @import './components/parts.css';
 @import './components/dashboard.css';

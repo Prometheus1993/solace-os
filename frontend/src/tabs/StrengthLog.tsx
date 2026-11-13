@@ -179,8 +179,8 @@ export function StrengthLog({ dto, onReload }: { dto: DashboardDTO; onReload: ()
   const loaded = sessions ?? [];
 
   return (
-    <>
-      <div ref={top}>
+    <div className="str-log-cols">
+      <div ref={top} className="str-log-col">
         <Card title="◆ Log a session">
           <SessionForm
             key={formKey}
@@ -199,7 +199,7 @@ export function StrengthLog({ dto, onReload }: { dto: DashboardDTO; onReload: ()
         </Card>
       </div>
 
-      <Card title="◆ Logged sessions">
+      <Card title="◆ Logged sessions" className="str-log-col">
         {sessions === undefined ? null : sessions === null ? (
           <div className="str-log-msg is-error">Can't reach /api/strength — (re)start <code>npm run server</code></div>
         ) : (
@@ -266,6 +266,6 @@ export function StrengthLog({ dto, onReload }: { dto: DashboardDTO; onReload: ()
           </div>
         )}
       </Card>
-    </>
+    </div>
   );
 }

@@ -182,21 +182,6 @@
 .desk-surface-tabs button[aria-current=page] { color:#c5fff4; border-bottom-color:#90d8d6; }
 .desk-surface-tabs:has(> button:only-child) { display:none; }
 .desk-surface-content { flex:1; min-height:0; overflow:auto; scrollbar-width:thin; scrollbar-color:#64888e var(--color-surface-1); }
-.desk-school { display:grid; grid-template-columns:170px minmax(0,1fr); gap:22px; padding:22px; max-width:1200px; margin:auto; }
-.desk-school > nav { display:flex; flex-direction:column; gap:5px; }
-.desk-school > nav button {
-  min-height:44px;
-  padding:10px;
-  text-align:left;
-  color:#ccdedf;
-  border:1px solid var(--color-border);
-  background:var(--color-surface-2);
-  font-size:13px;
-  overflow-wrap:anywhere;
-}
-.desk-school > nav button[aria-pressed=true] { border-color:#99d9d5; color:#e4fffa; background:#24434b; }
-.desk-school > div { min-width:0; }
-.desk-gym { max-width:1100px; padding:20px 24px; margin:auto; }.desk-gym > p { color:#bfd3d9; font:14px/1.5 var(--font-body); margin:0 0 18px; }
 .desktop-hub .desk-surface .wp-shard-panel,
 .desktop-hub .desk-surface .wp-deck-panel,
 .desktop-hub .desk-surface .wp-scanner-panel {
@@ -222,7 +207,6 @@
 .desktop-hub .wp-scanner-panel > h1,.desktop-hub .wp-deck-panel > h1 { margin:0 0 12px; font-size:24px; }
 .desktop-hub .wp-scanner-panel > .wp-eyebrow,.desktop-hub .wp-deck-panel > .wp-eyebrow { display:none; }
 .desktop-hub .desk-surface .wp-shard-stream { min-height:100%; height:auto; }
-.desktop-hub .terminal-explorer { min-height:100%; }
 .desk-signals {
   position:absolute;
   z-index:var(--z-header);
@@ -253,11 +237,6 @@
 }
 .desktop-hub[data-motion=false] .desk-city { --city-play:paused; }
 .desktop-hub .desk-city *,.desktop-hub .desk-city *::after,.desktop-hub .desk-city *::before { animation-play-state:var(--city-play); }
-.desktop-hub .terminal-explorer { color:var(--color-text-1); }
-.desktop-hub .te-content > section[hidden] { display:none; }
-.desktop-hub .desk-gym input,.desktop-hub .desk-school input,.desktop-hub .desk-gym select,.desktop-hub .desk-school select { min-height:44px; font-size:16px; }
-.desktop-hub .desk-gym .str-log-list { max-height:none; overflow:visible; }
-.desktop-hub .desk-gym .str-log-actions { position:sticky; bottom:-20px; z-index:1; padding:12px 0; background:var(--color-surface-1); }
 @media(max-width:1100px) { .desk-header .desk-home { font-size:10px; }.desk-settings button { font-size:9px; padding-inline:6px; } }
 @media(max-width:760px) {
   .desk-header nav { justify-content:center; }
@@ -273,16 +252,6 @@
   .desk-surface-header kbd { display:none; }
   .desk-surface-tabs { padding-inline:8px; }
   .desk-surface-tabs button { min-height:40px; padding:8px 12px; }
-  .desk-school { display:block; padding:12px; }
-  .desk-school > nav { flex-direction:row; overflow:auto; margin-bottom:14px; }
-  .desk-school > nav button { flex-shrink:0; max-width:170px; }
-  .desk-gym { padding:12px; }
-  .desktop-hub .desk-gym .str-log-actions { bottom:-12px; }
-  .desktop-hub .desk-gym .str-log-head { grid-template-columns:1fr; }
-  .desktop-hub .desk-gym .str-log-set {
-    grid-template-columns:18px minmax(0,1fr) minmax(0,1fr) 32px 32px;
-    gap:4px;
-  }
   .desktop-hub .desk-surface .wp-shard-panel,
   .desktop-hub .desk-surface .wp-deck-panel,
   .desktop-hub .desk-surface .wp-scanner-panel {

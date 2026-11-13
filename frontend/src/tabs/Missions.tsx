@@ -230,95 +230,99 @@ export function Missions({ dto, onReload }: { dto: DashboardDTO; onReload: () =>
   );
 
   return (
-    <TabShell>
-      {ya && (
-        <Card title="▮ GRADE OF MERIT">
-          <div className="mis-grade-row">
-            <span className="mis-grade-value">
-              {ya.average.toFixed(2)}
-              <span className="mis-grade-unit">/20</span>
-            </span>
-            <span className={`mis-grade-band${ya.band.key === 'pass' ? '' : ' is-distinction'}`}>
-              {ya.band.label}
-            </span>
-          </div>
-          <div className="mis-grade-note">
-            {ya.toNext ? `${ya.toNext.gap.toFixed(2)} to ${ya.toNext.label} (≥${ya.toNext.min})` : 'Highest distinction'}
-            {` · ${ya.passedCount} passed, ${ya.creditsCounted} sp`}
-            {resitsNeeded > 0 ? ` · ${resitsNeeded} resit${resitsNeeded === 1 ? '' : 's'} pending` : ''}
-          </div>
-        </Card>
-      )}
-      <TileGrid>
-        <StatTile label="Resits" value={String(resitsNeeded)} sub="to resit" color={resitsNeeded > 0 ? C.danger : undefined} />
-        <StatTile label="Next resit" value={rw ? tMinus(rw.firstDays) : '—'} sub={rw ? 'days to first' : 'none dated'} color={soon ? C.danger : undefined} />
-        <StatTile label="Resit window" value={rw ? `${ddmm(rw.start)}–${ddmm(rw.end)}` : '—'} sub={rw ? 'resit period' : 'no dates yet'} />
-        <StatTile label="Cleared" value={`${passedCount}/${total}`} sub="passed (≥10)" />
-      </TileGrid>
-
-      <Card title="▮ RESITS NEEDED">
-        {rw && (
-          <div className="mis-resit-window">
-            <span className={`mis-window-dates${soon ? ' is-soon' : ''}`}>
-              {fmtDate(rw.start)} – {fmtDate(rw.end)}
-            </span>
-            {rw.firstDays != null && (
-              <span className="mis-window-hint">
-                · first in {tMinus(rw.firstDays)}
-                {rw.firstDays > 0 ? ` day${rw.firstDays === 1 ? '' : 's'}` : ''}
+    <TabShell className="mis-fit">
+      <div className="mis-side">
+        {ya && (
+          <Card title="▮ GRADE OF MERIT">
+            <div className="mis-grade-row">
+              <span className="mis-grade-value">
+                {ya.average.toFixed(2)}
+                <span className="mis-grade-unit">/20</span>
               </span>
-            )}
-          </div>
+              <span className={`mis-grade-band${ya.band.key === 'pass' ? '' : ' is-distinction'}`}>
+                {ya.band.label}
+              </span>
+            </div>
+            <div className="mis-grade-note">
+              {ya.toNext ? `${ya.toNext.gap.toFixed(2)} to ${ya.toNext.label} (≥${ya.toNext.min})` : 'Highest distinction'}
+              {` · ${ya.passedCount} passed, ${ya.creditsCounted} sp`}
+              {resitsNeeded > 0 ? ` · ${resitsNeeded} resit${resitsNeeded === 1 ? '' : 's'} pending` : ''}
+            </div>
+          </Card>
         )}
-        <AccordionList
-          items={resits}
-          editingId={openList === 'resits' ? editId : null}
-          renderRow={(m) => <MissionRow m={m} selected={openList === 'resits' && editId === m.id} onClick={() => toggleEdit('resits', m)} />}
-          renderEditor={() => renderForm()}
-          empty="No resits — nothing failed yet."
-        />
-      </Card>
+        <TileGrid>
+          <StatTile label="Resits" value={String(resitsNeeded)} sub="to resit" color={resitsNeeded > 0 ? C.danger : undefined} />
+          <StatTile label="Next resit" value={rw ? tMinus(rw.firstDays) : '—'} sub={rw ? 'days to first' : 'none dated'} color={soon ? C.danger : undefined} />
+          <StatTile label="Resit window" value={rw ? `${ddmm(rw.start)}–${ddmm(rw.end)}` : '—'} sub={rw ? 'resit period' : 'no dates yet'} />
+          <StatTile label="Cleared" value={`${passedCount}/${total}`} sub="passed (≥10)" />
+        </TileGrid>
+      </div>
+      <div className="mis-lists">
+        <Card title="▮ RESITS NEEDED" className="parts-card--scroll">
+          {rw && (
+            <div className="mis-resit-window">
+              <span className={`mis-window-dates${soon ? ' is-soon' : ''}`}>
+                {fmtDate(rw.start)} – {fmtDate(rw.end)}
+              </span>
+              {rw.firstDays != null && (
+                <span className="mis-window-hint">
+                  · first in {tMinus(rw.firstDays)}
+                  {rw.firstDays > 0 ? ` day${rw.firstDays === 1 ? '' : 's'}` : ''}
+                </span>
+              )}
+            </div>
+          )}
+          <AccordionList
+            items={resits}
+            editingId={openList === 'resits' ? editId : null}
+            renderRow={(m) => <MissionRow m={m} selected={openList === 'resits' && editId === m.id} onClick={() => toggleEdit('resits', m)} />}
+            renderEditor={() => renderForm()}
+            empty="No resits — nothing failed yet."
+          />
+        </Card>
 
-      <Card
-        title="▮ PENDING"
-        headerRight={
-          <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
-        }
-      >
-        {adding && (
-          <div className="mis-add-panel">
-            <InsetPanel>{renderForm()}</InsetPanel>
-          </div>
-        )}
-        <AccordionList
-          items={pending}
-          editingId={openList === 'pending' ? editId : null}
-          renderRow={(m) => <MissionRow m={m} selected={openList === 'pending' && editId === m.id} onClick={() => toggleEdit('pending', m)} />}
-          renderEditor={() => renderForm()}
-          empty="Nothing awaiting a result."
-        />
-      </Card>
-
-      <Card title="▮ PASSED">
-        <button
-          className="parts-button mis-btn-sm"
-          onClick={() => setShowHistory((v) => !v)}
-          aria-expanded={showHistory}
+        <Card
+          title="▮ PENDING"
+        className="parts-card--scroll"
+          headerRight={
+            <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
+          }
         >
-          {showHistory ? '▾ Hide' : `▸ History (${passedCount})`}
-        </button>
-        {showHistory && (
-          <div className="mis-history-panel">
-            <AccordionList
-              items={passedExams}
-              editingId={openList === 'passed' ? editId : null}
-              renderRow={(m) => <MissionRow m={m} selected={openList === 'passed' && editId === m.id} onClick={() => toggleEdit('passed', m)} />}
-              renderEditor={() => renderForm()}
-              empty="No passed exams yet."
-            />
-          </div>
-        )}
-      </Card>
+          {adding && (
+            <div className="mis-add-panel">
+              <InsetPanel>{renderForm()}</InsetPanel>
+            </div>
+          )}
+          <AccordionList
+            items={pending}
+            editingId={openList === 'pending' ? editId : null}
+            renderRow={(m) => <MissionRow m={m} selected={openList === 'pending' && editId === m.id} onClick={() => toggleEdit('pending', m)} />}
+            renderEditor={() => renderForm()}
+            empty="Nothing awaiting a result."
+          />
+        </Card>
+
+        <Card title="▮ PASSED" className="parts-card--scroll">
+          <button
+            className="parts-button mis-btn-sm"
+            onClick={() => setShowHistory((v) => !v)}
+            aria-expanded={showHistory}
+          >
+            {showHistory ? '▾ Hide' : `▸ History (${passedCount})`}
+          </button>
+          {showHistory && (
+            <div className="mis-history-panel">
+              <AccordionList
+                items={passedExams}
+                editingId={openList === 'passed' ? editId : null}
+                renderRow={(m) => <MissionRow m={m} selected={openList === 'passed' && editId === m.id} onClick={() => toggleEdit('passed', m)} />}
+                renderEditor={() => renderForm()}
+                empty="No passed exams yet."
+              />
+            </div>
+          )}
+        </Card>
+      </div>
     </TabShell>
   );
 }

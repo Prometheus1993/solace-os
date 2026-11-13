@@ -49,7 +49,7 @@ function TaskRow({ t, selected, busy, onClick, onToggle }: { t: Task; selected: 
 
 /** SCHOOL TERM — school tasks & deadlines (assignments, company visits). Open list sorted by deadline
  *  (the DTO already orders it), done items collapsed behind "History"; rows edit INLINE (accordion). */
-export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { dto: DashboardDTO; onReload: () => void | Promise<void>; compact?: boolean; courseFilter?: string }) {
+export function SchoolTasks({ dto, onReload, courseFilter }: { dto: DashboardDTO; onReload: () => void | Promise<void>; courseFilter?: string }) {
   const tasks = dto.schoolTasks.filter(t => courseFilter === undefined || (t.course ?? 'Unsorted') === courseFilter);
   const open = tasks.filter((t) => !t.done);
   const doneTasks = tasks.filter((t) => t.done);
@@ -171,18 +171,19 @@ export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { 
   );
 
   return (
-    <TabShell>
-      {!compact && <TileGrid>
+    <TabShell className="st-fit">
+      <TileGrid>
         <StatTile label="Open" value={String(open.length)} sub="tasks" />
         <StatTile label="Overdue" value={String(overdueCount)} sub="late" color={overdueCount > 0 ? C.danger : undefined} />
         <StatTile label="Next deadline" value={next ? tMinus(next.daysUntil) : '—'} sub={next ? next.title : 'no open deadline'} color={next && next.daysUntil <= 2 ? C.danger : undefined} />
         <StatTile label="Done" value={String(doneTasks.length)} sub="completed" />
-      </TileGrid>}
+      </TileGrid>
 
       <Card
         title="▮ OPEN"
+        className="st-open parts-card--scroll"
         headerRight={
-          <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : compact ? '+ NEW TASK' : '＋ Add'}</button>
+          <button className="parts-button mis-btn-sm" onClick={startAdd}>{adding ? '✕ Close' : '＋ Add'}</button>
         }
       >
         {adding && (
@@ -199,7 +200,7 @@ export function SchoolTasks({ dto, onReload, compact = false, courseFilter }: { 
         />
       </Card>
 
-      <Card title="▮ DONE">
+      <Card title="▮ DONE" className="parts-card--scroll">
         <button
           className="parts-button mis-btn-sm"
           onClick={() => setShowHistory((v) => !v)}

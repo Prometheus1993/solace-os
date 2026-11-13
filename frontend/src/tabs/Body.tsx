@@ -44,7 +44,7 @@ function VitalTile({ label, point, win, unit, fmt }: { label: string; point: Poi
 function TrendCard({ title, series, color, unit, precision, hint }: { title: string; series: Series; color: string; unit: string; precision: number; hint: string }) {
   return (
     <Card title={title}>
-      <LineChart data={series.map((p) => ({ label: p.date.slice(5), value: p.value }))} color={color} unit={unit} precision={precision} />
+      <LineChart data={series.map((p) => ({ label: p.date.slice(5), value: p.value }))} color={color} height={82} unit={unit} precision={precision} />
       <div className="vitals-trend-hint">{hint}</div>
     </Card>
   );
@@ -98,7 +98,7 @@ export function Body({ dto, onReload }: { dto: DashboardDTO; onReload: () => voi
   const goalNum = (v: string): number | null => (v.trim() === '' ? null : Number(v));
 
   return (
-    <TabShell>
+    <TabShell className="vitals-fit">
       <Card title="◆ Recovery vitals">
         <div className="parts-tile-grid">
           <VitalTile label="Overnight HRV" point={latest(v.hrv)} win={rec.hrv} unit="ms" />
