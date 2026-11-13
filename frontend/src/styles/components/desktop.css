@@ -17,7 +17,6 @@
 .desktop-hub:not(.desk-view-desk)::after { opacity:1; }
 .desk-stage { position:absolute; }
 .desk-scenery { position:absolute; inset:0; transition:transform var(--dur-scene) var(--ease-scene),filter var(--dur-scene); }
-.desktop-hub[data-origin=books] .desk-scenery { transform-origin:18% 87%; }
 .desktop-hub:not(.desk-view-desk) .desk-scenery { transform:scale(1.28); filter:brightness(.8); }
 .desk-city { --city-play:running; position:absolute; pointer-events:none; }
 /* Local, low-opacity light and fog retain the authored pixel silhouettes. */
@@ -142,7 +141,6 @@
   transform-origin:70% 65%;
 }
 .desk-surface[hidden] { display:none; }
-.desktop-hub[data-origin=books] .desk-surface { transform-origin:20% 75%; border-color:#b59974; }
 @keyframes desk-surface-in {
   from { opacity:0; transform:scale(.78); filter:brightness(1.6); }
   45% { opacity:1; }
@@ -182,18 +180,6 @@
 .desk-surface-tabs button[aria-current=page] { color:#c5fff4; border-bottom-color:#90d8d6; }
 .desk-surface-tabs:has(> button:only-child) { display:none; }
 .desk-surface-content { flex:1; min-height:0; overflow:auto; scrollbar-width:thin; scrollbar-color:#64888e var(--color-surface-1); }
-.desktop-hub .desk-surface .wp-shard-panel {
-  position:relative;
-  inset:auto;
-  width:100%;
-  height:100%;
-  max-height:none;
-  padding:22px 28px;
-  border:0;
-  margin:0;
-  box-shadow:none;
-}
-.desktop-hub .desk-surface .wp-shard-stream { min-height:100%; height:auto; }
 .desk-signals {
   position:absolute;
   z-index:var(--z-header);
@@ -239,11 +225,6 @@
   .desk-surface-header kbd { display:none; }
   .desk-surface-tabs { padding-inline:8px; }
   .desk-surface-tabs button { min-height:40px; padding:8px 12px; }
-  .desktop-hub .desk-surface .wp-shard-panel {
-    padding:14px;
-  }
-  .desktop-hub .wp-shard-stream > header { display:block; }
-  .desktop-hub .wp-shard-search { margin-top:12px; }
   .desk-loading { font-size:13px; }
 }
 @media(max-height:650px) and (min-width:761px) {

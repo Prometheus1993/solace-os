@@ -6,14 +6,12 @@ import { useTerminalRoute } from './use-terminal-route.ts';
 import { terminalHash, type TerminalTarget } from './terminal-route.ts';
 import { navigate } from '../navigate.ts';
 import { DeskHud } from './DeskHud.tsx';
-import { ShardPanel } from './ShardPanel.tsx';
 import { SCAN_POINTS, recoveryReading } from './scanner-data.ts';
 import { DeskHologramCloseup } from './DeskHologramCloseup.tsx';
+import { DeskBookcaseCloseup } from './DeskBookcaseCloseup.tsx';
 import type { SyncReport } from './sync-report.ts';
 import { forcedSkyPhase } from './desk-sky.ts';
 import { forcedSkyMood } from './desk-weather.ts';
-import '../../styles/components/desk-panels.css';
-import '../../styles/components/netrunner-rig.css';
 import '../../styles/components/desktop.css';
 import '../../styles/components/desktop-sprites.css';
 import '../../styles/components/desk-radio.css';
@@ -28,7 +26,6 @@ import { readStored, reducedMotionQuery, writeStored } from './desk-browser.ts';
 import { useVisited } from './use-visited.ts';
 
 const SURFACES = [
-  { id: 'library', label: 'Library', path: 'COLLECTION / MANGA + BOOKS', origin: 'books', nav: 'LIBRARY' },
   { id: 'scratchpad', label: 'Scratchpad', path: 'DESK / PERSONAL NOTES', origin: 'notebook', nav: 'NOTES' },
   { id: 'collection', label: 'Small Companions', path: 'SHELF / COLLECTION', origin: 'shelf', nav: 'FIGURES' },
 ] as const;
@@ -52,6 +49,7 @@ export default function DesktopHub(props: DesktopHubProps) {
   const [figure, setFigure] = useState(0);
   const [radioOpen, setRadioOpen] = useState(false);
   const [showcaseOpen, setShowcaseOpen] = useState(false);
+  const [bookcaseOpen, setBookcaseOpen] = useState(false);
   const terminal = useTerminalRoute();
   const terminalOpen = terminal !== null;
   const [view, setView] = useState<View>('desk');
@@ -75,7 +73,7 @@ export default function DesktopHub(props: DesktopHubProps) {
   const skyPhase = (import.meta.env.DEV ? forcedSkyPhase(window.location.search) : null) ?? dayPhase(now, sky?.sunrise, sky?.sunset);
   const skyMood = (import.meta.env.DEV ? forcedSkyMood(window.location.search) : null) ?? (sky ? weatherMood(sky.weatherCode) : 'clear');
   const open = (next: View) => {
-    if (layout.editing || showcaseOpen) return;
+    if (layout.editing || showcaseOpen || bookcaseOpen) return;
     if (next === view) return;
     if (view === 'desk' && document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
     if (next !== 'desk') visit(next);
@@ -97,30 +95,35 @@ export default function DesktopHub(props: DesktopHubProps) {
     return () => window.clearInterval(timer);
   }, [visible]);
   // A link or hash that opens the terminal closes any desk surface first.
-  useEffect(() => { if (terminalOpen) { setView('desk'); setShowcaseOpen(false); } }, [terminalOpen]);
+  useEffect(() => { if (terminalOpen) { setView('desk'); setShowcaseOpen(false); setBookcaseOpen(false); } }, [terminalOpen]);
   useEffect(() => {
-    if (scene.current) scene.current.inert = view !== 'desk' || radioOpen || terminalOpen || showcaseOpen;
-    if (radioOpen || terminalOpen || showcaseOpen) return;
+    if (scene.current) scene.current.inert = view !== 'desk' || radioOpen || terminalOpen || showcaseOpen || bookcaseOpen;
+    if (radioOpen || terminalOpen || showcaseOpen || bookcaseOpen) return;
     if (layout.editing) { wasEditing.current = true; return; }
     if (wasEditing.current) { wasEditing.current = false; layoutButton.current?.focus({ preventScroll: true }); return; }
     if (view !== 'desk') surfaces.current?.querySelector<HTMLElement>(`[data-surface="${view}"]`)?.focus({ preventScroll: true });
     else if (returnTo.current) (returnTo.current.isConnected ? returnTo.current : deskButton.current)?.focus({ preventScroll: true });
-  }, [view, layout.editing, radioOpen, terminalOpen, showcaseOpen]);
+  }, [view, layout.editing, radioOpen, terminalOpen, showcaseOpen, bookcaseOpen]);
   const openRadio = () => {
-    if (layout.editing || radioOpen || showcaseOpen) return;
+    if (layout.editing || radioOpen || showcaseOpen || bookcaseOpen) return;
     if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
     setRadioOpen(true);
   };
   const openShowcase = () => {
-    if (layout.editing || showcaseOpen || radioOpen || terminalOpen) return;
+    if (layout.editing || showcaseOpen || radioOpen || terminalOpen || bookcaseOpen) return;
     if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
     setShowcaseOpen(true);
+  };
+  const openBookcase = () => {
+    if (layout.editing || showcaseOpen || radioOpen || terminalOpen || bookcaseOpen) return;
+    if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
+    setBookcaseOpen(true);
   };
   // The terminal reopens where it was last open (the drafts in its views survive anyway).
   const lastTerminal = useRef<TerminalTarget>({ folder: 'body', view: 'overview' });
   if (terminal) lastTerminal.current = terminal;
   const openTerminal = (at: TerminalTarget = lastTerminal.current) => {
-    if (layout.editing || terminalOpen || radioOpen || showcaseOpen) return;
+    if (layout.editing || terminalOpen || radioOpen || showcaseOpen || bookcaseOpen) return;
     if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
     navigate(terminalHash(at));
   };
@@ -157,7 +160,6 @@ export default function DesktopHub(props: DesktopHubProps) {
           syncing={props.syncing}
           skyPhase={skyPhase}
           skyMood={skyMood}
-          view={view}
           radio={radio}
           layout={layout}
           onFigure={index => { setFigure(index); open('collection'); }}
@@ -165,6 +167,7 @@ export default function DesktopHub(props: DesktopHubProps) {
           onTerminal={() => openTerminal()}
           onRadio={openRadio}
           onHologram={openShowcase}
+          onBookcase={openBookcase}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)} />
       </div>
@@ -173,6 +176,7 @@ export default function DesktopHub(props: DesktopHubProps) {
     <header className="desk-header">
       <button ref={deskButton} className="desk-home" onClick={() => open('desk')} aria-label="Return to your desk"><span>07</span> PERSONAL DESK</button>
       <nav aria-label="Desktop tools">
+        <button disabled={layout.editing} aria-pressed={bookcaseOpen} onClick={openBookcase}>LIBRARY</button>
         {SURFACE_LIST.filter(item => item.nav).map(item => <button
           key={item.id}
           disabled={layout.editing}
@@ -212,6 +216,12 @@ export default function DesktopHub(props: DesktopHubProps) {
       origin={() => scene.current?.querySelector('.desk-prop-hologram')?.getBoundingClientRect() ?? null}
       onSync={props.onSyncGarmin}
       onClose={() => setShowcaseOpen(false)} />}
+    {bookcaseOpen && <DeskBookcaseCloseup
+      series={props.dto.series}
+      reduced={reduced}
+      origin={() => scene.current?.querySelector('.desk-prop-books')?.getBoundingClientRect() ?? null}
+      onPick={target => navigate(terminalHash(target))}
+      onClose={() => setBookcaseOpen(false)} />}
     <DeskTerminalCloseup
       dto={props.dto}
       target={terminal}
@@ -242,7 +252,6 @@ export default function DesktopHub(props: DesktopHubProps) {
           </button>)}
         </nav>
         <div className="desk-surface-content">
-          {surface.id === 'library' && <ShardPanel series={props.dto.series} />}
           {surface.id === 'scratchpad' && <Scratchpad />}
           {surface.id === 'collection'
             && <CollectiblePanel selected={figure} onSelect={setFigure} />}

@@ -1,6 +1,7 @@
 const files = import.meta.glob<string>([
   '../../assets/private/desk-pano-*-v1.png',
   '../../assets/private/{desk-monitor-atlas,desk-books-atlas}-v1.png',
+  '../../assets/private/bookcase-{back,front}-v1.png',
   '../../assets/private/{desk-keyboard-mouse-atlas,desk-lamp-atlas,desk-accessories-atlas,cyberpunk-hovercar}-v1.png',
   '../../assets/private/{desk-speaker-play-atlas,spotify-logo}-v1.png',
   '../../assets/private/radio-closeup-*-v1.png',

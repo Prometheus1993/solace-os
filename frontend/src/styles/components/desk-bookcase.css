@@ -1,0 +1,83 @@
+/* The zoomed bookcase (DeskBookcaseCloseup.tsx): its own overlay layer above the desk scene, which is never scaled. The stage is the
+   2800x1800 art; every part sits at percentages of it (`--x/--y/--w/--h` on `.case-box`), so covers scale with the art. Text sizes use
+   cqw, 1cqw = 28 art pixels. Layers: back art, covers, front art (lips hide the cover bottoms, ignores the pointer), controls. */
+.case-closeup {
+  position:absolute;
+  inset:0;
+  z-index:var(--z-overlay);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(ellipse at center,#0a1220cc,#05060bf2);
+  outline:0;
+}
+.case-close {
+  position:absolute;
+  top:var(--space-5);
+  right:var(--space-6);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-4);
+  padding:6px 12px;
+  font:var(--fs-sm) var(--font-mono);
+  letter-spacing:var(--ls-label);
+  color:var(--color-text-1);
+  background:var(--color-surface-3);
+  border:var(--bw-1) solid var(--color-border-strong);
+  cursor:pointer;
+}
+.case-close:hover { color:var(--color-cyan); }
+.case-close kbd { font:var(--fs-2xs) var(--font-mono); color:var(--color-text-3); }
+.case-stage {
+  --accent:var(--color-violet);
+  position:relative;
+  width:min(98vw,calc((100vh - 56px) * 28 / 18));
+  aspect-ratio:28/18;
+  container-type:inline-size;
+  filter:drop-shadow(0 18px 40px #000a);
+}
+.case-stage[data-channel=books] { --accent:var(--color-cyan); }
+.case-stage[data-art=false] { background:var(--color-surface-overlay); border:var(--bw-1) solid var(--color-border-strong); border-top:3px solid var(--accent); }
+.case-box { position:absolute; left:var(--x); top:var(--y); width:var(--w); height:var(--h); box-sizing:border-box; }
+.case-art { position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none; user-select:none; -webkit-user-drag:none; }
+.case-plain-lip { background:var(--color-surface-3); border-top:var(--bw-1) solid var(--color-border-strong); }
+
+/* Covers */
+.case-cover { padding:0; border:var(--bw-1) solid var(--color-border-strong); background:var(--color-surface-2); cursor:pointer; overflow:hidden; transition:transform var(--dur-fast,120ms) ease; }
+.case-cover img { display:block; width:100%; height:100%; object-fit:cover; }
+.case-cover:hover, .case-cover:focus-visible { transform:translateY(-1.2%); }
+.case-cover:focus-visible { outline:2px solid var(--accent); outline-offset:-4px; }
+.case-cover[data-reading=true] { box-shadow:inset 0 -.5cqw 0 var(--color-cyan); }
+.case-cover[data-placeholder=true] { display:flex; align-items:center; justify-content:center; text-align:center; background:linear-gradient(160deg,var(--color-surface-3),var(--color-surface-1)); border-left:.4cqw solid var(--accent); }
+.case-cover-title { display:flex; flex-direction:column; gap:.5cqw; padding:0 .5cqw; font:600 1cqw/1.2 var(--font-title); color:var(--color-text-1); overflow-wrap:break-word; }
+.case-cover-title small { font:.85cqw var(--font-mono); letter-spacing:var(--ls-label); color:var(--accent); }
+.case-empty { display:grid; place-items:center; margin:0; font:1.3cqw var(--font-mono); letter-spacing:var(--ls-label); color:var(--color-text-2); }
+
+/* Header plate: title, channels, search, count */
+.case-head { display:flex; align-items:center; gap:2cqw; padding:0 1.6cqw; }
+.case-head h1 { margin:0; font:600 2.1cqw var(--font-title); letter-spacing:var(--ls-label); color:var(--color-text-1); }
+.case-channels { display:flex; gap:.6cqw; }
+.case-channels button, .case-head input {
+  font:1.05cqw var(--font-mono);
+  letter-spacing:var(--ls-label);
+  color:var(--color-text-1);
+  background:var(--color-surface-input);
+  border:var(--bw-1) solid var(--color-border-strong);
+  padding:.45cqw 1.1cqw;
+}
+.case-channels button { cursor:pointer; }
+.case-channels button:hover { color:var(--color-cyan); }
+.case-channels button[aria-pressed=true] { color:var(--accent); border-color:var(--accent); background:var(--color-surface-3); }
+.case-head input { flex:1; min-width:0; max-width:26cqw; margin-left:auto; }
+.case-head input::placeholder { color:var(--color-text-3); }
+.case-head input:focus-visible, .case-channels button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.case-count { font:.95cqw var(--font-mono); letter-spacing:var(--ls-label); color:var(--color-text-2); white-space:nowrap; }
+
+/* Page arrows on the art's two arrow plates */
+.case-arrow { display:grid; place-items:center; padding:0; color:var(--color-cyan); background:transparent; border:0; cursor:pointer; }
+.case-arrow:hover:not(:disabled) { color:var(--color-text-1); text-shadow:var(--glow-cyan); }
+.case-arrow:disabled { color:var(--color-text-3); opacity:.45; cursor:default; }
+.case-arrow:focus-visible { outline:2px solid var(--color-cyan); outline-offset:2px; }
+
+@media (prefers-reduced-motion:reduce) { .case-cover { transition:none; } .case-cover:hover, .case-cover:focus-visible { transform:none; } }
+.case-arrow svg { width:70%; height:70%; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
