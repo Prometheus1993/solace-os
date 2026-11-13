@@ -13,6 +13,17 @@ Rules:
 
 ## [Unreleased]
 
+### Added
+- Hologram showcase (#42): click the hologram on the desk and the scene zooms in on a body showcase (Esc or a click outside zooms back out; with reduced motion it fades). The hologram body is lit per stat, brighter for a higher level: STAMINA lights the legs, STRENGTH the arms and torso, LEANNESS the outline, each with a callout line and its level and tier. Next to it: today's CONDITION as one aura and one word (READY, STEADY or RECOVER, taken from the existing readiness advice), your JOURNEY since each stat's fresh start (level and value change, a bar and a small chart), and LAST SYNC with the **SYNC GARMIN** button, which after a sync shows what it brought (new runs, km, wellness days, stat changes). While a sync runs the hologram on the desk scans (a sweeping line and the label SYNCING…), also when the showcase is closed; it stands still with MOTION OFF or reduced motion. New hologram artwork (body, zone layers and projector); without the artwork file the showcase still works with the tinted avatar.
+- The dashboard has a new `journey` field per stat (start reading since the fresh start plus one point per day), read from the stat history.
+
+### Changed
+- Syncing Garmin now has one place: the hologram showcase. The six stat cards at the top of the desk only show your numbers; they are no longer buttons.
+- The "stale wellness" marker in the bottom bar now points to the hologram showcase for syncing.
+
+### Removed
+- The biomonitor puck on the desk, the BODY SCAN panel, the GARMIN UPLINK panel and the red SYNC button in the bottom bar. A saved desk layout that still holds the puck keeps loading (the puck is simply ignored).
+
 ## [0.6.0] - 2026-11-13
 
 ### Added

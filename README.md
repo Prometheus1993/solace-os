@@ -22,8 +22,10 @@ trademarks belong to their owners, and none of those names is used as the name o
 ![SHELF](docs/screenshots/shelf.png)
 
 You start on a "jack in" start screen. After you enter you land on your desk: a desk above a city, with tools you can
-open (terminal, library, biomonitor, radio, scratchpad, small companions). You customise the desk yourself, and your key
-stats stay visible in a footer bar; the run and km totals and the **⟲ SYNC** button sit in the bar at the bottom.
+open (terminal, library, hologram showcase, radio, scratchpad, small companions). You customise the desk yourself, and your key
+stats stay visible in a footer bar; the run and km totals sit in the bar at the bottom. Click the hologram on the desk to zoom
+in on a body showcase: your stat levels light up the hologram, your condition today, your journey since the fresh start and
+the **⟲ SYNC GARMIN** button with what the last sync brought.
 Everything else lives in the terminal on the monitor: click the monitor (or TERMINAL in the bottom bar) and it zooms in
 to nearly fill the screen; Esc or a click outside zooms back out. The terminal has three folders (the whole app is one
 dark style, there is no theme switch). The links `#body`, `#study` and `#shelf` (also `#body/vitals`, `#shelf/manga` and so
@@ -70,7 +72,7 @@ docker compose down         # stops it; your data stays in the volume (add -v to
 - **Data** lives in the named volume `solace-data`, mounted at `/app/data` (the `.sqlite`, `-wal` and `-shm` files together). The demo database is seeded once on first start; your edits persist.
 - **Demo or your own data:** `SOLACE_DEMO=0 docker compose up` uses `data/solace.sqlite` in the same volume (created on first start). The default, `SOLACE_DEMO=1`, uses fake data and disables Garmin sync.
 - **Port:** only the web UI is published, on `127.0.0.1` (never your network); the API stays inside the container and the UI proxies `/api` to it. Change the host port with `SOLACE_PORT=5180`.
-- **Garmin sync (optional, `SOLACE_DEMO=0` only):** log in once on your own machine (see Garmin sync), then uncomment the `~/.garminconnect` volume in `compose.yaml`. It must be read-write because the token is refreshed. Without a token, ⟲ SYNC shows a clear error.
+- **Garmin sync (optional, `SOLACE_DEMO=0` only):** log in once on your own machine (see Garmin sync), then uncomment the `~/.garminconnect` volume in `compose.yaml`. It must be read-write because the token is refreshed. Without a token, SYNC GARMIN shows a clear error.
 - **Price table:** the container uses `config/price-table.example.json`; uncomment the `price-table.json` volume in `compose.yaml` to use your own.
 
 ## Requirements and setup
@@ -138,7 +140,7 @@ Connect, stores them, backfills run temperatures from Open-Meteo and recomputes 
    ```
 
    Run the same command again when the sync reports that your login expired (the token lasts months).
-3. Sync with the **⟲ SYNC** button in the bottom bar of the desk.
+3. Click the hologram on the desk and sync with **⟲ SYNC GARMIN** in the showcase. While it runs, the hologram on the desk shows a scanning state.
 
 ## Your own data
 
