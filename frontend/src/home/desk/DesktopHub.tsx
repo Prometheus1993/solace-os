@@ -17,6 +17,7 @@ import '../../styles/components/desktop-sprites.css';
 import '../../styles/components/desk-radio.css';
 import '../../styles/components/desk-sky.css';
 import '../../styles/components/desk-weather.css';
+import '../../styles/components/desk-surface.css';
 import { DeskSpriteScene, hasDeskSprites } from './DeskSpriteScene.tsx';
 import { CollectiblePanel, Scratchpad, useDeskRadio } from './DeskPersonalTools.tsx';
 import { DeskRadioCloseup } from './DeskRadioCloseup.tsx';
@@ -239,18 +240,8 @@ export default function DesktopHub(props: DesktopHubProps) {
         && <section key={surface.id} data-surface={surface.id} className="desk-surface" hidden={view !== surface.id} tabIndex={-1} aria-label={surface.label}>
         <header className="desk-surface-header">
           <div><small>{surface.path}</small><h1>{surface.label}</h1></div>
-          <button onClick={() => open('desk')}>← DESK <kbd>ESC</kbd></button>
+          <button className="parts-button" onClick={() => open('desk')}>← DESK <kbd>ESC</kbd></button>
         </header>
-        <nav
-          className="desk-surface-tabs"
-          aria-label="Work surfaces">
-          {SURFACE_LIST.filter(item => item.origin === surface.origin).map(item => <button
-            key={item.id}
-            aria-current={view === item.id ? 'page' : undefined}
-            onClick={() => open(item.id)}>
-            {item.label}
-          </button>)}
-        </nav>
         <div className="desk-surface-content">
           {surface.id === 'scratchpad' && <Scratchpad />}
           {surface.id === 'collection'

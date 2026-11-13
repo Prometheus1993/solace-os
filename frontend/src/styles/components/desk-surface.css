@@ -1,0 +1,118 @@
+/* The desk's NOTES and FIGURES panels (DesktopHub `.desk-surface`, Scratchpad and CollectiblePanel in DeskPersonalTools.tsx).
+   A Solace panel: pixel-art frame over Surface 1, a labelled header, shared button art. Buttons are `.parts-button` (parts.css);
+   the `button.` selectors below beat the desk's `.desktop-hub button` reset. */
+.desk-surface {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  pointer-events:auto;
+  color:var(--color-text-1);
+  background:var(--color-surface-1);
+  border:12px solid transparent;
+  border-image:url('../../assets/ui/panel-frame.png') 24 / 12px round;
+  border-radius:var(--radius-none);
+  image-rendering:pixelated;
+  box-shadow:var(--shadow-l);
+  animation:desk-surface-in calc(var(--dur-scene) - 130ms) var(--ease-scene) both;
+  transform-origin:70% 65%;
+}
+.desk-surface[hidden] { display:none; }
+@keyframes desk-surface-in {
+  from { opacity:0; transform:scale(.78); }
+  to { opacity:1; transform:none; }
+}
+.desk-surface-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-6);
+  flex-shrink:0;
+  padding:var(--space-5) var(--space-6);
+  border-bottom:var(--bw-1) solid var(--color-hairline);
+}
+.desk-surface-header small { display:flex; align-items:center; gap:var(--space-4); font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-wide); color:var(--color-text-2); }
+.desk-surface-header small::before { content:''; width:7px; height:7px; margin:1px; flex:0 0 auto; transform:rotate(45deg); background:var(--color-cyan); box-shadow:var(--glow-signal); color:var(--color-cyan); }
+.desk-surface-header h1 { margin:var(--space-2) 0 0; font:600 var(--fs-2xl)/1.2 var(--font-title); letter-spacing:var(--ls-tight); color:var(--color-text-1); }
+.desk-surface-header kbd { margin-left:var(--space-5); font:var(--fs-2xs) var(--font-mono); color:var(--color-text-3); }
+.desk-surface button.parts-button { font:var(--fs-md)/16px var(--font-mono); color:var(--color-text-1); }
+.desk-surface button.parts-button:hover:not(:disabled) { color:var(--color-cyan); }
+.desk-surface button.parts-button:active:not(:disabled) { color:var(--color-text-1); }
+.desk-surface-content { flex:1; min-height:0; overflow:auto; scrollbar-width:thin; scrollbar-color:var(--color-cyan-dim) var(--color-surface-1); }
+
+/* NOTES */
+.desk-scratchpad { display:flex; flex-direction:column; height:100%; min-height:260px; padding:var(--space-6); gap:var(--space-5); }
+.desk-scratchpad label { font:600 var(--fs-xl) var(--font-title); color:var(--color-text-1); }
+.desk-scratchpad p { margin:0; font:var(--fs-sm) var(--font-mono); letter-spacing:var(--ls-label); color:var(--color-text-3); }
+.desk-scratchpad textarea {
+  flex:1;
+  min-height:180px;
+  width:100%;
+  resize:vertical;
+  padding:var(--space-5) var(--space-6);
+  border:var(--bw-1) solid var(--color-border);
+  border-radius:var(--radius-none);
+  background:repeating-linear-gradient(var(--color-surface-input) 0 31px,var(--color-hairline) 31px 32px);
+  color:var(--color-text-1);
+  font:var(--fs-lg)/32px var(--font-mono);
+}
+.desk-scratchpad textarea::placeholder { color:var(--color-text-4); }
+.desk-scratchpad textarea:focus-visible { outline:var(--focus-ring); outline-offset:var(--bw-1); border-color:var(--color-border-strong); }
+
+/* FIGURES */
+.desk-collection-panel {
+  min-height:100%;
+  max-width:1000px;
+  margin:0 auto;
+  padding:var(--space-7);
+  display:grid;
+  grid-template-columns:minmax(0,5fr) minmax(0,6fr);
+  grid-template-rows:auto 1fr auto auto 1fr;
+  column-gap:var(--space-8);
+  align-content:center;
+  font:var(--fs-md)/1.5 var(--font-body);
+}
+.desk-collection-panel > :not(nav,.desk-collection-figure) { grid-column:2; }
+.desk-collection-panel > .desk-eyebrow { grid-row:2; align-self:end; }
+.desk-collection-panel > h2 { grid-row:3; }
+.desk-collection-panel > h2 + p { grid-row:4; }
+.desk-collection-panel > h2 + p + p { grid-row:5; align-self:start; }
+.desk-collection-panel nav { grid-column:1 / -1; display:flex; flex-wrap:wrap; justify-content:center; gap:var(--space-5); }
+.desk-collection-panel nav button.parts-button[aria-pressed=true] {
+  border-image-source:url('../../assets/ui/button-hover.png');
+  background-color:var(--color-surface-1);
+  color:var(--color-cyan);
+  box-shadow:var(--glow-cyan);
+}
+.desk-collection-panel h2 { margin:var(--space-3) 0 var(--space-4); font:600 var(--fs-2xl)/1.2 var(--font-title); letter-spacing:var(--ls-tight); }
+.desk-collection-panel p { margin:var(--space-4) 0; color:var(--color-text-2); }
+.desk-eyebrow { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-cyan-soft); }
+.desk-collection-panel p.desk-eyebrow { color:var(--color-cyan-soft); }
+.desk-collection-figure {
+  grid-column:1;
+  grid-row:2 / span 4;
+  align-self:center;
+  width:min(100%,300px);
+  aspect-ratio:160 / 190;
+  margin:var(--space-6) auto 0;
+  animation:desk-figure-turn 650ms ease-out;
+}
+@keyframes desk-figure-turn { from { transform:rotateY(-35deg) translateY(10px); opacity:.3; } to { transform:rotateY(0deg) translateY(0); opacity:1; } }
+
+@media(max-width:760px) {
+  .desk-surface-header { padding:var(--space-4) var(--space-5); gap:var(--space-4); }
+  .desk-surface-header h1 { font-size:var(--fs-xl); }
+  .desk-surface-header kbd { display:none; }
+  .desk-collection-panel,.desk-scratchpad { padding:var(--space-5); }
+  .desk-collection-panel { grid-template-columns:minmax(0,1fr); }
+  .desk-collection-panel { grid-template-rows:none; }
+  .desk-collection-panel > :not(nav),.desk-collection-panel > .desk-eyebrow,.desk-collection-panel > h2,.desk-collection-panel > h2 + p,.desk-collection-panel > h2 + p + p { grid-column:1; grid-row:auto; align-self:auto; }
+}
+@media(max-height:650px) and (min-width:761px) {
+  .desk-surface-header { padding:var(--space-4) var(--space-6); }
+  .desk-surface-header h1 { font-size:var(--fs-xl); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .desk-surface { animation:desk-fade 100ms both; }
+  .desk-collection-figure { animation:none; }
+}
