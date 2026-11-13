@@ -60,8 +60,24 @@
 .desk-scratchpad textarea:focus-visible { outline:var(--focus-ring); outline-offset:var(--bw-1); border-color:var(--color-border-strong); }
 
 /* FIGURES */
-.desk-collection-panel { max-width:800px; margin:auto; padding:var(--space-7); font:var(--fs-md)/1.5 var(--font-body); }
-.desk-collection-panel nav { display:flex; flex-wrap:wrap; gap:var(--space-5); }
+.desk-collection-panel {
+  min-height:100%;
+  max-width:1000px;
+  margin:0 auto;
+  padding:var(--space-7);
+  display:grid;
+  grid-template-columns:minmax(0,5fr) minmax(0,6fr);
+  grid-template-rows:auto 1fr auto auto 1fr;
+  column-gap:var(--space-8);
+  align-content:center;
+  font:var(--fs-md)/1.5 var(--font-body);
+}
+.desk-collection-panel > :not(nav,.desk-collection-figure) { grid-column:2; }
+.desk-collection-panel > .desk-eyebrow { grid-row:2; align-self:end; }
+.desk-collection-panel > h2 { grid-row:3; }
+.desk-collection-panel > h2 + p { grid-row:4; }
+.desk-collection-panel > h2 + p + p { grid-row:5; align-self:start; }
+.desk-collection-panel nav { grid-column:1 / -1; display:flex; flex-wrap:wrap; justify-content:center; gap:var(--space-5); }
 .desk-collection-panel nav button.parts-button[aria-pressed=true] {
   border-image-source:url('../../assets/ui/button-hover.png');
   background-color:var(--color-surface-1);
@@ -73,9 +89,12 @@
 .desk-eyebrow { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-cyan-soft); }
 .desk-collection-panel p.desk-eyebrow { color:var(--color-cyan-soft); }
 .desk-collection-figure {
-  width:160px;
-  height:190px;
-  margin:var(--space-7) auto;
+  grid-column:1;
+  grid-row:2 / span 4;
+  align-self:center;
+  width:min(100%,300px);
+  aspect-ratio:160 / 190;
+  margin:var(--space-6) auto 0;
   animation:desk-figure-turn 650ms ease-out;
 }
 @keyframes desk-figure-turn { from { transform:rotateY(-35deg) translateY(10px); opacity:.3; } to { transform:rotateY(0deg) translateY(0); opacity:1; } }
@@ -85,6 +104,9 @@
   .desk-surface-header h1 { font-size:var(--fs-xl); }
   .desk-surface-header kbd { display:none; }
   .desk-collection-panel,.desk-scratchpad { padding:var(--space-5); }
+  .desk-collection-panel { grid-template-columns:minmax(0,1fr); }
+  .desk-collection-panel { grid-template-rows:none; }
+  .desk-collection-panel > :not(nav),.desk-collection-panel > .desk-eyebrow,.desk-collection-panel > h2,.desk-collection-panel > h2 + p,.desk-collection-panel > h2 + p + p { grid-column:1; grid-row:auto; align-self:auto; }
 }
 @media(max-height:650px) and (min-width:761px) {
   .desk-surface-header { padding:var(--space-4) var(--space-6); }
