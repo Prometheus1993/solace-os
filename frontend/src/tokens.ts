@@ -54,9 +54,9 @@ export const confidenceColor = (c: Confidence): string => (c === 'high' ? 'var(-
 
 /** Directive verbs (UI-only). */
 export const READINESS: Record<string, { verb: string; color: string }> = {
-  go_hard: { verb: 'ENGAGE', color: 'var(--color-ok)' },
-  go_easy: { verb: 'HOLD', color: 'var(--color-amber)' },
-  rest: { verb: 'STAND DOWN', color: 'var(--color-danger)' },
+  go_hard: { verb: 'TRAIN', color: 'var(--color-ok)' },
+  go_easy: { verb: 'EASY', color: 'var(--color-amber)' },
+  rest: { verb: 'REST', color: 'var(--color-danger)' },
 };
 
 export const round1 = (n: number): number => Math.round(n * 10) / 10;
