@@ -22,10 +22,13 @@ trademarks belong to their owners, and none of those names is used as the name o
 ![SHELF](docs/screenshots/shelf.png)
 
 You start on a "jack in" start screen. After you enter you land on your desk: a desk above a city, with tools you can
-open (school, terminal, library, biomonitor, Garmin sync, gym log, radio, scratchpad, small companions). You customise the
-desk yourself, and your key stats stay visible in a footer bar. From the desk you reach the main areas (the whole app is
-one dark style, there is no theme switch; the links `#desk`, `#body`, `#study` and `#shelf` open them, and the old
-`#home`, `#training`, `#school` and `#archives` links still work):
+open (terminal, library, biomonitor, radio, scratchpad, small companions). You customise the desk yourself, and your key
+stats stay visible in a footer bar; the run and km totals and the **⟲ SYNC** button sit in the bar at the bottom.
+Everything else lives in the terminal on the monitor: click the monitor (or TERMINAL in the bottom bar) and it zooms in
+to nearly fill the screen; Esc or a click outside zooms back out. The terminal has three folders (the whole app is one
+dark style, there is no theme switch). The links `#body`, `#study` and `#shelf` (also `#body/vitals`, `#shelf/manga` and so
+on) open the desk with the terminal zoomed on that folder, `#desk` is the desk, and the old `#home`, `#training`, `#school`
+and `#archives` links still work:
 
 - **BODY** (training)
   - **STATUS**: your three stats, readiness (`go_hard` / `go_easy` / `rest`) and a weekly report (last week vs the week before).
@@ -135,7 +138,7 @@ Connect, stores them, backfills run temperatures from Open-Meteo and recomputes 
    ```
 
    Run the same command again when the sync reports that your login expired (the token lasts months).
-3. Sync with the **⟲ SYNC** button in the command bar.
+3. Sync with the **⟲ SYNC** button in the bottom bar of the desk.
 
 ## Your own data
 

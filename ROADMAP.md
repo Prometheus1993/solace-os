@@ -11,7 +11,7 @@
 
 ## Next
 
-- BODY, STUDY and SHELF restyled to it, one area at a time
+- In progress: BODY, STUDY and SHELF open inside the desk terminal on the monitor, no separate pages (#35)
 
 ## Maybe later
 
