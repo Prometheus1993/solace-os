@@ -1,6 +1,6 @@
 {
   "name": "@solace/data",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "Impure adapters: SQLite repository, migrations, importers (FIT/Garmin wellness JSON/run-plan JSON/manual strength), weather client, ingest pipeline.",
