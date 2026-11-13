@@ -49,7 +49,8 @@
 .case-cover:focus-visible { outline:2px solid var(--accent); outline-offset:-4px; }
 .case-cover[data-reading=true] { box-shadow:inset 0 -.5cqw 0 var(--color-cyan); }
 .case-cover[data-placeholder=true] { display:flex; align-items:center; justify-content:center; text-align:center; background:linear-gradient(160deg,var(--color-surface-3),var(--color-surface-1)); border-left:.4cqw solid var(--accent); }
-.case-cover-title { display:flex; flex-direction:column; gap:.5cqw; padding:0 .5cqw; font:600 1cqw/1.2 var(--font-title); color:var(--color-text-1); overflow-wrap:break-word; }
+.case-cover-title { display:flex; flex-direction:column; gap:.5cqw; padding:0 .5cqw; font:600 1cqw/1.2 var(--font-title); color:var(--color-text-1); overflow-wrap:break-word; max-height:100%; overflow:hidden; }
+.case-cover-title b { font-weight:inherit; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:6; line-clamp:6; overflow:hidden; }
 .case-cover-title small { font:.85cqw var(--font-mono); letter-spacing:var(--ls-label); color:var(--accent); }
 .case-empty { display:grid; place-items:center; margin:0; font:1.3cqw var(--font-mono); letter-spacing:var(--ls-label); color:var(--color-text-2); }
 

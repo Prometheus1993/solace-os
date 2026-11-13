@@ -26,12 +26,13 @@ function Cover({ series, box, onPick }: { series: Series; box: Box; onPick: (tar
     className="case-box case-cover"
     data-reading={series.reading}
     data-placeholder={!image}
+    title={series.title}
     style={place(box)}
     aria-label={`${series.title}${series.reading ? ', reading' : ''}. Open in the terminal`}
     onClick={() => onPick(seriesTarget(series))}>
     {image
       ? <img src={series.coverUrl!} alt="" loading="lazy" draggable={false} onError={() => setFailed(true)} />
-      : <span className="case-cover-title"><small>{series.type.toUpperCase()}</small>{series.title}</span>}
+      : <span className="case-cover-title"><small>{series.type.toUpperCase()}</small><b>{series.title}</b></span>}
   </button>;
 }
 
