@@ -103,7 +103,7 @@ Copying only the first file gives a stale backup.
 
 ## Mac app
 
-Solace can run as a Mac app (Electron) instead of `npm start`. You build it yourself on your own Mac (unsigned, no download). It starts the same API server and web UI from this repo folder and uses the same database and `.env`. Details, shortcuts and build steps: [`docs/mac-app.md`](docs/mac-app.md).
+Solace can run as a Mac app (Electron) instead of `npm start`. You build it yourself on your own Mac (unsigned, no download). It starts the same API server and web UI from this repo folder and uses the same database and `.env`. Details, shortcuts and build steps: [`docs/mac-app.md`](docs/mac-app.md). After `npm run desktop:build`, quit Solace (⌘Q) and replace `/Applications/Solace.app` with the new build from `desktop/dist/`; a second Solace only focuses the one already running, so an old copy keeps showing the old version.
 
 ## Desk radio
 

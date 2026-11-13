@@ -2,6 +2,11 @@
 // request building is in `spotify-api.ts`, the 6 local tracks in `desk-personal-state.ts`.
 import { playlistUri, type PlayerSnapshot } from './spotify-api.ts';
 
+/** Where the Spotify setup stands: no Mac app, a Mac app too old to have the Spotify bridge, or a Mac app with it. */
+export type SpotifySupport = 'browser' | 'outdated' | 'ready';
+export const spotifySupport = (desktop: { spotify?: unknown } | undefined): SpotifySupport =>
+  !desktop ? 'browser' : desktop.spotify ? 'ready' : 'outdated';
+
 export const STATIONS = ['LOFI', 'JAZZ', 'BOSSA'] as const;
 export type Station = typeof STATIONS[number];
 export const decodeStation = (raw: string | null): Station => STATIONS.find(s => s === raw) ?? 'LOFI';

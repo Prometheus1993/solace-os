@@ -3,7 +3,7 @@ import { loadScratchpad, saveScratchpad, TRACKS, nextLocalTrack } from './desk-p
 import { readStored, writeStored } from './desk-browser.ts';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
 import {
-  decodePlaylists, decodeStation, decodeVolume, radioDisplay, radioStatus, stationUri,
+  decodePlaylists, decodeStation, decodeVolume, radioDisplay, radioStatus, spotifySupport, stationUri,
   type Playlists, type RadioAction, type Station, type SpotifyConnection,
 } from './radio-state.ts';
 import {
@@ -107,7 +107,7 @@ export function useDeskRadio() {
     if (result.connected) setUseLocal(false);
   };
   return {
-    audio, status, playing, volume, station, playlists, display, connection, hasSpotify: !!spotify, configured: info.configured,
+    audio, status, playing, volume, station, playlists, display, connection, hasSpotify: !!spotify, support: spotifySupport(window.solaceDesktop), configured: info.configured,
     src: `${import.meta.env.BASE_URL}music/open-lofi/${track.file}`,
     toggle: () => {
       if (status === 'local') { if (localPlaying || intent.current) pauseLocal(); else void playLocal(); }

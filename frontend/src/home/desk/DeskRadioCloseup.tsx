@@ -173,7 +173,9 @@ export function DeskRadioCloseup({ radio, reduced, origin, onClose }: { radio: D
     </div>
     <details className="radio-setup">
       <summary>SPOTIFY SETUP</summary>
-      {!radio.hasSpotify
+      {radio.support === 'outdated'
+        ? <p>Update the Solace Mac app: rebuild it (npm run desktop:build) and replace /Applications/Solace.app.</p>
+        : radio.support === 'browser'
         ? <p>Spotify works in the Solace Mac app. Here the radio plays the local lofi tracks.</p>
         : !radio.configured
           ? <p>Put SOLACE_SPOTIFY_CLIENT_ID in .env and restart the app (see the README, "Desk radio").</p>
