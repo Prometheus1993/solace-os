@@ -22,7 +22,7 @@ trademarks belong to their owners, and none of those names is used as the name o
 ![SHELF](docs/screenshots/shelf.png)
 
 You start on a "jack in" start screen. After you enter you land on your desk: a desk above a city, with tools you can
-open (terminal, library, hologram showcase, radio, scratchpad, small companions). You customise the desk yourself, and your key
+open (terminal, bookcase of covers, hologram showcase, radio, scratchpad, small companions). You customise the desk yourself, and your key
 stats stay visible in a footer bar; the run and km totals sit in the bar at the bottom. Click the hologram on the desk to zoom
 in on a body showcase: your stat levels light up the hologram, your condition today, your journey since the fresh start and
 the **⟲ SYNC GARMIN** button with what the last sync brought.
