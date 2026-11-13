@@ -10,7 +10,6 @@ import { ShardPanel } from './ShardPanel.tsx';
 import { SCAN_POINTS, recoveryReading } from './scanner-data.ts';
 import { DeskHologramCloseup } from './DeskHologramCloseup.tsx';
 import type { SyncReport } from './sync-report.ts';
-import { avatarState } from './avatar-state.ts';
 import { forcedSkyPhase } from './desk-sky.ts';
 import { forcedSkyMood } from './desk-weather.ts';
 import '../../styles/components/desk-panels.css';
@@ -71,7 +70,6 @@ export default function DesktopHub(props: DesktopHubProps) {
   const wasEditing = useRef(false);
   const current = SURFACE_LIST.find(item => item.id === view);
   const moving = ambience && visible && !reduced && view === 'desk' && !layout.editing;
-  const avatar = avatarState(props.dto);
   // The sky and room looks hook onto data-sky-phase (desk-sky.css); the weather look hooks onto data-sky-mood (desk-weather.css).
   const sky = props.dto.sky;
   const skyPhase = (import.meta.env.DEV ? forcedSkyPhase(window.location.search) : null) ?? dayPhase(now, sky?.sunrise, sky?.sunset);
@@ -160,7 +158,6 @@ export default function DesktopHub(props: DesktopHubProps) {
           skyPhase={skyPhase}
           skyMood={skyMood}
           view={view}
-          avatar={avatar}
           radio={radio}
           layout={layout}
           onFigure={index => { setFigure(index); open('collection'); }}

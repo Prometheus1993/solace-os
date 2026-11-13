@@ -71,7 +71,7 @@ describe('showcase layout', () => {
     }
   });
   it('rests the projector top surface on the feet baseline', () => {
-    expect(PROJECTOR.y + 119 * 0.9).toBeCloseTo(FIGURE.y + 1560);
+    expect(PROJECTOR.y + 119 * 0.68).toBeCloseTo(FIGURE.y + 1560);
   });
   it('converts a world box to stage percentages', () => {
     expect(boxPercent({ x: 0, y: 0, w: WORLD.w, h: WORLD.h })).toEqual({ x: 0, y: 0, w: 100, h: 100 });

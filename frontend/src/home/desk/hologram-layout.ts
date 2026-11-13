@@ -4,10 +4,10 @@ import type { StatKey } from './hologram-state.ts';
 // numbers come from the art's parts.json (anchors, feet baseline, emitter), nothing else about the art is stored here.
 // The world is wider than the figure so the callout labels sit in its margins.
 export const WORLD = { w: 1760, h: 1820 } as const;
-export const FIGURE = { x: 380, y: 0, w: 1000, h: 1600 } as const;
+export const FIGURE = { x: 380, y: 60, w: 1000, h: 1600 } as const;
 const FEET_BASELINE_Y = 1560;
 const FEET_CENTER_X = 519;
-const PROJECTOR_ART = { w: 1200, h: 400, emitterX: 600, topSurfaceY: 119, scale: 0.9 } as const;
+const PROJECTOR_ART = { w: 1200, h: 400, emitterX: 600, topSurfaceY: 119, scale: 0.68 } as const;
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -28,9 +28,9 @@ const ANCHORS: Record<StatKey, { x: number; y: number }> = {
 
 /** The callouts: the label's world position and the world position its line points at. */
 export const CALLOUTS: ReadonlyArray<{ stat: StatKey; side: 'left' | 'right'; label: { x: number; y: number }; target: { x: number; y: number } }> = [
-  { stat: 'leanness', side: 'left', label: { x: 340, y: 400 }, target: { x: FIGURE.x + ANCHORS.leanness.x, y: FIGURE.y + ANCHORS.leanness.y } },
-  { stat: 'strength', side: 'right', label: { x: 1420, y: 520 }, target: { x: FIGURE.x + ANCHORS.strength.x, y: FIGURE.y + ANCHORS.strength.y } },
-  { stat: 'stamina', side: 'right', label: { x: 1420, y: 1150 }, target: { x: FIGURE.x + ANCHORS.stamina.x, y: FIGURE.y + ANCHORS.stamina.y } },
+  { stat: 'leanness', side: 'left', label: { x: 340, y: 460 }, target: { x: FIGURE.x + ANCHORS.leanness.x, y: FIGURE.y + ANCHORS.leanness.y } },
+  { stat: 'strength', side: 'right', label: { x: 1420, y: 580 }, target: { x: FIGURE.x + ANCHORS.strength.x, y: FIGURE.y + ANCHORS.strength.y } },
+  { stat: 'stamina', side: 'right', label: { x: 1420, y: 1210 }, target: { x: FIGURE.x + ANCHORS.stamina.x, y: FIGURE.y + ANCHORS.stamina.y } },
 ];
 
 /** A world box as percentages of the stage, for `left/top/width/height`. */

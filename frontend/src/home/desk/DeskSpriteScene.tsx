@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { DayPhase, WeatherMood } from '@solace/core';
-import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
-import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
-import type { AvatarMood } from './avatar-state.ts';
 import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
 import { DeskCat } from './DeskCat.tsx';
@@ -44,8 +41,8 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onTerminal, onRadio, onHologram, onLoad, onError }: {
-  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, radio, layout, onFigure, onOpen, onTerminal, onRadio, onHologram, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string;
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
   onOpen: (view: 'library' | 'scratchpad') => void; onTerminal: () => void; onRadio: () => void; onHologram: () => void; onLoad: () => void; onError: () => void;
@@ -206,14 +203,10 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
       className="desk-prop desk-prop-hologram"
       data-syncing={syncing}
       onClick={onHologram}
-      aria-label={syncing ? 'Open the body showcase. Garmin sync in progress.' : `Open the body showcase. Hologram avatar: ${avatar.label}`}>
-      <span className="desk-hologram-person">
-        {moving && avatar.mood === 'neutral' ? <AnimatedAvatar /> : <img src={avatarPoseUrls[avatar.mood] ?? avatarUrl} alt="" draggable={false} />}
-      </span>
-      <span className="desk-hologram-beam" aria-hidden="true" />
-      <span className="desk-hologram-scan" aria-hidden="true" />
+      aria-label={syncing ? 'Open the body showcase. Garmin sync in progress.' : 'Open the body showcase'}>
+      <span className="desk-hologram-glow" aria-hidden="true" />
       <span className="desk-hologram-base">{propSprite('hologram')}</span>
-      <span className="desk-prop-label">COMPANION ONLINE<small>{syncing ? 'SYNCING…' : `${avatar.label} / SHOWCASE`}</small></span>
+      <span className="desk-prop-label">COMPANION ONLINE<small>{syncing ? 'SYNCING…' : 'SHOWCASE'}</small></span>
     </button>
     <button
       {...layout.prop('radio')}

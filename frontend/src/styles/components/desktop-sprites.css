@@ -78,50 +78,23 @@
 .desk-reaction-announcement { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .desk-radio-led { position:absolute; left:16%; top:31%; width:48%; height:5%; background:#ffd09a; opacity:0; box-shadow:0 0 12px #e9a54e; pointer-events:none; }
 .desk-prop-radio[data-playing=true] .desk-radio-led { animation:desk-radio-light 2s ease-in-out infinite alternate; }
-.desk-prop-hologram { z-index:var(--z-header); left:41.5%; bottom:10%; width:8.5%; height:calc(var(--desk-w)*.1594); }
-.desk-hologram-person {
+.desk-prop-hologram { z-index:var(--z-header); left:41.5%; bottom:10%; width:8.5%; height:calc(var(--desk-w)*.0319); }
+/* A pulse of light over the base while a sync runs; static without motion. */
+.desk-hologram-glow {
   position:absolute;
-  left:10%;
-  top:0;
-  width:80%;
-  height:84%;
-  opacity:.8;
-  filter:grayscale(1) sepia(1) saturate(5) hue-rotate(130deg) drop-shadow(0 0 8px #5ffaff80);
-  animation:desk-hologram-glow 5s ease-in-out infinite alternate;
-}
-.desk-hologram-person img,.desk-hologram-person canvas { display:block; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
-.desk-hologram-person::after {
-  content:'';
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:repeating-linear-gradient(transparent 0 3px,#62f7ff2b 3px 4px);
-  mix-blend-mode:screen;
-}
-.desk-hologram-beam {
-  position:absolute;
-  bottom:10%;
-  left:12%;
-  width:76%;
-  height:40%;
+  left:14%;
+  top:-90%;
+  width:72%;
+  height:120%;
   clip-path:polygon(30% 100%,70% 100%,100% 0,0 0);
-  background:linear-gradient(0deg,#69eaff3d,transparent);
+  background:linear-gradient(0deg,#8ceaf0e6,#8ceaf040 60%,transparent);
+  opacity:0;
   pointer-events:none;
 }
-.desk-hologram-scan { position:absolute; left:10%; top:0; width:80%; height:84%; overflow:hidden; opacity:0; pointer-events:none; }
-.desk-hologram-scan::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(transparent calc(100% - 3px),var(--color-cyan) 0);
-  box-shadow:0 8px 14px -4px #5ffaffa0;
-  transform:translateY(-45%);
-}
-.desk-prop-hologram[data-syncing=true] .desk-hologram-scan { opacity:1; }
-.desk-prop-hologram[data-syncing=true] .desk-hologram-beam { background:linear-gradient(0deg,#8ceaf080,transparent); }
-.desktop-hub[data-motion=true] .desk-prop-hologram[data-syncing=true] .desk-hologram-scan::before { animation:desk-hologram-scan 1.3s ease-in-out infinite alternate; }
-.desktop-hub[data-motion=true] .desk-prop-hologram[data-syncing=true] .desk-hologram-beam { animation:desk-hologram-pulse .9s ease-in-out infinite alternate; }
-.desk-hologram-base { position:absolute; left:9%; bottom:0; width:82%; height:20%; }
+.desk-prop-hologram[data-syncing=true] .desk-hologram-glow { opacity:.9; }
+.desk-prop-hologram[data-syncing=true] .desk-hologram-base { filter:drop-shadow(0 0 8px #8ceaf0) brightness(1.25); }
+.desktop-hub[data-motion=true] .desk-prop-hologram[data-syncing=true] .desk-hologram-glow { animation:desk-hologram-pulse .9s ease-in-out infinite alternate; }
+.desk-hologram-base { position:absolute; left:9%; bottom:0; width:82%; height:100%; }
 .desk-prop-hologram .desk-prop-label { left:auto; right:0; transform:translateY(6px); bottom:94%; }
 .desk-delivery-drone { position:absolute; left:0; top:36%; width:8%; height:10%; animation:desk-drone-flight 41s -17s linear infinite; }
 .desk-delivery-drone-far { top:13%; width:3%; height:5%; opacity:.65; animation-duration:63s; animation-delay:-42s; animation-direction:reverse; }
@@ -141,8 +114,6 @@
 @keyframes desk-prop-bob { 0%,100% { transform:translateY(0); } 45% { transform:translateY(-4px) rotate(3deg); } }
 @keyframes desk-coffee-steam { 0% { opacity:0; transform:translateY(0); } 25% { opacity:.7; } 100% { opacity:0; transform:translateY(-22px); } }
 @keyframes desk-radio-light { from { opacity:.2; } to { opacity:.65; } }
-@keyframes desk-hologram-glow { from { opacity:.7; } to { opacity:.9; } }
-@keyframes desk-hologram-scan { from { transform:translateY(-100%); } to { transform:translateY(0); } }
 @keyframes desk-hologram-pulse { from { opacity:.55; } to { opacity:1; } }
 .desk-prop-label {
   position:absolute;
