@@ -13,6 +13,8 @@ Rules:
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-13
+
 ### Added
 - Solace as a Mac app (Electron, new workspace `desktop/`): `npm run desktop` runs it, `npm run desktop:build` builds an unsigned `Solace.app`. It starts the API server and the web UI itself (or reuses a Solace that already runs on those ports), keeps running when you close the window, launches at login, has an "Always on Top" toggle and the global show/hide shortcut Control+Option+Command+S. It notifies you on the morning of an exam or resit day and when your Garmin login is about to expire or has expired. If it starts its own API but the web port is already answering (for example the Docker demo), it stops with a port-in-use error instead of showing the wrong database. See README "Mac app".
 - The server now knows the sky: it asks Open-Meteo for today's sunrise, sunset and the current weather at a configurable location (default Antwerp; `SOLACE_LAT` + `SOLACE_LON` in `.env`, `SOLACE_SKY=0` turns it off), keeps the answer in memory for 30 minutes and adds it to the dashboard as `sky`. If Open-Meteo cannot be reached the dashboard still loads and `sky` is `null`. The demo always uses the default location. From this the desk works out the phase of the day (dawn, day, dusk, night; fixed clock hours without data) and one of four weather moods (clear, fog, rain, snow).

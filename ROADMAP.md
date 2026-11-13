@@ -8,10 +8,12 @@
 - One desk style
 - One Solace visual style: one dark token layer, fonts, shared panels and buttons, the shell, and the areas renamed DESK, BODY, STUDY and SHELF (#34)
 - A living desk: a panoramic room, a walking cat, a real day/night cycle, lighting, city life and weather (#17)
+- The desk radio with Spotify stations in the Mac app (#33)
+- BODY, STUDY and SHELF open inside the desk terminal on the monitor; no separate pages (#35)
 
 ## Next
 
-- In progress: BODY, STUDY and SHELF open inside the desk terminal on the monitor, no separate pages (#35)
+- To be planned.
 
 ## Maybe later
 
