@@ -1,6 +1,6 @@
 {
   "name": "@solace/cli",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "Headless dev runtime: seed/import/report/audit commands. Proves the whole pipeline with no UI.",

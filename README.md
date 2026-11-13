@@ -18,6 +18,8 @@ trademarks belong to their owners, and none of those names is used as the name o
 ![The start screen](docs/screenshots/start.png)
 
 ![The desk](docs/screenshots/desk.png)
+![The body showcase](docs/screenshots/showcase.png)
+![The bookcase](docs/screenshots/bookcase.png)
 ![BODY](docs/screenshots/body.png)
 ![SHELF](docs/screenshots/shelf.png)
 
