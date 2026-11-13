@@ -174,49 +174,6 @@
 .desktop-sprite-hub[data-origin=shelf] .desk-scenery { transform-origin:10% 46%; }
 .desktop-sprite-hub .desk-header { gap:10px; }.desktop-sprite-hub .desk-header nav { flex-wrap:wrap; gap:8px; }
 .desktop-sprite-hub .desk-header nav button { font-size:12px; }
-.desk-collection-panel { max-width:800px; margin:auto; padding:30px; line-height:1.6; }
-.desk-eyebrow { color:#9ac4c7; font-size:11px; letter-spacing:.12em; }
-.desk-collection-panel nav button {
-  min-height:44px;
-  padding:10px 16px;
-  border:1px solid #63888c;
-  border-radius:3px;
-  background:#162b35;
-}
-.desk-collection-panel nav button[aria-pressed=true] {
-  border-color:#e4b87e;
-  background:#443a2a;
-}
-.desk-scratchpad {
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  min-height:260px;
-  padding:24px;
-  gap:12px;
-}
-.desk-scratchpad label { font-size:20px; color:#e7d0aa; }
-.desk-scratchpad p { margin:0; font-size:12px; color:#b7cdd0; }
-.desk-scratchpad textarea {
-  flex:1;
-  min-height:180px;
-  resize:vertical;
-  width:100%;
-  border:1px solid #6a7c7d;
-  border-radius:3px;
-  background:repeating-linear-gradient(#1c2930 0 31px,#8ca5a417 31px 32px);
-  color:#ecdfcc;
-  font:16px/32px var(--font-mono);
-  padding:12px 16px;
-}
-.desk-collection-panel nav { display:flex; flex-wrap:wrap; gap:10px; }
-.desk-collection-figure {
-  width:160px;
-  height:190px;
-  margin:24px auto;
-  animation:desk-figure-turn 650ms ease-out;
-}
-@keyframes desk-figure-turn { from { transform:rotateY(-35deg) translateY(10px); opacity:.3; } to { transform:rotateY(0deg) translateY(0); opacity:1; } }
 .desktop-sprite-hub[data-motion=false] .desk-sprite-scene * { animation-play-state:paused!important; }
 .desktop-sprite-hub[data-motion=false] .desk-prop-figure { transition:none; }
 .desktop-sprite-hub .desk-loading { top:28%; }
@@ -245,7 +202,6 @@
   .desk-prop-label { font-size:10px; padding:6px 8px; }
   .desk-prop-label small { font-size:8px; }
   .desk-monitor-power { min-height:20px; }
-  .desk-collection-panel { padding:16px; }.desk-scratchpad { padding:16px; }
 }
 @media(max-height:550px) and (max-width:760px) {
   .desktop-sprite-hub .desk-signals { height:62px; grid-template-columns:repeat(6,minmax(0,1fr)); }
@@ -256,7 +212,6 @@
 }
 @media(prefers-reduced-motion:reduce) {
   .desk-prop-label,.desk-prop-figure { transition:none; }
-  .desktop-sprite-hub .desk-collection-figure { animation:none; }
 }
 
 /* Layout controls stay separate from the scene's tool interactions. */

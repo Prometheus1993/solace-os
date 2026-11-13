@@ -195,7 +195,7 @@ export function CollectiblePanel({ selected, onSelect }: { selected: number; onS
   const figure = FIGURES[selected];
   return <div className="desk-collection-panel">
     <nav aria-label="Collectible figures">
-      {FIGURES.map((item, i) => <button key={item.name} aria-pressed={selected === i} onClick={() => onSelect(i)}>{item.name}</button>)}
+      {FIGURES.map((item, i) => <button key={item.name} className="parts-button" aria-pressed={selected === i} onClick={() => onSelect(i)}>{item.name}</button>)}
     </nav>
     <div key={selected} className="desk-collection-figure"><DeskObjectSprite id={selected === 0 ? 'figure-one' : 'figure-two'} /></div>
     <p className="desk-eyebrow">{figure.detail}</p>
