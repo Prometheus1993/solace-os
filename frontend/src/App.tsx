@@ -9,6 +9,7 @@ import { createEntryState, entryHash } from './start-state.ts';
 import { canonicalRoute } from './home/desk/terminal-route.ts';
 import { FxOverlay } from './FxOverlay.tsx';
 import type { SolaceSpotify } from './home/desk/spotify-api.ts';
+import { buildSyncReport, syncSnapshot, type SyncReport, type SyncSummary } from './home/desk/sync-report.ts';
 
 type Toast = { msg: string; tone: 'info' | 'ok' | 'err' } | null;
 declare global {
@@ -21,7 +22,7 @@ interface SyncResponse {
   ok?: boolean;
   error?: string;
   message?: string;
-  summary?: { runsImported: number; recoveryDaysWritten: number; wellnessDays: string[] };
+  summary?: SyncSummary;
 }
 
 /** An old bookmark (`#training/running`) is rewritten to its new name in place (no history entry, no reload). */
@@ -43,6 +44,7 @@ export function App() {
   const loadSeqRef = useRef(0); // monotonic id so a slow earlier /api/dashboard can't overwrite fresher state
   const [busy, setBusy] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [syncReport, setSyncReport] = useState<SyncReport | null>(null);
   const [toast, setToast] = useState<Toast>(null);
   // Single auto-dismiss timer for toasts: clear the previous one before each new toast so a
   // stale timer can't blank a newer toast.
@@ -108,6 +110,7 @@ export function App() {
   const syncGarmin = useCallback(async () => {
     if (busy || syncing) return;
     clearToastTimer();
+    const before = dtoRef.current && syncSnapshot(dtoRef.current);
     setSyncing(true);
     setBusy(true);
     setToast({ msg: 'Syncing Garmin… (pulling runs + wellness)', tone: 'info' });
@@ -118,6 +121,7 @@ export function App() {
       if (res.ok && j.ok && j.summary) {
         await loadDashboard();
         const s = j.summary;
+        if (before && dtoRef.current) setSyncReport(buildSyncReport(before, syncSnapshot(dtoRef.current), s, new Date()));
         const runWord = s.runsImported === 1 ? 'run' : 'runs';
         const dayWord = s.recoveryDaysWritten === 1 ? 'day' : 'days';
         setToast({ msg: `Garmin synced · ${s.runsImported} new ${runWord} · ${s.recoveryDaysWritten} wellness ${dayWord}`, tone: 'ok' });
@@ -177,7 +181,7 @@ export function App() {
 
   return (
     <div className={`app-root${fadeIn ? ' ss-fade-in' : ''}`}>
-      <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} onSyncGarmin={() => void syncGarmin()} />
+      <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} syncReport={syncReport} onSyncGarmin={() => void syncGarmin()} />
 
       {busy && <div className="app-busy-bar" />}
       {toast && <div className="app-toast" role={toast.tone === 'err' ? 'alert' : 'status'} data-tone={toast.tone} style={{ bottom: 24 }}>{toast.msg}</div>}

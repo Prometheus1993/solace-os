@@ -25,7 +25,3 @@ export function sharedSpriteBounds(bounds: SpriteRect[]): SpriteRect {
   const x = Math.min(...bounds.map(b => b.x)), y = Math.min(...bounds.map(b => b.y));
   return { x, y, width: Math.max(...bounds.map(b => b.x + b.width)) - x, height: Math.max(...bounds.map(b => b.y + b.height)) - y };
 }
-
-export function puckFrame(syncing: boolean, highlighted: boolean, phase: number): number {
-  return syncing ? 2 + Math.abs(phase % 2) : highlighted ? 1 : 0;
-}

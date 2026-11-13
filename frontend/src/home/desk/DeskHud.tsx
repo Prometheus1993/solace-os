@@ -10,21 +10,13 @@ function staleLabel(f: DataFreshness): string | null {
   return runs != null && runs >= 2 ? `WELLNESS ${rec}D STALE · RUNS ${runs}D` : `WELLNESS ${rec}D STALE`;
 }
 
-/** The desk's run/km totals and the one ⟲ SYNC trigger (POST /api/sync-garmin, owned by App). */
-export function DeskHud({ dto, syncing, busy, disabled, onSync }: { dto: DashboardDTO; syncing: boolean; busy: boolean; disabled: boolean; onSync: () => void }) {
+/** The desk's run/km totals. Syncing lives in the hologram showcase. */
+export function DeskHud({ dto }: { dto: DashboardDTO }) {
   const stale = staleLabel(dto.dataFreshness);
   return <div className="desk-hud">
     <span className="desk-hud-totals">{dto.totals.runCount} RUNS · {round1(dto.totals.totalRunKm)} KM</span>
     {stale && <span
       className="desk-hud-stale"
-      title={`Newest wellness reading: ${dto.dataFreshness.recoveryLatestDate ?? '—'}. Sync to pull the rest.`}>{stale}</span>}
-    <button
-      className="desk-hud-sync"
-      disabled={disabled || syncing || busy}
-      data-syncing={syncing}
-      title={syncing ? 'Syncing Garmin…' : 'Sync Garmin (pull new runs + wellness)'}
-      onClick={onSync}>
-      <span aria-hidden="true">⟲</span> {syncing ? 'SYNCING' : 'SYNC'}
-    </button>
+      title={`Newest wellness reading: ${dto.dataFreshness.recoveryLatestDate ?? '—'}. Sync from the hologram showcase to pull the rest.`}>{stale}</span>}
   </div>;
 }

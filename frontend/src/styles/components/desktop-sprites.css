@@ -41,7 +41,6 @@
 .desk-prop-monitor { z-index:var(--z-header); left:54%; bottom:10.3%; width:24%; height:calc(var(--desk-w)*.1104); container-type:inline-size; }
 .desk-prop-keyboard { z-index:var(--z-overlay); left:57.5%; bottom:6.5%; width:17%; height:calc(var(--desk-w)*.0491); }
 .desk-prop-mouse { z-index:var(--z-overlay); left:75.5%; bottom:7%; width:3.2%; height:calc(var(--desk-w)*.0334); }
-.desk-prop-puck { z-index:var(--z-overlay); left:44%; bottom:6.5%; width:5.5%; height:calc(var(--desk-w)*.0357); }
 /* The cat's cushion lies on the right of the tabletop. */
 .desk-prop-companion { z-index:9; left:83%; bottom:6%; width:10%; height:calc(var(--desk-w)*.0362); }
 .desk-prop-companion canvas { object-position:bottom center; }
@@ -109,6 +108,19 @@
   background:linear-gradient(0deg,#69eaff3d,transparent);
   pointer-events:none;
 }
+.desk-hologram-scan { position:absolute; left:10%; top:0; width:80%; height:84%; overflow:hidden; opacity:0; pointer-events:none; }
+.desk-hologram-scan::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(transparent calc(100% - 3px),var(--color-cyan) 0);
+  box-shadow:0 8px 14px -4px #5ffaffa0;
+  transform:translateY(-45%);
+}
+.desk-prop-hologram[data-syncing=true] .desk-hologram-scan { opacity:1; }
+.desk-prop-hologram[data-syncing=true] .desk-hologram-beam { background:linear-gradient(0deg,#8ceaf080,transparent); }
+.desktop-hub[data-motion=true] .desk-prop-hologram[data-syncing=true] .desk-hologram-scan::before { animation:desk-hologram-scan 1.3s ease-in-out infinite alternate; }
+.desktop-hub[data-motion=true] .desk-prop-hologram[data-syncing=true] .desk-hologram-beam { animation:desk-hologram-pulse .9s ease-in-out infinite alternate; }
 .desk-hologram-base { position:absolute; left:9%; bottom:0; width:82%; height:20%; }
 .desk-prop-hologram .desk-prop-label { left:auto; right:0; transform:translateY(6px); bottom:94%; }
 .desk-delivery-drone { position:absolute; left:0; top:36%; width:8%; height:10%; animation:desk-drone-flight 41s -17s linear infinite; }
@@ -130,6 +142,8 @@
 @keyframes desk-coffee-steam { 0% { opacity:0; transform:translateY(0); } 25% { opacity:.7; } 100% { opacity:0; transform:translateY(-22px); } }
 @keyframes desk-radio-light { from { opacity:.2; } to { opacity:.65; } }
 @keyframes desk-hologram-glow { from { opacity:.7; } to { opacity:.9; } }
+@keyframes desk-hologram-scan { from { transform:translateY(-100%); } to { transform:translateY(0); } }
+@keyframes desk-hologram-pulse { from { opacity:.55; } to { opacity:1; } }
 .desk-prop-label {
   position:absolute;
   bottom:80%;
@@ -148,7 +162,7 @@
 .desk-prop-label small { display:block; margin-top:5px; font-size:10px; color:#c5cdd2; }
 .desk-prop-books .desk-prop-label { bottom:45%; border-color:#e9bd8b; }
 .desk-prop:hover > .desk-prop-label,.desk-prop:focus-visible > .desk-prop-label { opacity:1; transform:translate(-50%,0); }
-.desk-prop-books:hover,.desk-prop-puck:hover { filter:drop-shadow(0 0 9px #95e5df16); }
+.desk-prop-books:hover { filter:drop-shadow(0 0 9px #95e5df16); }
 .desk-prop-monitor .desk-monitor { left:4%; top:7.5%; width:92%; height:66%; }
 .desk-prop-monitor .desk-folders { position:absolute; inset:0; padding:0; }
 .desk-prop-monitor .desk-folders button { width:100%; height:100%; padding:4px; gap:6px; font-size:clamp(8px,2.1cqw,14px); }
@@ -171,7 +185,7 @@
   border:0;
   border-radius:0;
 }
-.desktop-sprite-hub .desk-signals > button {
+.desktop-sprite-hub .desk-signals > .desk-signal {
   min-height:60px;
   padding:8px 10px;
   border:0;
@@ -179,18 +193,11 @@
   background:linear-gradient(180deg,#091521ed,#0b1624a1);
   box-shadow:var(--shadow-s);
 }
-.desktop-sprite-hub .desk-signals > button > span { font-size:11px; }
+.desktop-sprite-hub .desk-signals > .desk-signal > span { font-size:11px; }
 .desktop-sprite-hub .desk-signals strong { font-size:14px; }
 .desktop-sprite-hub .desk-signals small { font-size:10px; }
-.desktop-sprite-hub .desk-signals > button[aria-pressed=true],
-.desktop-sprite-hub .desk-signals > button:hover {
-  border-bottom-color:#d9fffa;
-  background:linear-gradient(180deg,#15333ded,#0b1624bb);
-}
 .desktop-sprite-hub .desk-header { top:auto; bottom:0; padding:10px 22px; background:linear-gradient(transparent,#100e18ed); }
 .desktop-sprite-hub .desk-surfaces { inset:108px 4% 70px; }
-.desktop-sprite-hub[data-origin=puck] .desk-scenery { transform-origin:47% 91%; }
-.desktop-sprite-hub[data-origin=puck] .desk-surface { transform-origin:47% 100%; }
 .desktop-sprite-hub[data-origin=monitor] .desk-scenery { transform-origin:66% 80%; }
 .desktop-sprite-hub[data-origin=notebook] .desk-scenery { transform-origin:18% 91%; }
 .desktop-sprite-hub[data-origin=shelf] .desk-scenery { transform-origin:10% 46%; }
@@ -244,13 +251,13 @@
 .desktop-sprite-hub .desk-loading { top:28%; }
 @media(max-width:1100px) {
   .desktop-sprite-hub .desk-signals { width:calc(100% - 24px); gap:6px; }
-  .desktop-sprite-hub .desk-signals > button { padding-inline:7px; }
-  .desktop-sprite-hub .desk-signals > button > span { font-size:10px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal { padding-inline:7px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal > span { font-size:10px; }
 }
 @media(max-width:760px) {
   .desktop-sprite-hub .desk-signals { top:8px; bottom:auto; width:calc(100% - 16px); height:130px; gap:5px 8px; padding:0; }
-  .desktop-sprite-hub .desk-signals > button { min-height:60px; padding:5px 8px; }
-  .desktop-sprite-hub .desk-signals > button > span { font-size:10px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal { min-height:60px; padding:5px 8px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal > span { font-size:10px; }
   .desktop-sprite-hub .desk-signals strong { font-size:12px; }
   .desktop-sprite-hub .desk-signals small { font-size:9px; }
   .desktop-sprite-hub .desk-header { padding:6px 8px; gap:3px; flex-wrap:wrap; }
@@ -271,8 +278,8 @@
 }
 @media(max-height:550px) and (max-width:760px) {
   .desktop-sprite-hub .desk-signals { height:62px; grid-template-columns:repeat(6,minmax(0,1fr)); }
-  .desktop-sprite-hub .desk-signals > button { min-height:56px; padding:4px; }
-  .desktop-sprite-hub .desk-signals > button > span { font-size:8px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal { min-height:56px; padding:4px; }
+  .desktop-sprite-hub .desk-signals > .desk-signal > span { font-size:8px; }
   .desktop-sprite-hub .desk-signals small { display:none; }
   .desktop-sprite-hub .desk-surfaces { inset:85px 8px 96px; }
 }

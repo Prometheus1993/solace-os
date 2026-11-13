@@ -24,13 +24,7 @@
 }
 .terminal-stage > .terminal-explorer { flex:1; min-height:0; }
 
-/* The desk HUD: run/km totals and the one SYNC trigger, in the bottom bar. */
+/* The desk HUD: run/km totals (and the stale-data marker) in the bottom bar. */
 .desk-hud { display:flex; align-items:center; gap:10px; }
 .desk-hud-totals { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-text-1); font-variant-numeric:tabular-nums; white-space:nowrap; }
 .desk-hud-stale { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-danger); border:var(--bw-1) solid currentColor; padding:4px 8px; white-space:nowrap; background:#0d1119bb; }
-.desk-header .desk-hud-sync { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:var(--fs-sm); letter-spacing:var(--ls-caps); color:var(--color-text-1); background:var(--color-magenta-fill); border:var(--bw-1) solid var(--color-magenta-edge); }
-.desk-header .desk-hud-sync:hover:not(:disabled) { background:var(--color-magenta-strong); }
-.desk-header .desk-hud-sync:active:not(:disabled) { transform:translateY(1px); }
-.desk-header .desk-hud-sync:disabled { opacity:.6; cursor:progress; }
-.desk-hud-sync[data-syncing=true] span { display:inline-block; animation:solace-spin .9s linear infinite; }
-@media(prefers-reduced-motion:reduce) { .desk-hud-sync[data-syncing=true] span { animation:none; } }
