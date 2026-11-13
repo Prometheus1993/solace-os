@@ -1,6 +1,6 @@
 {
   "name": "solace",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "A local-first personal OS with a living desk: training (running + strength), books/manga and school tasks, in one Solace-style web UI.",

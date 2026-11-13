@@ -1,7 +1,7 @@
 {
   "name": "@solace/desktop",
   "productName": "Solace",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "Solace as a Mac app: an Electron shell that starts (or reuses) the API server and the web UI and shows them in one window.",
