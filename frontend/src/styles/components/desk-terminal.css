@@ -1,0 +1,36 @@
+/* The zoomed desk terminal (DeskTerminalCloseup.tsx): its own overlay layer above the desk scene, which is never scaled.
+   The stage grows out of the monitor screen by a transform animation (opacity only under reduced motion). */
+.terminal-closeup {
+  position:absolute;
+  inset:0;
+  z-index:var(--z-overlay);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(ellipse at center,#100a0cd9,#05060bf2);
+  outline:0;
+}
+.terminal-closeup[hidden] { display:none; }
+.terminal-stage {
+  width:min(98vw,1900px);
+  height:min(96vh,1100px);
+  display:flex;
+  flex-direction:column;
+  background:var(--color-surface-rig);
+  border:1px solid var(--color-border-rig);
+  border-top:3px solid var(--color-magenta-strong);
+  box-shadow:var(--shadow-xl);
+  overflow:hidden;
+}
+.terminal-stage > .terminal-explorer { flex:1; min-height:0; }
+
+/* The desk HUD: run/km totals and the one SYNC trigger, in the bottom bar. */
+.desk-hud { display:flex; align-items:center; gap:10px; }
+.desk-hud-totals { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-text-1); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.desk-hud-stale { font:var(--fs-xs) var(--font-mono); letter-spacing:var(--ls-caps); color:var(--color-danger); border:var(--bw-1) solid currentColor; padding:4px 8px; white-space:nowrap; background:#0d1119bb; }
+.desk-header .desk-hud-sync { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:var(--fs-sm); letter-spacing:var(--ls-caps); color:var(--color-text-1); background:var(--color-magenta-fill); border:var(--bw-1) solid var(--color-magenta-edge); }
+.desk-header .desk-hud-sync:hover:not(:disabled) { background:var(--color-magenta-strong); }
+.desk-header .desk-hud-sync:active:not(:disabled) { transform:translateY(1px); }
+.desk-header .desk-hud-sync:disabled { opacity:.6; cursor:progress; }
+.desk-hud-sync[data-syncing=true] span { display:inline-block; animation:solace-spin .9s linear infinite; }
+@media(prefers-reduced-motion:reduce) { .desk-hud-sync[data-syncing=true] span { animation:none; } }

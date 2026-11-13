@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
 import { dayPhase, weatherMood } from '@solace/core/domain';
-import { SchoolTasks } from '../../tabs/SchoolTasks.tsx';
-import { StrengthLog } from '../../tabs/StrengthLog.tsx';
-import { TerminalExplorer } from './TerminalExplorer.tsx';
+import { DeskTerminalCloseup } from './DeskTerminalCloseup.tsx';
+import { useTerminalRoute } from './use-terminal-route.ts';
+import { terminalHash, type TerminalTarget } from './terminal-route.ts';
+import { navigate } from '../navigate.ts';
+import { DeskHud } from './DeskHud.tsx';
 import { ShardPanel } from './ShardPanel.tsx';
 import { DeckPanel } from './DeckPanel.tsx';
 import { ScannerPanel } from './ScannerPanel.tsx';
@@ -12,6 +14,7 @@ import { avatarState } from './avatar-state.ts';
 import { forcedSkyPhase } from './desk-sky.ts';
 import { forcedSkyMood } from './desk-weather.ts';
 import '../../styles/components/desk-panels.css';
+import '../../styles/components/netrunner-rig.css';
 import '../../styles/components/desktop.css';
 import '../../styles/components/desktop-sprites.css';
 import '../../styles/components/desk-radio.css';
@@ -23,16 +26,12 @@ import { DeskRadioCloseup } from './DeskRadioCloseup.tsx';
 import { DeskLayoutEditor, useDeskLayout } from './DeskLayoutEditor.tsx';
 import { DeskCanvas } from './DeskCanvas.tsx';
 import { readStored, reducedMotionQuery, writeStored } from './desk-browser.ts';
-import { courseNames } from './school-courses.ts';
 import { useVisited } from './use-visited.ts';
 
 const SURFACES = [
-  { id: 'school', label: 'School', path: 'WORKSPACE / SCHOOL', origin: 'monitor', nav: 'WORKSPACE' },
-  { id: 'terminal', label: 'Terminal', path: 'WORKSPACE / PERSONAL FILES', origin: 'monitor' },
   { id: 'library', label: 'Library', path: 'COLLECTION / MANGA + BOOKS', origin: 'books', nav: 'LIBRARY' },
   { id: 'signals', label: 'Signals', path: 'PUCK / BIOMONITOR', origin: 'puck', nav: 'PUCK' },
   { id: 'sync', label: 'Sync', path: 'PUCK / GARMIN UPLINK', origin: 'puck' },
-  { id: 'gym', label: 'Gym log', path: 'PUCK / MANUAL TRAINING LOG', origin: 'puck' },
   { id: 'scratchpad', label: 'Scratchpad', path: 'DESK / PERSONAL NOTES', origin: 'notebook', nav: 'NOTES' },
   { id: 'collection', label: 'Small Companions', path: 'SHELF / COLLECTION', origin: 'shelf', nav: 'FIGURES' },
 ] as const;
@@ -54,10 +53,11 @@ export default function DesktopHub(props: DesktopHubProps) {
   const radio = useDeskRadio();
   const [figure, setFigure] = useState(0);
   const [radioOpen, setRadioOpen] = useState(false);
+  const terminal = useTerminalRoute();
+  const terminalOpen = terminal !== null;
   const [view, setView] = useState<View>('desk');
   const [visited, visit] = useVisited<Surface>();
   const [metric, setMetric] = useState<ScanMetric>('sleep');
-  const [course, setCourse] = useState<string | undefined>();
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(!hasDeskSprites);
   const [visible, setVisible] = useState(() => !document.hidden);
@@ -99,23 +99,32 @@ export default function DesktopHub(props: DesktopHubProps) {
     const timer = window.setInterval(() => setNow(new Date()), 60_000);
     return () => window.clearInterval(timer);
   }, [visible]);
+  // A link or hash that opens the terminal closes any desk surface first.
+  useEffect(() => { if (terminalOpen) setView('desk'); }, [terminalOpen]);
   useEffect(() => {
-    if (scene.current) scene.current.inert = view !== 'desk' || radioOpen;
-    if (radioOpen) return;
+    if (scene.current) scene.current.inert = view !== 'desk' || radioOpen || terminalOpen;
+    if (radioOpen || terminalOpen) return;
     if (layout.editing) { wasEditing.current = true; return; }
     if (wasEditing.current) { wasEditing.current = false; layoutButton.current?.focus({ preventScroll: true }); return; }
     if (view !== 'desk') surfaces.current?.querySelector<HTMLElement>(`[data-surface="${view}"]`)?.focus({ preventScroll: true });
     else if (returnTo.current) (returnTo.current.isConnected ? returnTo.current : deskButton.current)?.focus({ preventScroll: true });
-  }, [view, layout.editing, radioOpen]);
+  }, [view, layout.editing, radioOpen, terminalOpen]);
   const openRadio = () => {
     if (layout.editing || radioOpen) return;
     if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
     setRadioOpen(true);
   };
+  // The terminal reopens where it was last open (the drafts in its views survive anyway).
+  const lastTerminal = useRef<TerminalTarget>({ folder: 'body', view: 'overview' });
+  if (terminal) lastTerminal.current = terminal;
+  const openTerminal = (at: TerminalTarget = lastTerminal.current) => {
+    if (layout.editing || terminalOpen || radioOpen) return;
+    if (document.activeElement instanceof HTMLElement) returnTo.current = document.activeElement;
+    navigate(terminalHash(at));
+  };
   const toggleAmbience = () => {
     setAmbience(previous => { const next = !previous; writeStored('solace.desk.ambience', next ? 'on' : 'off'); return next; });
   };
-  const saved = async () => { await props.onReload(); };
 
   return <section
     className={`desktop-hub desktop-sprite-hub desk-view-${view}`}
@@ -152,6 +161,7 @@ export default function DesktopHub(props: DesktopHubProps) {
           layout={layout}
           onFigure={index => { setFigure(index); open('collection'); }}
           onOpen={open}
+          onTerminal={() => openTerminal()}
           onRadio={openRadio}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)} />
@@ -168,9 +178,11 @@ export default function DesktopHub(props: DesktopHubProps) {
           onClick={() => open(item.id)}>
           {item.nav}
         </button>)}
+        <button disabled={layout.editing} aria-pressed={terminalOpen} onClick={() => openTerminal()}>TERMINAL</button>
         <button disabled={layout.editing} aria-pressed={radioOpen} onClick={openRadio}>RADIO{radio.playing ? ' ●' : ''}</button>
       </nav>
       <div className="desk-settings">
+        <DeskHud dto={props.dto} syncing={props.syncing} busy={props.busy} disabled={layout.editing} onSync={props.onSyncGarmin} />
         <button
           ref={layoutButton}
           disabled={layout.editing}
@@ -188,6 +200,12 @@ export default function DesktopHub(props: DesktopHubProps) {
       reduced={reduced}
       origin={() => scene.current?.querySelector('.desk-prop-radio')?.getBoundingClientRect() ?? null}
       onClose={() => setRadioOpen(false)} />}
+    <DeskTerminalCloseup
+      dto={props.dto}
+      target={terminal}
+      reduced={reduced}
+      origin={() => scene.current?.querySelector('.desk-prop-monitor .desk-monitor')?.getBoundingClientRect() ?? null}
+      onReload={props.onReload} />
     {layout.editing && <DeskLayoutEditor layout={layout} />}
     {!layout.editing && layout.message && <p className="desk-layout-status" role="status">{layout.message}</p>}
     {view === 'desk'
@@ -212,21 +230,8 @@ export default function DesktopHub(props: DesktopHubProps) {
           </button>)}
         </nav>
         <div className="desk-surface-content">
-          {surface.id === 'school'
-            && <div className="desk-school">
-              <nav aria-label="School folders">
-                <button aria-pressed={course === undefined} onClick={() => setCourse(undefined)}>▤ All tasks</button>
-                {courseNames(props.dto.schoolTasks).map(name => <button
-                  key={name}
-                  aria-pressed={course === name}
-                  onClick={() => setCourse(name)}>▤ {name}
-                </button>)}
-              </nav>
-              <div><SchoolTasks compact courseFilter={course} dto={props.dto} onReload={saved} /></div>
-            </div>}
-          {surface.id === 'terminal' && <TerminalExplorer dto={props.dto} onReload={props.onReload} />}
           {surface.id === 'library' && <ShardPanel series={props.dto.series} />}
-          {surface.id === 'signals' && <ScannerPanel dto={props.dto} selected={metric} onLogWorkout={() => open('gym')} />}
+          {surface.id === 'signals' && <ScannerPanel dto={props.dto} selected={metric} onLogWorkout={() => openTerminal({ folder: 'body', view: 'strength' })} />}
           {surface.id === 'sync'
             && <DeckPanel
               dto={props.dto}
@@ -234,11 +239,6 @@ export default function DesktopHub(props: DesktopHubProps) {
               busy={props.busy}
               onSync={props.onSyncGarmin}
               onScanner={() => open('signals')} />}
-          {surface.id === 'gym'
-            && <div className="desk-gym">
-              <p>Log what you trained. Your draft stays here when you return to the desk; save before leaving Home.</p>
-              <StrengthLog dto={props.dto} onReload={saved} />
-            </div>}
           {surface.id === 'scratchpad' && <Scratchpad />}
           {surface.id === 'collection'
             && <CollectiblePanel selected={figure} onSelect={setFigure} />}

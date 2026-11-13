@@ -46,11 +46,11 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onRadio, onLoad, onError }: {
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onTerminal, onRadio, onLoad, onError }: {
   moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
-  onOpen: (view: 'terminal' | 'library' | 'signals' | 'scratchpad') => void; onRadio: () => void; onLoad: () => void; onError: () => void;
+  onOpen: (view: 'library' | 'signals' | 'scratchpad') => void; onTerminal: () => void; onRadio: () => void; onLoad: () => void; onError: () => void;
 }) {
   const root = layout.scene;
   const [awake, setAwake] = useState(true);
@@ -202,7 +202,7 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
     </button>
     <div {...layout.prop('monitor')} className="desk-prop desk-prop-monitor" data-awake={awake}>
       {propSprite('monitor', awake ? 1 : 0)}
-      {awake ? <MonitorScreen moving={moving} onOpenTerminal={() => onOpen('terminal')} /> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
+      {awake ? <MonitorScreen moving={moving} onOpenTerminal={onTerminal} /> : <button className="desk-wake-monitor" onClick={() => setAwake(true)}>WAKE DISPLAY</button>}
       <button
         className="desk-monitor-power"
         aria-label={awake ? 'Put monitor to sleep' : 'Wake monitor'}

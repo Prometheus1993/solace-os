@@ -16,7 +16,7 @@ const lastSession = (days: number | null | undefined): string =>
 export function Strength({ dto, onReload }: { dto: DashboardDTO; onReload: () => void | Promise<void> }) {
   const s = dto.stats.strength;
   return (
-    <TabShell>
+    <TabShell className="str-fit">
       <TileGrid>
         <StatTile label="Strength" value={`LV ${s.level}`} sub={lastSession(s.lastSessionDaysAgo)} color={STAT_COLOR.strength} />
         {s.breakdown.map((b) => (

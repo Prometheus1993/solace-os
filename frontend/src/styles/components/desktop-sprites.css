@@ -150,8 +150,8 @@
 .desk-prop:hover > .desk-prop-label,.desk-prop:focus-visible > .desk-prop-label { opacity:1; transform:translate(-50%,0); }
 .desk-prop-books:hover,.desk-prop-puck:hover { filter:drop-shadow(0 0 9px #95e5df16); }
 .desk-prop-monitor .desk-monitor { left:4%; top:7.5%; width:92%; height:66%; }
-.desk-prop-monitor .desk-folders { width:100%; padding-inline:5%; }
-.desk-prop-monitor .desk-folders button { padding:4px; gap:6px; font-size:clamp(8px,2.1cqw,14px); }
+.desk-prop-monitor .desk-folders { position:absolute; inset:0; padding:0; }
+.desk-prop-monitor .desk-folders button { width:100%; height:100%; padding:4px; gap:6px; font-size:clamp(8px,2.1cqw,14px); }
 .desk-prop-monitor .desk-folders svg { width:clamp(16px,6cqw,32px); }
 .desk-prop-monitor .desk-monitor-caption,.desk-prop-monitor .desk-monitor-footer { font-size:clamp(6px,1.4cqw,10px); }
 .desk-monitor-power { position:absolute; left:46%; top:75%; width:9%; height:8%; min-height:28px; border:0; background:transparent; }

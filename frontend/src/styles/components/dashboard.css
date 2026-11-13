@@ -37,9 +37,13 @@
 .dash-weekly__range { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-2); }
 .dash-weekly { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--color-text-1); }
 .dash-weekly th { padding: 8px 14px; font-size: var(--fs-xs); font-weight: 400; letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-3); text-align: right; border-bottom: 1px solid var(--color-hairline); }
-.dash-weekly td { padding: 7px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--color-hairline); }
+.dash-weekly td { padding: 5px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--color-hairline); }
+/* The two value columns are sized to their content, so the numbers sit close to the label. */
+.dash-weekly th:nth-child(2), .dash-weekly th:nth-child(3), .dash-weekly .dash-weekly__last, .dash-weekly .dash-weekly__before { width: 1%; white-space: nowrap; }
+.dash-weekly .dash-weekly__last { color: var(--color-text-1); }
+.dash-weekly .dash-weekly__before { color: var(--color-text-2); }
 .dash-weekly tr:last-child td { border-bottom: none; }
-.dash-weekly .dash-weekly__label { text-align: left; color: var(--color-text-2); white-space: normal; }
+.dash-weekly .dash-weekly__label { text-align: left; color: var(--group-color); white-space: normal; box-shadow: inset 3px 0 0 0 var(--group-color); }
 .dash-weekly .dash-weekly__arrow { width: 1%; color: var(--color-text-2); }
 @media (max-width: 600px) { .dash-weekly th, .dash-weekly td { padding-left: 8px; padding-right: 8px; } }
 
@@ -90,13 +94,10 @@
 .dash-equip__km { font-family: var(--font-mono); font-weight: 500; font-size: clamp(13.1px, 1.905vw, 16px); font-variant-numeric: tabular-nums; color: var(--color-cyan); white-space: nowrap; }
 .dash-equip__note { font-family: var(--font-mono); font-weight: 400; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--color-text-3); margin-top: 8px; line-height: 1.4; }
 
-.dash-root { max-width: 1500px; margin: 0 auto; padding: 6px clamp(14px, 4vw, 30px) 24px; display: flex; flex-direction: column; gap: 18px; }
-.dash-grid-top { display: grid; grid-template-columns: 430px 1fr; gap: 18px; align-items: start; }
-.dash-grid-top.is-narrow { grid-template-columns: 1fr; }
-.dash-grid-top__side { display: flex; flex-direction: column; gap: 18px; }
-.dash-grid-bottom { display: grid; grid-template-columns: 1.32fr 1fr; gap: 18px; align-items: start; }
-.dash-grid-bottom.is-narrow { grid-template-columns: 1fr; }
-.dash-grid-bottom__side { display: flex; flex-direction: column; gap: 18px; }
+/* STATUS fills the terminal: three columns, each a stack of panels. Below 1100px it is one scrolling column. */
+.dash-root { height: 100%; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.dash-col { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+@media (max-width: 1100px) { .dash-root { grid-template-columns: 1fr; height: auto; } }
 
 /* Dashboard's own inline <style> previously carried a blanket `*{animation:none!important}` under
    reduced-motion (defending only the levelUp keyframe below) — but that block only existed in the

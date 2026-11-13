@@ -3,7 +3,7 @@ import type { DashboardDTO, QuestProgress, RunRead, StatName, StatResult, Weekly
 import { C, cssVars, dayOf, fmtNum, fmtPace, monthOf, READINESS, round1, STAT_COLOR } from './tokens.ts';
 import { BarTrack, ConfidenceChip, OsBlock, Panel, Strip, SubTile, TierBadge, ZonePill } from './ui.tsx';
 import { StatRef } from './tabs/parts.tsx';
-import { useMobile, useNarrow } from './responsive.ts';
+import { useMobile } from './responsive.ts';
 
 const isSoft = (run: RunRead): boolean => run.reasons.some((r) => /soft ~\d/.test(r));
 
@@ -79,14 +79,14 @@ function CharacterStatus({ data }: { data: DashboardDTO }) {
   );
 }
 
-// ── Today's Directive ─────────────────────────────────────────────────────────
+// ── Today ─────────────────────────────────────────────────────────
 function Directive({ data }: { data: DashboardDTO }) {
   const r = data.readiness;
   const rec = data.recovery;
   const { verb, color } = READINESS[r.recommendation] ?? { verb: r.recommendation, color: C.muted };
   return (
     <OsBlock
-      title="Today's Directive"
+      title="Today"
       pad={false}
       style={cssVars({ '--directive-color': color })}
     >
@@ -117,8 +117,9 @@ function Directive({ data }: { data: DashboardDTO }) {
 }
 
 // ── Weekly report ─────────────────────────────────────────────────────────────
-// Last completed Mon–Sun week next to the week before. Numbers and arrows only; arrows are neutral
-// (no good/bad colouring), the direction is last week relative to the week before.
+// Last completed Mon–Sun week next to the week before. Each row carries its group colour (running = cyan,
+// strength = amber, body/wellness = violet); arrows are neutral (no good/bad colouring), the direction is last week
+// relative to the week before.
 const ARROW = { up: '↑', down: '↓', same: '=' } as const;
 
 const fmtRange = (start: string, end: string): string =>
@@ -126,18 +127,19 @@ const fmtRange = (start: string, end: string): string =>
 
 const fmtSigned = (n: number): string => (n > 0 ? `+${fmtNum(n)}` : fmtNum(n));
 
-const WEEKLY_ROWS: Array<{ label: string; key: Exclude<keyof WeeklyReport, 'lastWeek' | 'weekBefore'>; fmt: (n: number) => string }> = [
-  { label: 'Runs', key: 'runs', fmt: fmtNum },
-  { label: 'Distance', key: 'distanceKm', fmt: (n) => `${fmtNum(n)} km` },
-  { label: 'Avg pace', key: 'paceMinPerKm', fmt: (n) => `${fmtPace(n)}/km` },
-  { label: 'Avg HR', key: 'avgHrBpm', fmt: (n) => `${Math.round(n)} bpm` },
-  { label: 'Strength sessions', key: 'strengthSessions', fmt: fmtNum },
-  { label: 'Kg lifted', key: 'kgLifted', fmt: (n) => `${fmtNum(n)} kg` },
-  { label: 'HRV', key: 'hrvMs', fmt: (n) => `${Math.round(n)} ms` },
-  { label: 'Resting HR', key: 'restingHrBpm', fmt: (n) => `${Math.round(n)} bpm` },
-  { label: 'Sleep', key: 'sleepScore', fmt: (n) => `${Math.round(n)}/100` },
-  { label: 'Body Battery', key: 'bodyBattery', fmt: (n) => `${fmtNum(n)}%` },
-  { label: 'Weight', key: 'weightChangeKg', fmt: (n) => `${fmtSigned(n)} kg` },
+const RUNNING = STAT_COLOR.stamina, STRENGTH = STAT_COLOR.strength, WELLNESS = STAT_COLOR.leanness;
+const WEEKLY_ROWS: Array<{ label: string; key: Exclude<keyof WeeklyReport, 'lastWeek' | 'weekBefore'>; group: string; fmt: (n: number) => string }> = [
+  { label: 'Runs', key: 'runs', group: RUNNING, fmt: fmtNum },
+  { label: 'Distance', key: 'distanceKm', group: RUNNING, fmt: (n) => `${fmtNum(n)} km` },
+  { label: 'Avg pace', key: 'paceMinPerKm', group: RUNNING, fmt: (n) => `${fmtPace(n)}/km` },
+  { label: 'Avg HR', key: 'avgHrBpm', group: RUNNING, fmt: (n) => `${Math.round(n)} bpm` },
+  { label: 'Strength sessions', key: 'strengthSessions', group: STRENGTH, fmt: fmtNum },
+  { label: 'Kg lifted', key: 'kgLifted', group: STRENGTH, fmt: (n) => `${fmtNum(n)} kg` },
+  { label: 'HRV', key: 'hrvMs', group: WELLNESS, fmt: (n) => `${Math.round(n)} ms` },
+  { label: 'Resting HR', key: 'restingHrBpm', group: WELLNESS, fmt: (n) => `${Math.round(n)} bpm` },
+  { label: 'Sleep', key: 'sleepScore', group: WELLNESS, fmt: (n) => `${Math.round(n)}/100` },
+  { label: 'Body Battery', key: 'bodyBattery', group: WELLNESS, fmt: (n) => `${fmtNum(n)}%` },
+  { label: 'Weight', key: 'weightChangeKg', group: WELLNESS, fmt: (n) => `${fmtSigned(n)} kg` },
 ];
 
 function WeeklyReportBlock({ data }: { data: DashboardDTO }) {
@@ -156,13 +158,13 @@ function WeeklyReportBlock({ data }: { data: DashboardDTO }) {
           </tr>
         </thead>
         <tbody>
-          {WEEKLY_ROWS.map(({ label, key, fmt }) => {
+          {WEEKLY_ROWS.map(({ label, key, group, fmt }) => {
             const m = w[key];
             return (
-              <tr key={key}>
+              <tr key={key} style={cssVars({ '--group-color': group })}>
                 <td className="dash-weekly__label">{label}</td>
-                <td>{cell(w.lastWeek.hasData, m.lastWeek, fmt)}</td>
-                <td>{cell(w.weekBefore.hasData, m.weekBefore, fmt)}</td>
+                <td className="dash-weekly__last">{cell(w.lastWeek.hasData, m.lastWeek, fmt)}</td>
+                <td className="dash-weekly__before">{cell(w.weekBefore.hasData, m.weekBefore, fmt)}</td>
                 <td className="dash-weekly__arrow">{m.direction ? ARROW[m.direction] : ''}</td>
               </tr>
             );
@@ -173,7 +175,7 @@ function WeeklyReportBlock({ data }: { data: DashboardDTO }) {
   );
 }
 
-// ── Combat Log ──────────────────────────────────────────────────────────────────
+// ── Recent runs ──────────────────────────────────────────────────────────────────
 function Pill({ text, color }: { text: string; color: string }) {
   return <span className="dash-pill" style={cssVars({ '--pill-color': color })}>{text}</span>;
 }
@@ -229,7 +231,7 @@ function RunRow({ run }: { run: RunRead }) {
 function BattleLog({ data }: { data: DashboardDTO }) {
   return (
     <OsBlock
-      title="Combat Log · Recent Runs"
+      title="Recent runs"
       pad={false}
     >
       <div className="dash-battlelog-body">
@@ -244,11 +246,11 @@ function BattleLog({ data }: { data: DashboardDTO }) {
   );
 }
 
-// ── Objectives ──────────────────────────────────────────────────────────────────
+// ── Goals ──────────────────────────────────────────────────────────────────
 const fmtQuestVal = (v: number | null, unit: string): string => (v == null ? '—' : unit === 'min/km' ? fmtPace(v) : String(v));
 
 function QuestBar({ q }: { q: QuestProgress }) {
-  const color = q.done ? C.ok : C.danger;
+  const color = q.done ? C.ok : C.gold;
   return (
     <div className="dash-quest">
       <div className="dash-quest__header">
@@ -269,7 +271,7 @@ function QuestBar({ q }: { q: QuestProgress }) {
 
 function ActiveQuests({ data }: { data: DashboardDTO }) {
   return (
-    <OsBlock title="Objectives" pad={false}>
+    <OsBlock title="Goals" pad={false}>
       <div className="dash-quests-body">
         <span className="dash-quests-intro">On your way to your goals.</span>
         {data.quests.map((q) => (
@@ -311,28 +313,19 @@ function Equipped({ data }: { data: DashboardDTO }) {
 
 // ── Dashboard ───────────────────────────────────────────────────────────────────
 export function Dashboard({ data }: { data: DashboardDTO }) {
-  const narrow = useNarrow();
   return (
     <div className="dash-root">
-      {/* alignItems:'start' (not 'stretch') — since the vitals tiles moved to VITALS/Body.tsx
-          (3.2 #2) this column is shorter than the character panel; forcing it to stretch would
-          leave dead space below the weekly report instead of just sitting at its natural height. */}
-      <div className={`dash-grid-top${narrow ? ' is-narrow' : ''}`}>
+      <div className="dash-col">
         <CharacterStatus data={data} />
-        <div className="dash-grid-top__side">
-          <Directive data={data} />
-          {!narrow && <WeeklyReportBlock data={data} />}
-        </div>
+        <Equipped data={data} />
       </div>
-
-      {narrow && <WeeklyReportBlock data={data} />}
-
-      <div className={`dash-grid-bottom${narrow ? ' is-narrow' : ''}`}>
+      <div className="dash-col">
+        <Directive data={data} />
         <BattleLog data={data} />
-        <div className="dash-grid-bottom__side">
-          <ActiveQuests data={data} />
-          <Equipped data={data} />
-        </div>
+      </div>
+      <div className="dash-col">
+        <WeeklyReportBlock data={data} />
+        <ActiveQuests data={data} />
       </div>
     </div>
   );

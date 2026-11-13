@@ -1,4 +1,5 @@
-import { canonicalHash, resolveArea } from './areas.ts';
+import { resolveArea } from './areas.ts';
+import { canonicalRoute } from './home/desk/terminal-route.ts';
 
 /** Start-screen entry state (pure, so it can be tested without a DOM). */
 export interface StorageLike { getItem(k: string): string | null; setItem(k: string, v: string): void }
@@ -24,5 +25,5 @@ export function createEntryState(getStorage: () => StorageLike) {
 export function entryHash(hash: string): string {
   const h = hash.replace(/^#/, '');
   const area = resolveArea(h.split('/')[0] ?? '');
-  return area ? canonicalHash(h) : 'desk';
+  return area ? canonicalRoute(h) : 'desk';
 }

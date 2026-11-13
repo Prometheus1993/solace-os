@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DashboardDTO } from '@solace/core';
-import { CommandBar } from './CommandBar.tsx';
-import { BottomNav } from './BottomNav.tsx';
-import { canonicalHash, resolveArea, type Area } from './areas.ts';
-import { useMobile } from './responsive.ts';
 
 type Source = 'loading' | 'live' | 'offline';
 import { Home, preloadDesk } from './Home.tsx';
 import { LinkState } from './home/LinkState.tsx';
 import { StartScreen } from './StartScreen.tsx';
 import { createEntryState, entryHash } from './start-state.ts';
-import { Training } from './tabs/Training.tsx';
-import { School } from './tabs/School.tsx';
-import { Archives } from './tabs/Archives.tsx';
+import { canonicalRoute } from './home/desk/terminal-route.ts';
 import { FxOverlay } from './FxOverlay.tsx';
 import type { SolaceSpotify } from './home/desk/spotify-api.ts';
 
@@ -30,11 +24,10 @@ interface SyncResponse {
   summary?: { runsImported: number; recoveryDaysWritten: number; wellnessDays: string[] };
 }
 
-const areaFromHash = (): Area => resolveArea(window.location.hash.replace('#', '').split('/')[0] ?? '') ?? 'desk';
 /** An old bookmark (`#training/running`) is rewritten to its new name in place (no history entry, no reload). */
 const canonicalizeHash = (): void => {
   const h = window.location.hash.replace('#', '');
-  const c = canonicalHash(h);
+  const c = canonicalRoute(h);
   if (h && c !== h) window.history.replaceState(null, '', `#${c}`);
 };
 
@@ -48,12 +41,6 @@ export function App() {
   const [source, setSource] = useState<Source>('loading');
   const dtoRef = useRef<DashboardDTO | null>(null);
   const loadSeqRef = useRef(0); // monotonic id so a slow earlier /api/dashboard can't overwrite fresher state
-  const [area, setAreaState] = useState<Area>(areaFromHash);
-  const setArea = (a: Area) => {
-    setAreaState(a);
-    window.location.hash = a;
-  };
-  const mobile = useMobile();
   const [busy, setBusy] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState<Toast>(null);
@@ -72,10 +59,10 @@ export function App() {
     }, ms);
   };
 
-  // Keep `area` in sync with the hash (back/forward + the BODY sub-nav writing `body/<view>`).
+  // Rewrite an old hash to its canonical form on load and on every hash change; the desk reads the hash itself to open the terminal.
   useEffect(() => {
     canonicalizeHash();
-    const onHash = () => { canonicalizeHash(); setAreaState(areaFromHash()); };
+    const onHash = () => canonicalizeHash();
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -154,11 +141,11 @@ export function App() {
   // Start fetching the desk chunk as soon as the user has entered, in parallel with /api/dashboard.
   useEffect(() => { if (entered) preloadDesk(); }, [entered]);
 
-  // After "jack in": focus the desk (or the area's main) once it exists. The desk chunk is lazy, so poll briefly.
+  // After "jack in": focus the desk once it exists. The desk chunk is lazy, so poll briefly.
   useEffect(() => {
     if (!entered || !dto || !focusPending.current) return;
     const focusNow = () => {
-      const el = document.querySelector<HTMLElement>('.desktop-hub, main');
+      const el = document.querySelector<HTMLElement>('.desktop-hub');
       if (!el) return false;
       el.tabIndex = -1;
       el.focus({ preventScroll: true });
@@ -171,7 +158,7 @@ export function App() {
       if (focusNow() || ++tries >= 50) { window.clearInterval(id); focusPending.current = false; }
     }, 100);
     return () => window.clearInterval(id);
-  }, [entered, dto, area]);
+  }, [entered, dto]);
 
   const enter = useCallback(() => {
     entryState.markEntered();
@@ -186,50 +173,15 @@ export function App() {
 
   if (!entered) return <StartScreen onEnter={enter} />;
 
-  if (!dto && area === 'desk') return <LinkState offline={source === 'offline'} />;
-
-  if (!dto) {
-    return source === 'offline' ? (
-      <div className="app-state" role="alert">
-        <div className="app-state__panel">
-          <span className="app-state__heading">UPLINK FAULT</span>
-          <p className="app-state__message">Server offline. Start it with `npm run server`; this page retries every 30s.</p>
-          <button className="parts-button" onClick={() => void loadDashboard()}>Retry</button>
-        </div>
-      </div>
-    ) : (
-      <div className="app-state" role="status">
-        <span>LOADING<span className="app-state__cursor" aria-hidden="true" /></span>
-      </div>
-    );
-  }
+  if (!dto) return <LinkState offline={source === 'offline'} />;
 
   return (
     <div className={`app-root${fadeIn ? ' ss-fade-in' : ''}`}>
-      {/* DESK is the desk and brings its own chrome, so the old shell (CommandBar, BottomNav) is for the other areas only. */}
-      {area === 'desk' ? (
-        <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} onSyncGarmin={() => void syncGarmin()} />
-      ) : (
-        <>
-          <CommandBar area={area} setArea={setArea} totals={dto.totals} dataFreshness={dto.dataFreshness} onSyncGarmin={() => void syncGarmin()} syncing={syncing} />
-
-          <main className={mobile ? 'app-main is-mobile' : 'app-main'}>
-            {area === 'body' && <Training dto={dto} onReload={loadDashboard} />}
-            {area === 'study' && <School dto={dto} onReload={loadDashboard} />}
-            {area === 'shelf' && <Archives dto={dto} onReload={loadDashboard} />}
-          </main>
-
-          {mobile && <BottomNav area={area} setArea={setArea} />}
-        </>
-      )}
+      <Home onReload={loadDashboard} dto={dto} syncing={syncing} busy={busy} onSyncGarmin={() => void syncGarmin()} />
 
       {busy && <div className="app-busy-bar" />}
-      {toast && <div className="app-toast" role={toast.tone === 'err' ? 'alert' : 'status'} data-tone={toast.tone} style={{ bottom: overlayBottom(mobile) }}>{toast.msg}</div>}
+      {toast && <div className="app-toast" role={toast.tone === 'err' ? 'alert' : 'status'} data-tone={toast.tone} style={{ bottom: 24 }}>{toast.msg}</div>}
       <FxOverlay events={dto.levelEvents} />
     </div>
   );
 }
-
-// The BottomNav only exists on mobile now (desktop shell = CommandBar): the toast sits
-// above it there, and near the true viewport bottom on desktop. Main's clearance is via .app-main.is-mobile.
-const overlayBottom = (mobile: boolean): string | number => (mobile ? 'calc(70px + env(safe-area-inset-bottom))' : 24);

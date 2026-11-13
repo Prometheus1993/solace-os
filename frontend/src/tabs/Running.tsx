@@ -12,6 +12,9 @@ function weekStart(iso: string): string {
   return d.toLocaleDateString('sv-SE');
 }
 
+/** Chart plot height: four charts share one row of the terminal. */
+const CHART_H = 92;
+
 // ── "All runs" feed (rich rows; flat YoRHa with a zone-accent left edge) ──────
 type RunItem = DashboardDTO['runs'][number];
 
@@ -116,8 +119,8 @@ export function Running({ dto }: { dto: DashboardDTO }) {
   const recent = runs.slice(0, RECENT);
 
   return (
-    <TabShell>
-      {/* Run count + total km already sit in the always-visible CommandBar chip — not repeated here (3.2 #7). */}
+    <TabShell className="run-fit">
+      {/* Run count + total km already sit on the desk HUD — not repeated here (3.2 #7). */}
       <div className="run-stat-grid">
         <StatTile label="This week" value={thisWeekKm > 0 ? `${round1(thisWeekKm)} km` : '—'} sub="current ISO week" />
         <StatTile label="Longest" value={`${round1(longest)} km`} />
@@ -127,17 +130,17 @@ export function Running({ dto }: { dto: DashboardDTO }) {
 
       <div className="run-charts-grid">
         <Card title="◆ Weekly volume (km)">
-          <BarChart data={weekly} color={STAT_COLOR.stamina} unit=" km" precision={1} />
+          <BarChart data={weekly} color={STAT_COLOR.stamina} height={CHART_H} unit=" km" precision={1} />
           <div className="run-caption">Last 12 weeks.</div>
         </Card>
 
         <Card title="◆ Pace trend (min/km)">
-          <LineChart data={paceData} color={C.gold} unit="" precision={2} />
+          <LineChart data={paceData} color={C.gold} height={CHART_H} unit="" precision={2} />
           <div className="run-caption">Lower = faster.</div>
         </Card>
 
         <Card title="◆ Heart-rate trend (avg. bpm)">
-          <LineChart data={hrData} color={C.danger} unit="" precision={0} />
+          <LineChart data={hrData} color={C.danger} height={CHART_H} unit="" precision={0} />
           <div className="run-caption">Lower at the same pace = fitter.</div>
         </Card>
 
@@ -157,7 +160,7 @@ export function Running({ dto }: { dto: DashboardDTO }) {
         </Card>
       </div>
 
-      <Card title={`◆ Recent runs${runs.length > RECENT ? ` · last ${RECENT} of ${runs.length}` : ''}`}>
+      <Card className="parts-card--scroll" title={`◆ Recent runs${runs.length > RECENT ? ` · last ${RECENT} of ${runs.length}` : ''}`}>
         <div className="run-recent-list">
           {recent.map((r, i) => (
             <RunFeedRow key={`${r.date}-${i}`} r={r} />

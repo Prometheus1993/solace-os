@@ -1,16 +1,10 @@
-/* frontend/src/tabs/parts.tsx — shared tab-content primitives (TabShell/SubNav/Card/InsetPanel/
+/* frontend/src/tabs/parts.tsx — shared tab-content primitives (TabShell/Card/InsetPanel/
    AccordionList/TileGrid/StatTile/LineChart/BarChart/Field/Countdown/StatRef/FilterTabs) and the
    form-control base classes (.parts-input / .parts-button). The panel frame itself is in ui.css. */
 
 .parts-tooltip { position: absolute; transform: translateX(-50%); background: var(--color-surface-2); border: var(--bw-1) solid var(--color-border); border-radius: var(--radius-none); padding: 4px 8px; font-size: var(--fs-xs); font-family: var(--font-mono); color: var(--color-text-1); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 5; }
 
 .parts-tab-shell { max-width: 1500px; margin: 0 auto; padding: 18px clamp(14px, 4vw, 30px) 20px; display: flex; flex-direction: column; gap: 18px; }
-
-/* Sub-tabs: switch rail on the console. Never filled; active = cyan text, 2px cyan underline, glow. */
-.parts-subnav { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); padding: 14px clamp(14px, 4vw, 30px) 0; max-width: 1500px; margin: 0 auto; }
-.parts-subnav__btn { min-height: 36px; padding: 0 14px; border: 0; border-bottom: var(--bw-2) solid transparent; border-radius: var(--radius-none); cursor: pointer; font-family: var(--font-mono); font-weight: 400; font-size: var(--fs-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--color-text-2); background: transparent; transition: color var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
-.parts-subnav__btn:hover { color: var(--color-text-1); border-bottom-color: var(--color-cyan-dim); }
-.parts-subnav__btn.is-active { color: var(--color-cyan); border-bottom-color: var(--color-cyan); box-shadow: var(--glow-cyan); }
 
 /* Card: a framed panel with a header (mark in --panel-accent, hairline below). */
 .parts-card { padding: var(--space-6); }
