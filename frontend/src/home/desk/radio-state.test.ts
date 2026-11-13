@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   angleToVolume, decodePlaylists, decodeStation, decodeVolume, needleX, pointerAngle, radioDisplay, radioStatus, stationAngle,
-  stationFromAngle, stationUri, stepStation, stepVolume, turnedAngle, volumeToAngle, type SpotifyConnection,
+  stationFromAngle, stationUri, spotifySupport, stepStation, stepVolume, turnedAngle, volumeToAngle, type SpotifyConnection,
 } from './radio-state.ts';
 import type { PlayerSnapshot } from './spotify-api.ts';
 
@@ -128,5 +128,13 @@ describe('radio display', () => {
   });
   it('offers to connect when logged out', () => {
     expect(radioDisplay({ ...base, status: 'disconnected' }).actions).toEqual(['connect', 'play-local']);
+  });
+});
+
+describe('spotifySupport', () => {
+  it('tells a browser, an old Mac app and a Mac app with the Spotify bridge apart', () => {
+    expect(spotifySupport(undefined)).toBe('browser');
+    expect(spotifySupport({})).toBe('outdated');
+    expect(spotifySupport({ spotify: {} })).toBe('ready');
   });
 });

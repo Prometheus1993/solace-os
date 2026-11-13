@@ -26,7 +26,7 @@ npm run cli seed        # once, if you have no database yet
 npm run desktop:build   # downloads Electron (about 100 MB) and writes desktop/dist/Solace-darwin-<arch>/Solace.app
 ```
 
-Open `Solace.app` from that folder, or drag it to `/Applications` first. The app remembers where this repo folder is:
+Open `Solace.app` from that folder, or drag it to `/Applications` first. To update an installed copy, quit Solace (⌘Q) and replace `/Applications/Solace.app` with the new build from `desktop/dist/`: Solace allows only one running instance, so opening a new build while the old one runs just focuses the old window. The app remembers where this repo folder is:
 if you move or rename the folder, build again. After a `git pull`, restart the app; rebuild only when `desktop/` changed.
 
 The app needs Node 22 from the Homebrew `node@22` keg or from nvm (the same lookup as `start.sh`).
