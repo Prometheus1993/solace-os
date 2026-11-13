@@ -18,7 +18,6 @@ describe('desk sprite inventory', () => {
     expect(deskSpriteSpec('monitor', 0)).toEqual({ asset: 'desk-monitor-atlas', columns: 2, frame: 0 });
     expect(deskSpriteSpec('lamp')).toEqual({ asset: 'desk-lamp-atlas', columns: 2, frame: 0 });
     expect(deskSpriteSpec('lamp', 1)).toEqual({ asset: 'desk-lamp-atlas', columns: 2, frame: 1 });
-    expect(deskSpriteSpec('puck', 3)).toMatchObject({ columns: 2, rows: 2, frame: 3 });
   });
   it('draws both speakers from the 4-frame play atlas, whole cells, frame 0 idle', () => {
     for (const id of ['speaker-0', 'speaker-1'] as const) {

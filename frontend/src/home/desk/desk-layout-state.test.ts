@@ -30,6 +30,10 @@ describe('desk layout adjustments', () => {
     expect(decodeDeskLayout(JSON.stringify({ version: 1, props: { unknown: { x: 5, y: 0, scale: 1 }, headphones: { x: 1, y: 2, scale: 1 }, radio: { x: '4', y: 0, scale: 1 }, monitor: { x: 500, y: 0, scale: 0 } } }))).toEqual({ monitor: { x: 100, y: 0, scale: .35 } });
     expect(new Set(DESK_OBJECTS.map(([id]) => id)).size).toBe(DESK_OBJECTS.length);
   });
+  it('still loads a saved layout that holds the removed biomonitor puck, dropping only that prop', () => {
+    const saved = JSON.stringify({ version: 1, props: { puck: { x: 5, y: 5, scale: 1 }, radio: { x: 7, y: 0, scale: 1 } } });
+    expect(decodeDeskLayout(saved)).toEqual({ radio: { x: 7, y: 0, scale: 1 } });
+  });
   it('uses stage proportions so moves remain stable across screen sizes', () => {
     const start = { x: 3, y: -2, scale: .8 };
     expect(dragAdjustment(start, 100, 50, 1000, 500)).toEqual({ x: 13, y: 8, scale: .8 });

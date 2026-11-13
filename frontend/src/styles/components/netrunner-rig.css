@@ -1,5 +1,2 @@
-/* Netrunner Rig: the desk's scanner, deck and shard panels share one hardware language (the terminal's own frame is terminal-explorer.css). */
-.wp-scanner-panel,.wp-deck-console { color:#f0e7eb; }
-.wp-scanner-panel h1,.wp-deck-console h1 { color:#fff0ed; letter-spacing:-.025em; }
-.wp-deck-vitals > div { border-color:#755269; }
+/* Netrunner Rig: the shard panel's hardware language (the terminal's own frame is terminal-explorer.css). */
 .wp-shard-stream > header .wp-eyebrow { display:none; }.wp-shard-stream h1 { letter-spacing:.04em; }

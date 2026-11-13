@@ -13,7 +13,9 @@
 
 ## Next
 
-- To be planned.
+- Hologram showcase: the desk hologram shows your body stats, your condition and your journey, and runs the Garmin sync (#42)
+- Bookcase close-up: browse your collection as covers on shelves, replacing the shard cache (#43)
+- NOTES and FIGURES in the Solace style (#44)
 
 ## Maybe later
 

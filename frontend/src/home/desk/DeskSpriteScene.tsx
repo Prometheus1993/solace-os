@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { DayPhase, WeatherMood } from '@solace/core';
-import { AnimatedAvatar } from '../AnimatedAvatar.tsx';
-import { avatarPoseUrls, avatarUrl } from '../avatar.ts';
-import type { AvatarMood } from './avatar-state.ts';
 import { DeskSprite } from './DeskSprite.tsx';
 import { DeskObjectSprite } from './DeskObjectSprite.tsx';
 import { DeskCat } from './DeskCat.tsx';
 import { CityStories } from './CityStories.tsx';
 import { WeatherFx } from './WeatherFx.tsx';
 import type { DeskObjectId } from './desk-layout-state.ts';
-import { puckFrame } from './sprite-atlas.ts';
 import { catLight, lightLevels, poolVars, receiverVars, type ReceiverId } from './desk-light.ts';
 import { MonitorScreen } from './MonitorScreen.tsx';
 import { carLaneCount } from './city-story-motion.ts';
@@ -27,7 +23,6 @@ export const hasDeskSprites = [
   'desk-pano-desk',
   'desk-monitor-atlas',
   'desk-books-atlas',
-  'desk-puck-atlas',
   'desk-keyboard-mouse-atlas',
   'desk-lamp-atlas'
 ].every(name => !!asset(name));
@@ -46,16 +41,15 @@ const hoverFocus = (set: (on: boolean) => void) => ({
   onPointerEnter: () => set(true), onPointerLeave: () => set(false), onFocus: () => set(true), onBlur: () => set(false),
 });
 
-export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, avatar, radio, layout, onFigure, onOpen, onTerminal, onRadio, onLoad, onError }: {
-  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string; avatar: { mood: AvatarMood; label: string };
+export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, view, radio, layout, onFigure, onOpen, onTerminal, onRadio, onHologram, onLoad, onError }: {
+  moving: boolean; reduced: boolean; syncing: boolean; skyPhase: DayPhase; skyMood: WeatherMood; view: string;
   radio: DeskRadio; onFigure: (index: number) => void;
   layout: DeskLayoutControl;
-  onOpen: (view: 'library' | 'signals' | 'scratchpad') => void; onTerminal: () => void; onRadio: () => void; onLoad: () => void; onError: () => void;
+  onOpen: (view: 'library' | 'scratchpad') => void; onTerminal: () => void; onRadio: () => void; onHologram: () => void; onLoad: () => void; onError: () => void;
 }) {
   const root = layout.scene;
   const [awake, setAwake] = useState(true);
-  const [booksHover, setBooksHover] = useState(false), [puckHover, setPuckHover] = useState(false);
-  const [phase, setPhase] = useState(0);
+  const [booksHover, setBooksHover] = useState(false);
   const [reaction, setReaction] = useState('');
   const [speakerFrame, setSpeakerFrame] = useState(0);
   useEffect(
@@ -93,11 +87,6 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
     draggable={false}
     onLoad={loaded}
     onError={onError} />;
-  useEffect(() => {
-    if (!moving || !syncing) return;
-    const timer = window.setInterval(() => setPhase(previous => previous + 1), 650);
-    return () => window.clearInterval(timer);
-  }, [moving, syncing]);
   const car = asset('cyberpunk-hovercar');
   const flightLanes = (depth: typeof LANES[number]['depth']) => car && LANES.filter(lane => lane.depth === depth && lane.rank < carLaneCount(skyPhase)).map(lane => (
     <div
@@ -212,14 +201,12 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
     <button
       {...layout.prop('hologram')}
       className="desk-prop desk-prop-hologram"
-      onClick={() => onOpen('signals')}
-      aria-label={`Open signals. Hologram avatar: ${avatar.label}`}>
-      <span className="desk-hologram-person">
-        {moving && avatar.mood === 'neutral' ? <AnimatedAvatar /> : <img src={avatarPoseUrls[avatar.mood] ?? avatarUrl} alt="" draggable={false} />}
-      </span>
-      <span className="desk-hologram-beam" aria-hidden="true" />
+      data-syncing={syncing}
+      onClick={onHologram}
+      aria-label={syncing ? 'Open the body showcase. Garmin sync in progress.' : 'Open the body showcase'}>
+      <span className="desk-hologram-glow" aria-hidden="true" />
       <span className="desk-hologram-base">{propSprite('hologram')}</span>
-      <span className="desk-prop-label">COMPANION ONLINE<small>{avatar.label} / SIGNALS</small></span>
+      <span className="desk-prop-label">COMPANION ONLINE<small>{syncing ? 'SYNCING…' : 'SHOWCASE'}</small></span>
     </button>
     <button
       {...layout.prop('radio')}
@@ -279,15 +266,6 @@ export function DeskSpriteScene({ moving, reduced, syncing, skyPhase, skyMood, v
     </span>
     <div {...lit('keyboard')} className="desk-prop desk-prop-keyboard">{propSprite('keyboard')}</div>
     <div {...lit('mouse')} className="desk-prop desk-prop-mouse">{propSprite('mouse')}</div>
-    <button
-      {...layout.prop('puck')}
-      className="desk-prop desk-prop-puck"
-      aria-label={syncing ? 'Open biomonitor puck. Garmin sync in progress.' : 'Open biomonitor puck: health, Garmin sync and gym log'}
-      {...hoverFocus(setPuckHover)}
-      onClick={() => onOpen('signals')}>
-      {propSprite('puck', puckFrame(syncing, puckHover || ['signals', 'sync', 'gym'].includes(view), moving ? phase : 0))}
-      <span className="desk-prop-label">BIOMONITOR <small>{syncing ? 'SYNCING…' : 'SIGNALS / SYNC / GYM'}</small></span>
-    </button>
     <div {...layout.prop('companion')} className="desk-prop desk-prop-companion" aria-hidden="true">{propSprite('companion')}</div>
     <DeskCat
       moving={moving}

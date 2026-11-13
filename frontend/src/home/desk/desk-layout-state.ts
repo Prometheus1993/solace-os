@@ -1,7 +1,7 @@
 export const DESK_LAYOUT_KEY = 'solace.desk.layout.v1';
 export const DESK_OBJECTS = [
   ['lamp', 'Lamp'], ['books', 'Books'], ['monitor', 'Monitor'], ['keyboard', 'Keyboard'],
-  ['mouse', 'Mouse'], ['puck', 'Biomonitor'], ['radio', 'Radio'],
+  ['mouse', 'Mouse'], ['radio', 'Radio'],
   ['speaker-0', 'Left speaker'], ['speaker-1', 'Right speaker'],
   ['notebook', 'Notebook'], ['plant', 'Desk plant'], ['mug', 'Mug'],
   ['hologram', 'Avatar projector'], ['shelf', 'Shelf'], ['figure-one', 'Wayfarer figure'],

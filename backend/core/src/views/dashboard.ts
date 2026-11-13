@@ -38,6 +38,8 @@ import {
   type GoalsView,
   keyLiftOf,
   tierForLevel,
+  computeJourney,
+  type JourneyView,
   type KeyLiftId,
   type QuestProgress,
   type ScoredStrengthSet,
@@ -122,6 +124,8 @@ export interface DashboardDTO {
   };
   /** Recent level crossings (live vs last persisted) — drives the level-up flash. */
   levelEvents: LevelEvent[];
+  /** Each stat since its fresh start (start reading + a point per day), from the stat history. Display only. */
+  journey: JourneyView;
   quests: QuestProgress[];
   shoe: { model: string; authoritativeKm: number; baselineKm: number; sinceResetKm: number; fitRunsKm: number; note: string } | null;
   totals: { runCount: number; totalRunKm: number; strengthSets: number };
@@ -660,6 +664,7 @@ export function buildDashboard(input: DashboardInput): DashboardDTO {
     coachContext,
     stats: { stamina, strength, leanness, hero },
     levelEvents,
+    journey: computeJourney(statHistory),
     quests: goalQuests(runs, weightPoints, goals),
     shoe: shoe
       ? (() => {

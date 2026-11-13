@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gridRegions, puckFrame, sharedSpriteBounds, spriteBounds } from './sprite-atlas.ts';
+import { gridRegions, sharedSpriteBounds, spriteBounds } from './sprite-atlas.ts';
 
 describe('desk sprite sampling', () => {
   it('partitions odd-sized sheets without gaps or overlap', () => {
@@ -18,12 +18,5 @@ describe('desk sprite sampling', () => {
   });
   it('keeps the same crop across differently lit state frames', () => {
     expect(sharedSpriteBounds([{ x: 3, y: 4, width: 8, height: 6 }, { x: 1, y: 2, width: 12, height: 8 }])).toEqual({ x: 1, y: 2, width: 12, height: 8 });
-  });
-  it('shows sync frames only for an actual sync and keeps reduced-motion phase stable', () => {
-    expect(puckFrame(false, false, 99)).toBe(0);
-    expect(puckFrame(false, true, 99)).toBe(1);
-    expect(puckFrame(true, false, 0)).toBe(2);
-    expect(puckFrame(true, true, 1)).toBe(3);
-    expect(puckFrame(true, false, 2)).toBe(2);
   });
 });
