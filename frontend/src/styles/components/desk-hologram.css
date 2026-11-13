@@ -1,5 +1,5 @@
 /* The zoomed hologram showcase (DeskHologramCloseup.tsx): its own overlay layer above the desk scene, which is never scaled.
-   The stage grows out of the hologram prop by a transform animation (opacity only under reduced motion). The art is a 1760x1820
+   The stage grows out of the hologram prop by a transform animation (opacity only under reduced motion). The art is a 1760x1700
    "world" (hologram-layout.ts); `.holo-box` places a layer from --x/--y/--w/--h percentages. */
 .holo-closeup {
   position:absolute;
@@ -34,7 +34,7 @@
 /* Left column, hologram, right column. The hologram is as tall as the room allows; its width follows the art's aspect ratio. */
 .holo-body {
   --holo-h:calc(var(--stage-h) - 48px - 2 * var(--space-5) - 3px);
-  --holo-w:calc(var(--holo-h) * 1760 / 1820);
+  --holo-w:calc(var(--holo-h) * 1760 / 1700);
   flex:1;
   min-height:0;
   display:grid;
@@ -97,8 +97,7 @@
 /* The hologram */
 .holo-world { position:relative; width:var(--holo-w); height:100%; }
 .holo-box { position:absolute; left:var(--x); top:var(--y); width:var(--w); height:var(--h); }
-.holo-projector { display:block; image-rendering:pixelated; user-select:none; -webkit-user-drag:none; }
-.holo-projector-plain { background:radial-gradient(ellipse at 50% 30%,#8ceaf040,transparent 65%); }
+.holo-floor { background:radial-gradient(ellipse at center,#8ceaf055,#8ceaf018 45%,transparent 70%); border-radius:var(--radius-round); }
 .holo-figure { overflow:visible; }
 .holo-layer {
   --lit:.5;

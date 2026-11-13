@@ -7,7 +7,7 @@ import { historyPlot, recoveryReading } from './scanner-data.ts';
 import {
   calloutLabel, conditionOf, HEAD_GLOW, journeyRow, journeyText, shortDate, STAT_ZONE, zoneBrightness, type StatKey,
 } from './hologram-state.ts';
-import { boxPercent, CALLOUTS, FIGURE, PROJECTOR, WORLD, type Box } from './hologram-layout.ts';
+import { boxPercent, CALLOUTS, FIGURE, FLOOR, WORLD, type Box } from './hologram-layout.ts';
 import { syncReportLines, syncStamp, type SyncReport } from './sync-report.ts';
 import '../../styles/components/desk-hologram.css';
 
@@ -113,7 +113,6 @@ export function DeskHologramCloseup({ dto, syncing, busy, syncReport, reduced, m
   const shade = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const closing = useRef(false);
-  const projector = asset('hologram-projector-closeup');
   // forward = zooming in. Reduced motion only fades.
   const zoom = (forward: boolean): Promise<unknown> => {
     const from = origin(), box = stage.current!.getBoundingClientRect();
@@ -151,9 +150,7 @@ export function DeskHologramCloseup({ dto, syncing, busy, syncReport, reduced, m
           <SyncPanel dto={dto} syncing={syncing} busy={busy} report={syncReport} onSync={onSync} />
         </div>
         <div className="holo-world" role="img" aria-label={`Hologram body. ${STATS.map(s => { const l = calloutLabel(s, dto); return `${l.name} ${l.detail}`; }).join('. ')}.`}>
-          {projector
-            ? <img className="holo-box holo-projector" src={projector} alt="" draggable={false} style={place(PROJECTOR)} />
-            : <span className="holo-box holo-projector holo-projector-plain" style={place(PROJECTOR)} />}
+          <span className="holo-box holo-floor" style={place(FLOOR)} aria-hidden="true" />
           <div className="holo-box holo-figure" style={place(FIGURE)}>
             <Figure dto={dto} />
             <span className="holo-scan" aria-hidden="true" />

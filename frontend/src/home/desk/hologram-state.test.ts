@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { StatJourney } from '@solace/core';
 import { calloutLabel, conditionOf, HEAD_GLOW, journeyRow, journeyText, shortDate, STAT_ZONE, zoneBrightness } from './hologram-state.ts';
-import { CALLOUTS, FIGURE, PROJECTOR, WORLD, boxPercent } from './hologram-layout.ts';
+import { CALLOUTS, FIGURE, FLOOR, WORLD, boxPercent } from './hologram-layout.ts';
 
 describe('zone brightness', () => {
   it('rises with the level from a visible floor to full glow', () => {
@@ -57,10 +57,10 @@ describe('callout label', () => {
 });
 
 describe('showcase layout', () => {
-  it('keeps the figure, projector, labels and anchors inside the stage', () => {
+  it('keeps the figure, floor glow, labels and anchors inside the stage', () => {
     const inside = (p: { x: number; y: number }) => p.x >= 0 && p.x <= WORLD.w && p.y >= 0 && p.y <= WORLD.h;
-    expect(inside({ x: PROJECTOR.x, y: PROJECTOR.y })).toBe(true);
-    expect(inside({ x: PROJECTOR.x + PROJECTOR.w, y: PROJECTOR.y + PROJECTOR.h })).toBe(true);
+    expect(inside({ x: FLOOR.x, y: FLOOR.y })).toBe(true);
+    expect(inside({ x: FLOOR.x + FLOOR.w, y: FLOOR.y + FLOOR.h })).toBe(true);
     expect(FIGURE.x + FIGURE.w).toBeLessThanOrEqual(WORLD.w);
     for (const c of CALLOUTS) { expect(inside(c.label)).toBe(true); expect(inside(c.target)).toBe(true); }
   });
@@ -70,8 +70,8 @@ describe('showcase layout', () => {
       else expect(c.label.x).toBeGreaterThan(FIGURE.x + 833);
     }
   });
-  it('rests the projector top surface on the feet baseline', () => {
-    expect(PROJECTOR.y + 119 * 0.68).toBeCloseTo(FIGURE.y + 1560);
+  it('centres the floor glow on the feet baseline', () => {
+    expect(FLOOR.y + FLOOR.h / 2).toBeCloseTo(FIGURE.y + 1560);
   });
   it('converts a world box to stage percentages', () => {
     expect(boxPercent({ x: 0, y: 0, w: WORLD.w, h: WORLD.h })).toEqual({ x: 0, y: 0, w: 100, h: 100 });
