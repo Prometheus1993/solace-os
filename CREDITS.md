@@ -2,7 +2,7 @@
 
 ## Artwork
 
-The desk, city, avatar and hologram showcase artwork in `frontend/src/assets/private/` is original artwork made for this project with AI assistance.
+The desk, city, avatar, hologram showcase and bookcase artwork in `frontend/src/assets/private/` is original artwork made for this project with AI assistance.
 
 ## Third-party fonts, icons and music
 

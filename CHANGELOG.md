@@ -16,6 +16,7 @@ Rules:
 ### Added
 - Hologram showcase (#42): click the hologram on the desk and the scene zooms in on a body showcase (Esc or a click outside zooms back out; with reduced motion it fades). The hologram body is lit per stat, brighter for a higher level: STAMINA lights the legs, STRENGTH the arms and torso, LEANNESS the outline, each with a callout line and its level and tier. Next to it: today's CONDITION as one aura and one word (READY, STEADY or RECOVER, taken from the existing readiness advice), your JOURNEY since each stat's fresh start (level and value change, a bar and a small chart), and LAST SYNC with the **SYNC GARMIN** button, which after a sync shows what it brought (new runs, km, wellness days, stat changes). While a sync runs the hologram base on the desk pulses with light and shows the label SYNCING…, also when the showcase is closed; it stands still with MOTION OFF or reduced motion. New hologram artwork (body and zone layers); without the artwork file the showcase still works with the tinted avatar.
 - The dashboard has a new `journey` field per stat (start reading since the fresh start plus one point per day), read from the stat history.
+- Bookcase close-up (#43): click the books on the desk (or LIBRARY in the header) and the scene zooms in on a bookcase full of covers (Esc or a click outside zooms back out; with reduced motion it fades). Covers stand face-out on three shelves, 8 per shelf, 24 per page, what you are reading first and the rest by title; a series without a cover (or one that fails to load) gets a styled placeholder with its title. The plate on top holds the MANGA and BOOKS channels and a search (title or author); the arrows on the sides (or the left and right arrow keys) turn the page, and the page goes back to the first one when you change channel or search. Clicking a cover opens the terminal on SHELF at that series. New bookcase artwork; without the artwork files the bookcase still works as a plain panel.
 
 ### Changed
 - The hologram man no longer stands on the desk: only the hologram base stays there (click it to open the showcase); the man appears inside the showcase. The old desk avatar (moving sash, mood poses) is gone with its artwork files.
@@ -23,6 +24,7 @@ Rules:
 - The "stale wellness" marker in the bottom bar now points to the hologram showcase for syncing.
 
 ### Removed
+- The SHARD CACHE panel (the old horizontal cover row behind the desk books) and its styles; the bookcase close-up replaces it.
 - The biomonitor puck on the desk, the BODY SCAN panel, the GARMIN UPLINK panel and the red SYNC button in the bottom bar. A saved desk layout that still holds the puck keeps loading (the puck is simply ignored).
 
 ## [0.6.0] - 2026-11-13
