@@ -15,6 +15,7 @@ import {
   DEFAULT_ADJUSTMENT,
   DESK_LAYOUT_KEY,
   DESK_OBJECTS,
+  createStatusTimer,
   dragAdjustment,
   encodeDeskLayout,
   isDeskObject,
@@ -52,13 +53,17 @@ export function useDeskLayout() {
   const gesture = useRef<Gesture | null>(null);
   const values = editing ? draft : saved;
   const update = (id: DeskObjectId, change: Partial<PropAdjustment>) => setDraft(previous => adjustProp(previous, id, change));
-  const begin = () => { setDraft(saved); setEditing(true); setMessage(''); };
-  const cancel = () => { gesture.current = null; setDraft(saved); setEditing(false); setMessage('Layout changes cancelled.'); };
+  const statusTimer = useRef<ReturnType<typeof createStatusTimer>>();
+  statusTimer.current ??= createStatusTimer(() => setMessage(''));
+  useEffect(() => () => statusTimer.current?.stop(), []);
+  const begin = () => { statusTimer.current?.stop(); setDraft(saved); setEditing(true); setMessage(''); };
+  const cancel = () => {
+    gesture.current = null; setDraft(saved); setEditing(false); setMessage('Layout changes cancelled.'); statusTimer.current?.start();
+  };
   const save = () => {
     setSaved(draft); gesture.current = null; setEditing(false);
-    setMessage(writeStored(DESK_LAYOUT_KEY, encodeDeskLayout(draft))
-      ? 'Layout saved on this device.'
-      : 'Layout applied for this visit. Browser storage could not save it.');
+    if (writeStored(DESK_LAYOUT_KEY, encodeDeskLayout(draft))) { setMessage('Layout saved on this device.'); statusTimer.current?.start(); }
+    else { setMessage('Layout applied for this visit. Browser storage could not save it.'); statusTimer.current?.stop(); }
   };
   const prop = (id: DeskObjectId) => {
     const value = values[id] ?? DEFAULT_ADJUSTMENT;

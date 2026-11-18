@@ -55,3 +55,12 @@ export function resizeAdjustment(scale: number, start: { x: number; y: number },
   return clamp(scale * ratio, .35, 2);
 }
 
+
+export const LAYOUT_STATUS_MS = 4000;
+
+/** One restartable timeout that clears a transient status message; a newer start() cancels the older timer. */
+export function createStatusTimer(clear: () => void, ms = LAYOUT_STATUS_MS) {
+  let id: ReturnType<typeof setTimeout> | undefined;
+  const stop = () => { clearTimeout(id); id = undefined; };
+  return { start: () => { stop(); id = setTimeout(() => { id = undefined; clear(); }, ms); }, stop };
+}
