@@ -13,6 +13,9 @@ Rules:
 
 ## [Unreleased]
 
+### Fixed
+- Desk layout (#51): the "Layout saved on this device." and "Layout changes cancelled." messages now disappear after about 4 seconds; the storage-failure message stays until you edit again.
+
 ## [0.7.0] - 2026-11-13
 
 ### Added

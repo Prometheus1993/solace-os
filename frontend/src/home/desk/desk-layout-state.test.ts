@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { adjustProp, decodeDeskLayout, DEFAULT_ADJUSTMENT, DESK_OBJECTS, dragAdjustment, encodeDeskLayout, resetProp, resizeAdjustment } from './desk-layout-state.ts';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { adjustProp, createStatusTimer, LAYOUT_STATUS_MS, decodeDeskLayout, DEFAULT_ADJUSTMENT, DESK_OBJECTS, dragAdjustment, encodeDeskLayout, resetProp, resizeAdjustment } from './desk-layout-state.ts';
 
 describe('desk layout adjustments', () => {
   it('round trips independent prop adjustments without changing the default', () => {
@@ -82,5 +82,39 @@ describe('desk layout adjustments', () => {
     expect(next.monitor).toEqual(old.monitor);
     expect(decodeDeskLayout(encodeDeskLayout(next))).toEqual(next);
     expect(resetProp(next, 'companion').monitor).toEqual(old.monitor);
+  });
+});
+
+describe('layout status timer', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('clears a success message after LAYOUT_STATUS_MS', () => {
+    let message = 'Layout saved on this device.';
+    const timer = createStatusTimer(() => { message = ''; });
+    timer.start();
+    vi.advanceTimersByTime(LAYOUT_STATUS_MS - 1);
+    expect(message).toBe('Layout saved on this device.');
+    vi.advanceTimersByTime(1);
+    expect(message).toBe('');
+  });
+  it('does not clear a failure message when the timer is stopped, not started', () => {
+    let message = 'Layout applied for this visit. Browser storage could not save it.';
+    const timer = createStatusTimer(() => { message = ''; });
+    timer.start();
+    timer.stop();
+    vi.advanceTimersByTime(LAYOUT_STATUS_MS * 3);
+    expect(message).not.toBe('');
+  });
+  it('restarts on a second start so an older timer never clears the newer message', () => {
+    const clear = vi.fn();
+    const timer = createStatusTimer(clear);
+    timer.start();
+    vi.advanceTimersByTime(LAYOUT_STATUS_MS - 1000);
+    timer.start();
+    vi.advanceTimersByTime(LAYOUT_STATUS_MS - 1);
+    expect(clear).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(clear).toHaveBeenCalledTimes(1);
   });
 });
